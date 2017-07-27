@@ -16,36 +16,7 @@
  */
 package org.n52.geoprocessing.wps.client.model;
 
-public abstract class WPSParameter {
+public enum ResponseMode {
 
-    private String id;
-
-    private String title;
-
-    private String abstrakt;
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getAbstract() {
-        return abstrakt;
-    }
-
-    public void setAbstract(String abstrakt) {
-        this.abstrakt = abstrakt;
-    }
-
+    DOCUMENT, RAW
 }

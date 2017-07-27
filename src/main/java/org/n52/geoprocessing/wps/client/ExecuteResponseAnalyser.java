@@ -1,30 +1,18 @@
-/**
- * Copyright (C) 2007-2015 52°North Initiative for Geospatial Open Source
+/*
+ * ﻿Copyright (C) ${inceptionYear} - ${currentYear} 52°North Initiative for Geospatial Open Source
  * Software GmbH
  *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published
- * by the Free Software Foundation.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * If the program is linked with libraries which are licensed under one of
- * the following licenses, the combination of the program with the linked
- * library is not considered a "derivative work" of the program:
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
- *       • Apache License, version 2.0
- *       • Apache Software License, version 1.0
- *       • GNU Lesser General Public License, version 3
- *       • Mozilla Public License, versions 1.0, 1.1 and 2.0
- *       • Common Development and Distribution License (CDDL), version 1.0
- *
- * Therefore the distribution of the program linked with libraries licensed
- * under the aforementioned licenses, is permitted by the copyright holders
- * if the distribution is compliant with both the GNU General Public
- * License version 2 and the aforementioned licenses.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
- * Public License for more details.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.n52.geoprocessing.wps.client;
 
@@ -54,19 +42,19 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /*
- * 
+ *
  * returns the processOutputs according to the encoding of the process.
  * @author foerster
  *
  */
 public class ExecuteResponseAnalyser {
-	
+
 	private static Logger LOGGER = LoggerFactory.getLogger(ExecuteResponseAnalyser.class);
-	
+
 	ProcessDescriptionType processDesc;
 	ExecuteDocument exec;
 	Object response;
-	
+
 	public ExecuteResponseAnalyser(ExecuteDocument exec, Object response, ProcessDescriptionType processDesc) throws WPSClientException {
 		this.processDesc = processDesc;
 		this.exec= exec;
@@ -75,8 +63,8 @@ public class ExecuteResponseAnalyser {
 		}
 		this.response = response;
 	}
-	
-	
+
+
 /**
  * delivers the parsed ComplexData by name
  * @param outputID id of the output element
@@ -86,9 +74,9 @@ public class ExecuteResponseAnalyser {
  */
 	public IData getComplexData(String outputID, Class<?> binding) throws WPSClientException {
 		return parseProcessOutput(outputID, binding);
-		
+
 	}
-	
+
 	/**
 	 * delivers the parsed ComplexData by index
 	 * @param index index of the output element starting with 0
@@ -104,7 +92,7 @@ public class ExecuteResponseAnalyser {
 			throw new WPSClientException("Output cannot be determined by index since it is either raw data or an exception report");
 		}
 		OutputDataType[] outputs = doc.getExecuteResponse().getProcessOutputs().getOutputArray();
-		int counter = 0; 
+		int counter = 0;
 		for(OutputDataType output : outputs) {
 			if(output.getData().getComplexData() != null) {
 				if(counter == index) {
@@ -115,12 +103,12 @@ public class ExecuteResponseAnalyser {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * delivers just the URL of a referenced output identified by index
 	 * @param index index of the output
 	 * @return URL of the stored output
-	 * @throws WPSClientException 
+	 * @throws WPSClientException
 	 */
 	public String getComplexReferenceByIndex(int index) throws WPSClientException {
 		ExecuteResponseDocument doc = null;
@@ -130,7 +118,7 @@ public class ExecuteResponseAnalyser {
 			throw new WPSClientException("Output cannot be determined by index since it is either raw data or an exception report");
 		}
 		OutputDataType[] outputs = doc.getExecuteResponse().getProcessOutputs().getOutputArray();
-		int counter = 0; 
+		int counter = 0;
 		for(OutputDataType output : outputs) {
 			if(output.getReference() != null) {
 				if(counter == index) {
@@ -139,17 +127,17 @@ public class ExecuteResponseAnalyser {
 				counter ++;
 			}
 		}
-		RuntimeException rte = new RuntimeException("No reference found in response");		
+		RuntimeException rte = new RuntimeException("No reference found in response");
 		LOGGER.error(rte.getMessage());
 		throw rte;
 	}
-		
-	
-		
-	
+
+
+
+
 	/**
 	 * parses a specific WPS output
-	 * 
+	 *
 	 * @param outputID id of the output
 	 * @param outputDataBindingClass class of the desired output binding
 	 * @return parsed WPS output as IData
@@ -157,11 +145,11 @@ public class ExecuteResponseAnalyser {
 	 */
 	private IData parseProcessOutput(String outputID, Class<?> outputDataBindingClass) throws WPSClientException {
 		OutputDescriptionType outputDesc = null;
-		
+
 		String schema = null;
 		String mimeType = null;
 		String encoding = null;
-		
+
 		if(exec.getExecute().isSetResponseForm() && exec.getExecute().getResponseForm().isSetRawDataOutput()){
 			// get data specification from request
 			schema = exec.getExecute().getResponseForm().getRawDataOutput().getSchema();
@@ -176,9 +164,9 @@ public class ExecuteResponseAnalyser {
 					encoding = output.getEncoding();
 				}
 			}
-			
+
 		}
-		
+
 		if(mimeType==null){
 			for(OutputDescriptionType tempDesc : processDesc.getProcessOutputs().getOutputArray()) {
 				if(outputID.equals(tempDesc.getIdentifier().getStringValue())) {
@@ -191,7 +179,7 @@ public class ExecuteResponseAnalyser {
 			encoding = outputDesc.getComplexOutput().getDefault().getFormat().getEncoding();
 			schema = outputDesc.getComplexOutput().getDefault().getFormat().getSchema();
 		}
-		
+
 		IParser parser = StaticDataHandlerRepository.getParserFactory().getParser(schema, mimeType, encoding, outputDataBindingClass);
 		InputStream is = null;
 		if(response instanceof InputStream){
@@ -213,15 +201,15 @@ public class ExecuteResponseAnalyser {
 						} catch (IOException e) {
 							throw new WPSClientException("Could not fetch response from referenced URL", e);
 						}
-						
+
 					}else{
 						String complexDataContent;
 						try {
-							
+
 							NodeList candidateNodes = processOutput.getData().getComplexData().getDomNode().getChildNodes();
-							
-						    Node complexDataNode = candidateNodes.getLength() > 1 ? candidateNodes.item(1) : candidateNodes.item(0);							
-							
+
+						    Node complexDataNode = candidateNodes.getLength() > 1 ? candidateNodes.item(1) : candidateNodes.item(0);
+
 							complexDataContent = XMLUtil.nodeToString(complexDataNode);
 							is = new ByteArrayInputStream(complexDataContent.getBytes());
 						} catch (TransformerFactoryConfigurationError e) {
@@ -230,15 +218,15 @@ public class ExecuteResponseAnalyser {
 							LOGGER.error(e.getMessage());
 						}
 					}
-					
+
 				}
 			}
-			
+
 		}else{
 			throw new WPSClientException("Wrong output type");
 		}
-		
-		
+
+
 		if(parser != null) {
 			if(encoding != null && encoding.equalsIgnoreCase("base64")){
 				return parser.parseBase64(is, mimeType, schema);
@@ -246,7 +234,7 @@ public class ExecuteResponseAnalyser {
 				return parser.parse(is, mimeType, schema);
 			}
 		}
-		RuntimeException rte = new RuntimeException("Could not find suitable parser");		
+		RuntimeException rte = new RuntimeException("Could not find suitable parser");
 		LOGGER.error(rte.getMessage());
 		throw rte;
 	}

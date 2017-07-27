@@ -1,30 +1,18 @@
-/**
- * Copyright (C) 2007-2015 52°North Initiative for Geospatial Open Source
+/*
+ * ﻿Copyright (C) ${inceptionYear} - ${currentYear} 52°North Initiative for Geospatial Open Source
  * Software GmbH
  *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published
- * by the Free Software Foundation.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * If the program is linked with libraries which are licensed under one of
- * the following licenses, the combination of the program with the linked
- * library is not considered a "derivative work" of the program:
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
- *       • Apache License, version 2.0
- *       • Apache Software License, version 1.0
- *       • GNU Lesser General Public License, version 3
- *       • Mozilla Public License, versions 1.0, 1.1 and 2.0
- *       • Common Development and Distribution License (CDDL), version 1.0
- *
- * Therefore the distribution of the program linked with libraries licensed
- * under the aforementioned licenses, is permitted by the copyright holders
- * if the distribution is compliant with both the GNU General Public
- * License version 2 and the aforementioned licenses.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
- * Public License for more details.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.n52.geoprocessing.wps.client;
 
@@ -43,11 +31,13 @@ import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.XmlOptions;
 import org.n52.geoprocessing.wps.client.model.Process;
+import org.n52.geoprocessing.wps.client.model.ResponseMode;
 import org.n52.geoprocessing.wps.client.model.WPSCapabilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import net.opengis.wps.x100.ExecuteDocument;
+import net.opengis.wps.x100.ExecuteDocument.Execute;
 import net.opengis.wps.x100.ExecuteResponseDocument;
 import net.opengis.wps.x100.ProcessDescriptionsDocument;
 import net.opengis.wps.x20.GetResultDocument;
@@ -56,400 +46,470 @@ import net.opengis.wps.x20.ProcessOfferingDocument.ProcessOffering;
 import net.opengis.wps.x20.ProcessOfferingsDocument;
 
 /**
- * Contains some convenient methods to access and manage Web Processing Services in a very
- * generic way.
+ * Contains some convenient methods to access and manage Web Processing Services
+ * in a very generic way.
  *
  * This is implemented as a singleton.
- * 
+ *
  * @author bpross,foerster
  */
 
-
 public class WPSClientSession {
 
-	private static Logger LOGGER = LoggerFactory.getLogger(WPSClientSession.class);
+    private static Logger LOGGER = LoggerFactory.getLogger(WPSClientSession.class);
 
-	private static WPSClientSession session;
-	private Map<String, WPSCapabilities> loggedServices;
-	private XmlOptions options = null;
-	private String version;
+    private static WPSClientSession session;
 
-	// a Map of <url, all available process descriptions>
-	private Map<String, List<org.n52.geoprocessing.wps.client.model.Process>> processDescriptions;
+    private Map<String, WPSCapabilities> loggedServices;
 
-	/**
-	 * Initializes a WPS client session.
-	 *
-	 */
-	private WPSClientSession() {
-		options = new XmlOptions();
-		options.setLoadStripWhitespace();
-		options.setLoadTrimTextBuffer();
-		loggedServices = new HashMap<String, WPSCapabilities>();
-		processDescriptions = new HashMap<String, List<org.n52.geoprocessing.wps.client.model.Process>>();
-	}
+    private XmlOptions options = null;
 
-	/*
-	 * @result An instance of a WPS Client session.
-	 */
-	public static WPSClientSession getInstance() {
-		if(session == null) {
-			session = new WPSClientSession();
-		}
-		return session;
-	}
-	/**
-	 * This resets the WPSClientSession. This might be necessary, to get rid of old service entries/descriptions. However, the session has to be repopulated afterwards.
-	 */
-	public static void reset() {
-		session = new WPSClientSession();
-	}
+    public static final String VERSION_100 = "1.0.0";
 
-	/**
-	 * Connects to a WPS and retrieves Capabilities plus puts all available Descriptions into cache.
-	 * @param url the entry point for the service. This is used as id for further identification of the service.
-	 * @return true, if connect succeeded, false else.
-	 * @throws WPSClientException
-	 */
-	public boolean connect(String url, String version) throws WPSClientException {
-		LOGGER.info("CONNECT");
-		this.version = version;
-		if(loggedServices.containsKey(url)) {
-			LOGGER.info("Service already registered: " + url);
-			return false;
-		}
-		WPSCapabilities capsDoc = retrieveCapsViaGET(url, version);
-		if(capsDoc != null) {
-			loggedServices.put(url, capsDoc);
-			return true;
-		}
-//		ProcessDescriptionsDocument processDescs = describeAllProcesses(url);
-//		if(processDescs != null && capsDoc != null) {
-//			processDescriptions.put(url, processDescs);
-//			return true;
-//		}
-		LOGGER.warn("retrieving caps failed, caps are null");
-		return false;
-	}
+    public static final String VERSION_200 = "2.0.0";
 
-	/**
-	 * removes a service from the session
-	 * @param url
-	 */
-	public void disconnect(String url) {
-		if(loggedServices.containsKey(url)) {
-			loggedServices.remove(url);
-			processDescriptions.remove(url);
-			LOGGER.info("service removed successfully: " + url);
-		}
-	}
+    // a Map of <url, all available process descriptions>
+    private Map<String, List<Process>> processDescriptions;
 
-	/**
-	 * returns the serverIDs of all loggedServices
-	 * @return
-	 */
-	public List<String> getLoggedServices() {
-		return new ArrayList<String>(loggedServices.keySet());
-	}
+    /**
+     * Initializes a WPS client session.
+     *
+     */
+    private WPSClientSession() {
+        options = new XmlOptions();
+        options.setLoadStripWhitespace();
+        options.setLoadTrimTextBuffer();
+        loggedServices = new HashMap<String, WPSCapabilities>();
+        processDescriptions = new HashMap<String, List<Process>>();
+    }
 
-	/**
-	 * informs you if the descriptions for the specified service is already in the session.
-	 * in normal case it should return true :)
-	 * @param serverID
-	 * @return success
-	 */
-	public boolean descriptionsAvailableInCache(String serverID) {
-		return processDescriptions.containsKey(serverID);
-	}
+    /*
+     * @result An instance of a WPS Client session.
+     */
+    public static WPSClientSession getInstance() {
+        if (session == null) {
+            session = new WPSClientSession();
+        }
+        return session;
+    }
 
-	/**
-	 * returns the cached processdescriptions of a service.
-	 * @param serverID
-	 * @return success
-	 * @throws IOException
-	 */
-	private List<org.n52.geoprocessing.wps.client.model.Process> getProcessDescriptionsFromCache(String wpsUrl) throws IOException {
-//		if(! descriptionsAvailableInCache(wpsUrl)) {
-//			try{
-//				connect(wpsUrl);
-//			}
-//			catch(WPSClientException e) {
-//				throw new IOException("Could not initialize WPS " + wpsUrl);
-//			}
-//		}
-		return loggedServices.get(wpsUrl).getProcesses();
-	}
+    /**
+     * This resets the WPSClientSession. This might be necessary, to get rid of
+     * old service entries/descriptions. However, the session has to be
+     * repopulated afterwards.
+     */
+    public static void reset() {
+        session = new WPSClientSession();
+    }
 
+    /**
+     * Connects to a WPS and retrieves Capabilities plus puts all available
+     * Descriptions into cache.
+     *
+     * @param url
+     *            the entry point for the service. This is used as id for
+     *            further identification of the service.
+     * @return true, if connect succeeded, false else.
+     * @throws WPSClientException
+     */
+    public boolean connect(String url,
+            String version) throws WPSClientException {
+        LOGGER.info("CONNECT");
+        if (loggedServices.containsKey(url)) {
+            LOGGER.info("Service already registered: " + url);
+            return false;
+        }
+        WPSCapabilities capsDoc = retrieveCapsViaGET(url, version);
+        if (capsDoc != null) {
+            loggedServices.put(url, capsDoc);
+            return true;
+        }
+        // ProcessDescriptionsDocument processDescs = describeAllProcesses(url);
+        // if(processDescs != null && capsDoc != null) {
+        // processDescriptions.put(url, processDescs);
+        // return true;
+        // }
+        LOGGER.warn("retrieving caps failed, caps are null");
+        return false;
+    }
 
+    /**
+     * removes a service from the session
+     *
+     * @param url
+     */
+    public void disconnect(String url) {
+        if (loggedServices.containsKey(url)) {
+            loggedServices.remove(url);
+            processDescriptions.remove(url);
+            LOGGER.info("service removed successfully: " + url);
+        }
+    }
 
-	/**
-	 * return the processDescription for a specific process from Cache.
-	 * @param serverID
-	 * @param processID
-	 * @return a ProcessDescription for a specific process from Cache.
-	 * @throws IOException
-	 */
-	public org.n52.geoprocessing.wps.client.model.Process getProcessDescription(String serverID, String processID, String version) throws IOException {
-		List<org.n52.geoprocessing.wps.client.model.Process> processes = getProcessDescriptionsFromCache(serverID);
-		for(org.n52.geoprocessing.wps.client.model.Process process : processes) {
-			if(process.getId().equals(processID)) {
-				if(process.getInputs() == null || process.getInputs().isEmpty()){
-					try {
-						describeProcess(new String[]{processID}, serverID, version);
-					} catch (WPSClientException e) {
-						LOGGER.error("Could not fetch processdescription for process: " + processID, e);
-					}
-				}
-				return process;
-			}
-		}
-		return null;
-	}
+    /**
+     * returns the serverIDs of all loggedServices
+     *
+     * @return
+     */
+    public List<String> getLoggedServices() {
+        return new ArrayList<String>(loggedServices.keySet());
+    }
 
-	/**
-	 * Delivers all ProcessDescriptions from a WPS
-	 *
-	 * @param wpsUrl the URL of the WPS
-	 * @return An Array of ProcessDescriptions
-	 * @throws IOException
-	 */
-	public List<org.n52.geoprocessing.wps.client.model.Process> getAllProcessDescriptions(String wpsUrl) throws IOException{
-		return getProcessDescriptionsFromCache(wpsUrl);
-	}
+    /**
+     * informs you if the descriptions for the specified service is already in
+     * the session. in normal case it should return true :)
+     *
+     * @param serverID
+     * @return success
+     */
+    public boolean descriptionsAvailableInCache(String serverID) {
+        return processDescriptions.containsKey(serverID);
+    }
 
-	/**
-	 * looks up, if the service exists already in session.
-	 */
-	public boolean serviceAlreadyRegistered(String serverID) {
-		return loggedServices.containsKey(serverID);
-	}
+    /**
+     * returns the cached processdescriptions of a service.
+     *
+     * @param serverID
+     * @return success
+     * @throws IOException
+     */
+    private List<Process> getProcessDescriptionsFromCache(String wpsUrl)
+            throws IOException {
+        // if(! descriptionsAvailableInCache(wpsUrl)) {
+        // try{
+        // connect(wpsUrl);
+        // }
+        // catch(WPSClientException e) {
+        // throw new IOException("Could not initialize WPS " + wpsUrl);
+        // }
+        // }
+        return loggedServices.get(wpsUrl).getProcesses();
+    }
 
-	/**
-	 * provides you the cached capabilities for a specified service.
-	 * @param url
-	 * @return
-	 */
-	public WPSCapabilities getWPSCaps(String url) {
-		return loggedServices.get(url);
-	}
+    /**
+     * return the processDescription for a specific process from Cache.
+     *
+     * @param serverID
+     * @param processID
+     * @return a ProcessDescription for a specific process from Cache.
+     * @throws IOException
+     */
+    public Process getProcessDescription(String serverID,
+            String processID,
+            String version) throws IOException {
+        List<Process> processes = getProcessDescriptionsFromCache(serverID);
+        for (Process process : processes) {
+            if (process.getId().equals(processID)) {
+                if (process.getInputs() == null || process.getInputs().isEmpty()) {
+                    try {
+                        describeProcess(new String[] { processID }, serverID, version);
+                    } catch (WPSClientException e) {
+                        LOGGER.error("Could not fetch processdescription for process: " + processID, e);
+                    }
+                }
+                return process;
+            }
+        }
+        return null;
+    }
 
-	/**
-	 * retrieves the desired description for a service. the retrieved information will not be held in cache!
-	 * @param processIDs one or more processIDs
-	 * @param serverID
-	 * @throws WPSClientException
-	 */
-	public List<org.n52.geoprocessing.wps.client.model.Process> describeProcess(String[] processIDs, String serverID, String version) throws WPSClientException {
-//		WPSCapabilities caps = this.loggedServices.get(serverID);
-//		Operation[] operations = caps.getCapabilities().getOperationsMetadata().getOperationArray();
-//		String url = null;
-//		for(Operation operation : operations){
-//			if(operation.getName().equals("DescribeProcess")) {
-//				url = operation.getDCPArray()[0].getHTTP().getGetArray()[0].getHref();
-//			}
-//		}
-//		if(url == null) {
-//			throw new WPSClientException("Missing DescribeOperation in Capabilities");
-//		}
-		return retrieveDescriptionViaGET(processIDs, serverID, version);
-	}
+    /**
+     * Delivers all ProcessDescriptions from a WPS
+     *
+     * @param wpsUrl
+     *            the URL of the WPS
+     * @return An Array of ProcessDescriptions
+     * @throws IOException
+     */
+    public List<Process> getAllProcessDescriptions(String wpsUrl)
+            throws IOException {
+        return getProcessDescriptionsFromCache(wpsUrl);
+    }
 
-	/**
-	 * Executes a process at a WPS
-	 *
-	 * @param url url of server not the entry additionally defined in the caps.
-	 * @param execute Execute document
-	 * @return either an ExecuteResponseDocument or an InputStream if asked for RawData or an Exception Report
-	 */
-	private Object execute(String serverID, String url, ExecuteDocument execute, boolean rawData) throws WPSClientException{
-		execute.getExecute().setVersion(version);
-		return retrieveExecuteResponseViaPOST(url, execute,rawData);
-	}
+    /**
+     * looks up, if the service exists already in session.
+     */
+    public boolean serviceAlreadyRegistered(String serverID) {
+        return loggedServices.containsKey(serverID);
+    }
 
-	/**
-	 * Executes a process at a WPS
-	 *
-	 * @param url url of server not the entry additionally defined in the caps.
-	 * @param execute Execute document
-	 * @return either an ExecuteResponseDocument or an InputStream if asked for RawData or an Exception Report
-	 */
-	public Object execute(String serverID, String url, ExecuteDocument execute) throws WPSClientException{
-		if(execute.getExecute().isSetResponseForm()==true && execute.getExecute().isSetResponseForm()==true && execute.getExecute().getResponseForm().isSetRawDataOutput()==true){
-			return execute(serverID, url, execute,true);
-		}else{
-			return execute(serverID, url, execute,false);
-		}
+    /**
+     * provides you the cached capabilities for a specified service.
+     *
+     * @param url
+     * @return
+     */
+    public WPSCapabilities getWPSCaps(String url) {
+        return loggedServices.get(url);
+    }
 
-	}
+    /**
+     * retrieves the desired description for a service. the retrieved
+     * information will not be held in cache!
+     *
+     * @param processIDs
+     *            one or more processIDs
+     * @param serverID
+     * @throws WPSClientException
+     */
+    public List<Process> describeProcess(String[] processIDs,
+            String serverID,
+            String version) throws WPSClientException {
+        return retrieveDescriptionViaGET(processIDs, serverID, version);
+    }
 
-	private WPSCapabilities retrieveCapsViaGET(String url, String version) throws WPSClientException {
-		ClientCapabiltiesRequest req = new ClientCapabiltiesRequest(version);
-		url = req.getRequest(url);
-		try {
-			URL urlObj = new URL(url);
-			urlObj.getContent();
-			InputStream is = urlObj.openStream();
-			XmlObject xmlObject = checkInputStream(is);
-			return createWPSCapabilities(xmlObject);
-		} catch (MalformedURLException e) {
-			throw new WPSClientException("Capabilities URL seems to be unvalid: " + url, e);
-		} catch (IOException e) {
-			throw new WPSClientException("Error occured while retrieving capabilities from url: " + url, e);
-		}
-	}
+    /**
+     * Executes a process at a WPS
+     *
+     * @param url
+     *            url of server not the entry additionally defined in the caps.
+     * @param execute
+     *            Execute document
+     * @return either an ExecuteResponseDocument or an InputStream if asked for
+     *         RawData or an Exception Report
+     */
+    private Object execute(String serverID,
+            String url,
+            XmlObject execute,
+            boolean rawData) throws WPSClientException {
+        return retrieveExecuteResponseViaPOST(url, execute, rawData);
+    }
 
-	private WPSCapabilities createWPSCapabilities(XmlObject xmlObject) {
-		
-		if(xmlObject instanceof net.opengis.wps.x100.CapabilitiesDocument){
-			return createWPSCapabilitiesOWS11((net.opengis.wps.x100.CapabilitiesDocument)xmlObject);
-		}else if(xmlObject instanceof net.opengis.wps.x20.CapabilitiesDocument){
-			return createWPSCapabilitiesOWS20((net.opengis.wps.x20.CapabilitiesDocument)xmlObject);
-		}
-		
-		return new WPSCapabilities();
-	}
+    /**
+     * Executes a process at a WPS
+     *
+     * @param url
+     *            url of server not the entry additionally defined in the caps.
+     * @param execute
+     *            Execute document
+     * @return either an ExecuteResponseDocument or an InputStream if asked for
+     *         RawData or an Exception Report
+     */
+    public Object execute(String serverID,
+            String url,
+            ExecuteDocument execute, String version) throws WPSClientException {
+        if (execute.getExecute().isSetResponseForm() == true && execute.getExecute().isSetResponseForm() == true
+                && execute.getExecute().getResponseForm().isSetRawDataOutput() == true) {
+            return execute(serverID, url, execute, true);
+        } else {
+            return execute(serverID, url, execute, false);
+        }
 
-	private WPSCapabilities createWPSCapabilitiesOWS20(net.opengis.wps.x20.CapabilitiesDocument xmlObject) {
-		return new WPS20CapabilitiesParser().createWPSCapabilitiesOWS20(xmlObject);
-	}
+    }
+    public Object execute(String serverID,
+            String url,
+            org.n52.geoprocessing.wps.client.model.execution.Execute execute, String version) throws WPSClientException {
 
-	private WPSCapabilities createWPSCapabilitiesOWS11(net.opengis.wps.x100.CapabilitiesDocument xmlObject) {
-		return new WPS100CapabilitiesParser().createWPSCapabilitiesOWS100(xmlObject);
-	}
+        XmlObject executeObject = encode(execute, version);
 
-	private List<org.n52.geoprocessing.wps.client.model.Process> retrieveDescriptionViaGET(String[] processIDs, String url, String version) throws WPSClientException{
-		ClientDescribeProcessRequest req = new ClientDescribeProcessRequest(version);
-		req.setIdentifier(processIDs);
-		String requestURL = req.getRequest(url);
-		try {
-			URL urlObj = new URL(requestURL);
-			InputStream is = urlObj.openStream();
-			XmlObject doc = checkInputStream(is);
-			
-			WPSCapabilities capabilities = getWPSCaps(url);
-			
-			if(doc instanceof ProcessDescriptionsDocument){
-				return createProcessDescriptionArray((ProcessDescriptionsDocument)doc, capabilities);
-			}else if(doc instanceof net.opengis.wps.x20.ProcessOfferingsDocument){
-				return createProcessDescriptionArray((net.opengis.wps.x20.ProcessOfferingsDocument)doc, capabilities);
-			}
-		} catch (MalformedURLException e) {
-			throw new WPSClientException("URL seems not to be valid: " + url, e);
-		}
-		catch (IOException e) {
-			throw new WPSClientException("Error occured while receiving data", e);
-		}
-		LOGGER.info("No valid ProcessDescription found. Returning empty list.");
-		return new ArrayList<org.n52.geoprocessing.wps.client.model.Process>();
-	}
+        if (execute.getResponseMode() == ResponseMode.RAW) {
+            return execute(serverID, url, executeObject, true);
+        } else {
+            return execute(serverID, url, executeObject, false);
+        }
 
-	private List<org.n52.geoprocessing.wps.client.model.Process> createProcessDescriptionArray(ProcessOfferingsDocument doc, WPSCapabilities capabilities) {
+    }
 
-		List<org.n52.geoprocessing.wps.client.model.Process> processes = new ArrayList<>();
-		
+    private XmlObject encode(org.n52.geoprocessing.wps.client.model.execution.Execute execute, String version) {
+
+        XmlObject executeObject = XmlObject.Factory.newInstance();
+
+        switch (version) {
+        case VERSION_100:
+
+            break;
+
+        case VERSION_200:
+
+            break;
+
+        default:
+            break;
+        }
+
+        return executeObject;
+    }
+
+    private WPSCapabilities retrieveCapsViaGET(String url,
+            String version) throws WPSClientException {
+        ClientCapabiltiesRequest req = new ClientCapabiltiesRequest(version);
+        url = req.getRequest(url);
+        try {
+            URL urlObj = new URL(url);
+            urlObj.getContent();
+            InputStream is = urlObj.openStream();
+            XmlObject xmlObject = checkInputStream(is);
+            return createWPSCapabilities(xmlObject);
+        } catch (MalformedURLException e) {
+            throw new WPSClientException("Capabilities URL seems to be unvalid: " + url, e);
+        } catch (IOException e) {
+            throw new WPSClientException("Error occured while retrieving capabilities from url: " + url, e);
+        }
+    }
+
+    private WPSCapabilities createWPSCapabilities(XmlObject xmlObject) {
+
+        if (xmlObject instanceof net.opengis.wps.x100.CapabilitiesDocument) {
+            return createWPSCapabilitiesOWS11((net.opengis.wps.x100.CapabilitiesDocument) xmlObject);
+        } else if (xmlObject instanceof net.opengis.wps.x20.CapabilitiesDocument) {
+            return createWPSCapabilitiesOWS20((net.opengis.wps.x20.CapabilitiesDocument) xmlObject);
+        }
+
+        return new WPSCapabilities();
+    }
+
+    private WPSCapabilities createWPSCapabilitiesOWS20(net.opengis.wps.x20.CapabilitiesDocument xmlObject) {
+        return new WPS20CapabilitiesParser().createWPSCapabilitiesOWS20(xmlObject);
+    }
+
+    private WPSCapabilities createWPSCapabilitiesOWS11(net.opengis.wps.x100.CapabilitiesDocument xmlObject) {
+        return new WPS100CapabilitiesParser().createWPSCapabilitiesOWS100(xmlObject);
+    }
+
+    private List<Process> retrieveDescriptionViaGET(String[] processIDs,
+            String url,
+            String version) throws WPSClientException {
+        ClientDescribeProcessRequest req = new ClientDescribeProcessRequest(version);
+        req.setIdentifier(processIDs);
+        String requestURL = req.getRequest(url);
+        try {
+            URL urlObj = new URL(requestURL);
+            InputStream is = urlObj.openStream();
+            XmlObject doc = checkInputStream(is);
+
+            WPSCapabilities capabilities = getWPSCaps(url);
+
+            if (doc instanceof ProcessDescriptionsDocument) {
+                return createProcessDescriptionArray((ProcessDescriptionsDocument) doc, capabilities);
+            } else if (doc instanceof ProcessOfferingsDocument) {
+                return createProcessDescriptionArray((ProcessOfferingsDocument) doc, capabilities);
+            }
+        } catch (MalformedURLException e) {
+            throw new WPSClientException("URL seems not to be valid: " + url, e);
+        } catch (IOException e) {
+            throw new WPSClientException("Error occured while receiving data", e);
+        }
+        LOGGER.info("No valid ProcessDescription found. Returning empty list.");
+        return new ArrayList<Process>();
+    }
+
+    private List<Process> createProcessDescriptionArray(
+            ProcessOfferingsDocument doc,
+            WPSCapabilities capabilities) {
+
+        List<Process> processes = new ArrayList<>();
+
         ProcessOffering[] processOfferings = doc.getProcessOfferings().getProcessOfferingArray();
-        
+
         for (ProcessOffering processOffering : processOfferings) {
-    		
+
             String id = processOffering.getProcess().getIdentifier().getStringValue();
-            
+
             Process process = capabilities.getProcess(id);
-            		
-			processes.add(WPS20ProcessParser.completeProcess(processOffering, process));
-		}
-		
-		return processes;
-	}
 
-	private List<org.n52.geoprocessing.wps.client.model.Process> createProcessDescriptionArray(ProcessDescriptionsDocument doc, WPSCapabilities capabilities) {
-		
-		return null;
-	}
+            processes.add(WPS20ProcessParser.completeProcess(processOffering, process));
+        }
 
-	private InputStream retrieveDataViaPOST(XmlObject obj, String urlString) throws WPSClientException{
-		try {
-			URL url = new URL(urlString);
-			URLConnection conn = url.openConnection();
-			conn.setRequestProperty("Accept-Encoding", "gzip");
-			conn.setRequestProperty("Content-Type", "text/xml");
-			conn.setDoOutput(true);
-			obj.save(conn.getOutputStream());
-			InputStream input = null;
-			String encoding = conn.getContentEncoding();
-			if(encoding != null && encoding.equalsIgnoreCase("gzip")) {
-				input = new GZIPInputStream(conn.getInputStream());
-			}
-			else {
-				input = conn.getInputStream();
-			}
-			return input;
-		} catch (MalformedURLException e) {
-			throw new WPSClientException("URL seems to be unvalid", e);
-		} catch (IOException e) {
-			throw new WPSClientException("Error while transmission", e);
-		}
-	}
+        return processes;
+    }
 
-	private XmlObject checkInputStream(InputStream is) throws WPSClientException {
-		try {
-			XmlObject parsedXmlObject = XmlObject.Factory.parse(is);
+    private List<Process> createProcessDescriptionArray(
+            ProcessDescriptionsDocument doc,
+            WPSCapabilities capabilities) {
 
-			String exceptionText = "";
-			boolean isException = false;
+        return null;
+    }
 
-			if (parsedXmlObject instanceof net.opengis.ows.x11.ExceptionReportDocument) {
-				net.opengis.ows.x11.ExceptionReportDocument exceptionDoc = (net.opengis.ows.x11.ExceptionReportDocument) parsedXmlObject;
-				exceptionText = exceptionDoc.xmlText(options);
+    private InputStream retrieveDataViaPOST(XmlObject obj,
+            String urlString) throws WPSClientException {
+        try {
+            URL url = new URL(urlString);
+            URLConnection conn = url.openConnection();
+            conn.setRequestProperty("Accept-Encoding", "gzip");
+            conn.setRequestProperty("Content-Type", "text/xml");
+            conn.setDoOutput(true);
+            obj.save(conn.getOutputStream());
+            InputStream input = null;
+            String encoding = conn.getContentEncoding();
+            if (encoding != null && encoding.equalsIgnoreCase("gzip")) {
+                input = new GZIPInputStream(conn.getInputStream());
+            } else {
+                input = conn.getInputStream();
+            }
+            return input;
+        } catch (MalformedURLException e) {
+            throw new WPSClientException("URL seems to be unvalid", e);
+        } catch (IOException e) {
+            throw new WPSClientException("Error while transmission", e);
+        }
+    }
 
-			} else if (parsedXmlObject instanceof net.opengis.ows.x20.ExceptionReportDocument) {
-				net.opengis.ows.x20.ExceptionReportDocument exceptionDoc = (net.opengis.ows.x20.ExceptionReportDocument) parsedXmlObject;
-				exceptionText = exceptionDoc.xmlText(options);
-			}
+    private XmlObject checkInputStream(InputStream is) throws WPSClientException {
+        try {
+            XmlObject parsedXmlObject = XmlObject.Factory.parse(is);
 
-			if (isException) {
-				LOGGER.debug(exceptionText);
-				throw new WPSClientException("Error occured while executing query: ", exceptionText);
-			}
+            String exceptionText = "";
+            boolean isException = false;
 
-			return parsedXmlObject;
-		} catch (XmlException e) {
-			throw new WPSClientException("Error while parsing input.", e);
-		} catch (IOException e) {
-			throw new WPSClientException("Error occured while transfer", e);
-		}
-	}
-	
-	/**
-	 * either an ExecuteResponseDocument or an InputStream if asked for RawData or an Exception Report
-	 * @param url
-	 * @param doc
-	 * @param rawData
-	 * @return The execute response
-	 * @throws WPSClientException
-	 */
-	private Object retrieveExecuteResponseViaPOST(String url, ExecuteDocument doc, boolean rawData) throws WPSClientException{
-		InputStream is = retrieveDataViaPOST(doc, url);
-		if(rawData) {
-			return is;
-		}
-		XmlObject resultObj = checkInputStream(is);
-		
-		if(resultObj instanceof ExecuteResponseDocument){
-			return (ExecuteResponseDocument) resultObj;
-		}else if(resultObj instanceof GetStatusDocument){
-			return (GetStatusDocument) resultObj;
-		}else if(resultObj instanceof GetResultDocument){
-			return (GetResultDocument) resultObj;
-		}
-		return resultObj;
-	}
+            if (parsedXmlObject instanceof net.opengis.ows.x11.ExceptionReportDocument) {
+                net.opengis.ows.x11.ExceptionReportDocument exceptionDoc =
+                        (net.opengis.ows.x11.ExceptionReportDocument) parsedXmlObject;
+                exceptionText = exceptionDoc.xmlText(options);
 
-	public String[] getProcessNames(String url) throws IOException {
-		List<org.n52.geoprocessing.wps.client.model.Process> processes = getProcessDescriptionsFromCache(url);
-		String[] processNames = new String[processes.size()];
-		for(int i = 0; i<processNames.length; i++){
-			processNames[i] = processes.get(i).getId();
-		}
-		return processNames;
-	}
+            } else if (parsedXmlObject instanceof net.opengis.ows.x20.ExceptionReportDocument) {
+                net.opengis.ows.x20.ExceptionReportDocument exceptionDoc =
+                        (net.opengis.ows.x20.ExceptionReportDocument) parsedXmlObject;
+                exceptionText = exceptionDoc.xmlText(options);
+            }
+
+            if (isException) {
+                LOGGER.debug(exceptionText);
+                throw new WPSClientException("Error occured while executing query: ", exceptionText);
+            }
+
+            return parsedXmlObject;
+        } catch (XmlException e) {
+            throw new WPSClientException("Error while parsing input.", e);
+        } catch (IOException e) {
+            throw new WPSClientException("Error occured while transfer", e);
+        }
+    }
+
+    /**
+     * either an ExecuteResponseDocument or an InputStream if asked for RawData
+     * or an Exception Report
+     *
+     * @param url
+     * @param execute
+     * @param rawData
+     * @return The execute response
+     * @throws WPSClientException
+     */
+    private Object retrieveExecuteResponseViaPOST(String url,
+            XmlObject execute,
+            boolean rawData) throws WPSClientException {
+        InputStream is = retrieveDataViaPOST(execute, url);
+        if (rawData) {
+            return is;
+        }
+        XmlObject resultObj = checkInputStream(is);
+
+        if (resultObj instanceof ExecuteResponseDocument) {
+            return (ExecuteResponseDocument) resultObj;
+        } else if (resultObj instanceof GetStatusDocument) {
+            return (GetStatusDocument) resultObj;
+        } else if (resultObj instanceof GetResultDocument) {
+            return (GetResultDocument) resultObj;
+        }
+        return resultObj;
+    }
+
+    public String[] getProcessNames(String url) throws IOException {
+        List<Process> processes = getProcessDescriptionsFromCache(url);
+        String[] processNames = new String[processes.size()];
+        for (int i = 0; i < processNames.length; i++) {
+            processNames[i] = processes.get(i).getId();
+        }
+        return processNames;
+    }
 }

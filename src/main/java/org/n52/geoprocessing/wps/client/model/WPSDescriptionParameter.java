@@ -16,36 +16,18 @@
  */
 package org.n52.geoprocessing.wps.client.model;
 
-public abstract class WPSParameter {
+import java.util.List;
 
-    private String id;
+public abstract class WPSDescriptionParameter extends WPSParameter {
 
-    private String title;
+    private List<Format> formats;
 
-    private String abstrakt;
-
-    public String getId() {
-        return id;
+    public List<Format> getFormats() {
+        return formats;
     }
 
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getAbstract() {
-        return abstrakt;
-    }
-
-    public void setAbstract(String abstrakt) {
-        this.abstrakt = abstrakt;
+    public void setFormats(List<Format> formats) {
+        this.formats = formats;
     }
 
 }

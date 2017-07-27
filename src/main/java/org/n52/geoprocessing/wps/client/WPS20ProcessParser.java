@@ -1,3 +1,19 @@
+/*
+ * ﻿Copyright (C) ${inceptionYear} - ${currentYear} 52°North Initiative for Geospatial Open Source
+ * Software GmbH
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.n52.geoprocessing.wps.client;
 
 import java.math.BigInteger;
@@ -5,11 +21,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.n52.geoprocessing.wps.client.model.AllowedValues;
-import org.n52.geoprocessing.wps.client.model.Input;
-import org.n52.geoprocessing.wps.client.model.LiteralInput;
-import org.n52.geoprocessing.wps.client.model.Output;
+import org.n52.geoprocessing.wps.client.model.InputDescription;
+import org.n52.geoprocessing.wps.client.model.LiteralInputDescription;
+import org.n52.geoprocessing.wps.client.model.OutputDescription;
 import org.n52.geoprocessing.wps.client.model.Process;
-import org.n52.geoprocessing.wps.client.model.WPSParameter;
+import org.n52.geoprocessing.wps.client.model.WPSDescriptionParameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +49,7 @@ public class WPS20ProcessParser {
 
         InputDescriptionType[] inputDescriptions = processOffering.getProcess().getInputArray();
 
-        List<Input> inputs = new ArrayList<>();
+        List<InputDescription> inputs = new ArrayList<>();
 
         for (InputDescriptionType inputDescriptionType : inputDescriptions) {
 
@@ -44,7 +60,7 @@ public class WPS20ProcessParser {
 
         OutputDescriptionType[] outputDescriptions = processOffering.getProcess().getOutputArray();
 
-        List<Output> outputs = new ArrayList<>();
+        List<OutputDescription> outputs = new ArrayList<>();
 
         for (OutputDescriptionType outputDescriptionType : outputDescriptions) {
 
@@ -56,39 +72,59 @@ public class WPS20ProcessParser {
         return process;
     }
 
-    private static Output createOutput(OutputDescriptionType outputDescriptionType) {
-        Output output = new Output();
+    private static OutputDescription createOutput(OutputDescriptionType outputDescriptionType) {
+        OutputDescription output = new OutputDescription();
 
         DataDescriptionType dataType = outputDescriptionType.getDataDescription();
+
+        output = (OutputDescription) createWPSParameter(dataType, output);
+        try {
+            output.setId(outputDescriptionType.getIdentifier().getStringValue());
+        } catch (Exception e) {
+            LOGGER.info("Could not parse identifier of output: " + output.getId());
+            // TODO throw exception as output must have identifier
+        }
+
+        try {
+            output.setAbstract(outputDescriptionType.getAbstractArray(0).getStringValue());
+        } catch (Exception e) {
+            LOGGER.info("Could not parse abstract of output: " + output.getId());
+        }
+
+        try {
+            output.setTitle(outputDescriptionType.getTitleArray(0).getStringValue());
+        } catch (Exception e) {
+            LOGGER.info("Could not parse title of output: " + output.getId());
+        }
 
         return output;
     }
 
-    private static Input createInput(InputDescriptionType inputDescriptionType) {
+    private static InputDescription createInput(InputDescriptionType inputDescriptionType) {
 
-        Input input = new Input();
+        InputDescription input = new InputDescription();
 
         DataDescriptionType dataType = inputDescriptionType.getDataDescription();
 
-        input = (Input) createWPSParameter(dataType, input);
+        input = (InputDescription) createWPSParameter(dataType, input);
 
         try {
             input.setId(inputDescriptionType.getIdentifier().getStringValue());
         } catch (Exception e) {
-            LOGGER.info("Could not parse identifier of input.");
+            LOGGER.info("Could not parse identifier of input: " + input.getId());
             // TODO throw exception as input must have identifier
         }
 
         try {
             input.setAbstract(inputDescriptionType.getAbstractArray(0).getStringValue());
         } catch (Exception e) {
-            LOGGER.info("Could not parse abstract of input.");
+            LOGGER.info("Could not parse abstract of input: " + input.getId());
         }
 
         try {
             input.setTitle(inputDescriptionType.getTitleArray(0).getStringValue());
         } catch (Exception e) {
-            LOGGER.info("Could not parse title of input.");
+            LOGGER.info("Could not parse title of input: " + input.getId());
         }
 
         Object minOccursObject = inputDescriptionType.getMinOccurs();
@@ -98,7 +134,7 @@ public class WPS20ProcessParser {
                 input.setMinOccurs(((BigInteger) minOccursObject).intValue());
             }
         } catch (Exception e) {
-            LOGGER.info("Could not parse minimum occurs of input.");
+            LOGGER.info("Could not parse minimum occurs of input: " + input.getId());
         }
 
         Object maxOccursObject = inputDescriptionType.getMaxOccurs();
@@ -108,18 +144,16 @@ public class WPS20ProcessParser {
                 input.setMaxOccurs(((BigInteger) maxOccursObject).intValue());
             }
         } catch (Exception e) {
-            LOGGER.info("Could not parse maximum occurs of input.");
+            LOGGER.info("Could not parse maximum occurs of input: " + input.getId());
         }
 
         return input;
     }
 
-    private static WPSParameter createWPSParameter(DataDescriptionType dataType,
-            WPSParameter wpsParameter) {
+    private static WPSDescriptionParameter createWPSParameter(DataDescriptionType dataType,
+            WPSDescriptionParameter wpsParameter) {
 
         if (dataType instanceof ComplexDataType) {
-
-            // wpsParameter = new ComplexInput();
 
             ComplexDataType complexDataType = (ComplexDataType) dataType;
 
@@ -139,9 +173,9 @@ public class WPS20ProcessParser {
 
             String dataTypeString = literalDataType.getLiteralDataDomainArray(0).getDataType().getReference();
 
-            wpsParameter = new LiteralInput();
+            wpsParameter = new LiteralInputDescription();
 
-            wpsParameter = createLiteralInput(literalDataType, (LiteralInput) wpsParameter, dataTypeString);
+            wpsParameter = createLiteralInput(literalDataType, (LiteralInputDescription) wpsParameter, dataTypeString);
 
             Format[] formatDescriptions = literalDataType.getFormatArray();
 
@@ -164,8 +198,8 @@ public class WPS20ProcessParser {
 
     }
 
-    private static Input createLiteralInput(LiteralDataType literalDataType,
-            LiteralInput literalInput,
+    private static InputDescription createLiteralInput(LiteralDataType literalDataType,
+            LiteralInputDescription literalInput,
             String dataTypeString) {
 
         literalInput.setDataType(dataTypeString);
@@ -198,8 +232,8 @@ public class WPS20ProcessParser {
 
     private static AllowedValues createAllowedValues(
             net.opengis.ows.x20.AllowedValuesDocument.AllowedValues allowedValues) {
-        // TODO Auto-generated method stub
-        return null;
+        // TODO implement
+        return new AllowedValues();
     }
 
     private static org.n52.geoprocessing.wps.client.model.Format createFormat(Format formatDescription) {

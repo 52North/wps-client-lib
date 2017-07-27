@@ -16,36 +16,26 @@
  */
 package org.n52.geoprocessing.wps.client.model;
 
-public abstract class WPSParameter {
+public class InputDescription extends WPSDescriptionParameter {
 
-    private String id;
+    private int minOccurs;
 
-    private String title;
+    private int maxOccurs;
 
-    private String abstrakt;
-
-    public String getId() {
-        return id;
+    public int getMinOccurs() {
+        return minOccurs;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setMinOccurs(int minOccurs) {
+        this.minOccurs = minOccurs;
     }
 
-    public String getTitle() {
-        return title;
+    public int getMaxOccurs() {
+        return maxOccurs;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getAbstract() {
-        return abstrakt;
-    }
-
-    public void setAbstract(String abstrakt) {
-        this.abstrakt = abstrakt;
+    public void setMaxOccurs(int maxOccurs) {
+        this.maxOccurs = maxOccurs;
     }
 
 }

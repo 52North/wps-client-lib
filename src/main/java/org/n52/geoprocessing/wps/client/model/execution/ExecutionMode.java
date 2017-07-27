@@ -14,38 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.n52.geoprocessing.wps.client.model;
+package org.n52.geoprocessing.wps.client.model.execution;
 
-public abstract class WPSParameter {
+public enum ExecutionMode {
 
-    private String id;
-
-    private String title;
-
-    private String abstrakt;
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getAbstract() {
-        return abstrakt;
-    }
-
-    public void setAbstract(String abstrakt) {
-        this.abstrakt = abstrakt;
-    }
+    SYNC, ASYNC, AUTO
 
 }

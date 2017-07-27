@@ -1,13 +1,26 @@
+/*
+ * ﻿Copyright (C) ${inceptionYear} - ${currentYear} 52°North Initiative for Geospatial Open Source
+ * Software GmbH
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.n52.geoprocessing.wps.client;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.xmlbeans.XmlException;
 import org.n52.geoprocessing.wps.client.model.Address;
 import org.n52.geoprocessing.wps.client.model.ContactInfo;
 import org.n52.geoprocessing.wps.client.model.Phone;
@@ -31,17 +44,7 @@ public class WPS20CapabilitiesParser {
 
     private static Logger LOGGER = LoggerFactory.getLogger(WPS20CapabilitiesParser.class);
 
-    public WPS20CapabilitiesParser() {
-        try {
-            WPSCapabilities capabilities = createWPSCapabilitiesOWS20(CapabilitiesDocument.Factory
-                    .parse(new File("D:/dev/workspaces/workspace1/Test/src/de/test/carbonwfsgetfeature.xml")));
-
-            System.out.println(capabilities);
-
-        } catch (XmlException | IOException e) {
-            LOGGER.error(e.getMessage());
-        }
-    }
+    public WPS20CapabilitiesParser() {}
 
     public WPSCapabilities createWPSCapabilitiesOWS20(CapabilitiesDocument xmlObject) {
 

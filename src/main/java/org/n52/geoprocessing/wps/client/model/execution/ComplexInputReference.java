@@ -14,38 +14,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.n52.geoprocessing.wps.client.model;
+package org.n52.geoprocessing.wps.client.model.execution;
 
-public abstract class WPSParameter {
+import java.net.URL;
 
-    private String id;
+import org.apache.xmlbeans.XmlObject;
 
-    private String title;
+public class ComplexInputReference {
 
-    private String abstrakt;
+    private URL href;
 
-    public String getId() {
-        return id;
+    private URL bodyReference;
+
+    private XmlObject body;
+
+    public URL getHref() {
+        return href;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setHref(URL href) {
+        this.href = href;
     }
 
-    public String getTitle() {
-        return title;
+    public URL getBodyReference() {
+        return bodyReference;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setBodyReference(URL bodyReference) {
+        this.bodyReference = bodyReference;
     }
 
-    public String getAbstract() {
-        return abstrakt;
+    public XmlObject getBody() {
+        return body;
     }
 
-    public void setAbstract(String abstrakt) {
-        this.abstrakt = abstrakt;
+    public void setBody(XmlObject body) {
+        this.body = body;
     }
 
 }

@@ -1,5 +1,5 @@
-/**
- * ﻿Copyright (C) 2007 - 2016 52°North Initiative for Geospatial Open Source
+/*
+ * ﻿Copyright (C) ${inceptionYear} - ${currentYear} 52°North Initiative for Geospatial Open Source
  * Software GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -31,25 +31,25 @@ public class StaticDataHandlerRepository {
 
 	private static GeneratorFactory genFactory;
 	private static ParserFactory parserFactory;
-	
+
 	public static GeneratorFactory getGeneratorFactory() {
 		if(genFactory == null) {
-			Generator[] generators = WPSConfig.getInstance().getActiveRegisteredGenerator();		
-			
+			Generator[] generators = WPSConfig.getInstance().getActiveRegisteredGenerator();
+
 			GeneratorFactory.initialize(generators);
 			genFactory = GeneratorFactory.getInstance();
-			
-			
-			
+
+
+
 		}
 		return genFactory;
 	}
-	
+
 	public static ParserFactory getParserFactory() {
 		if(parserFactory == null) {
 			Parser[] parsers = WPSConfig.getInstance().getActiveRegisteredParser();
 			ParserFactory.initialize(parsers);
-			
+
 			parserFactory = ParserFactory.getInstance();
 		}
 		return parserFactory;

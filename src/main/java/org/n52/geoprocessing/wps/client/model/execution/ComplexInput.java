@@ -14,38 +14,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.n52.geoprocessing.wps.client.model;
+package org.n52.geoprocessing.wps.client.model.execution;
 
-public abstract class WPSParameter {
+public class ComplexInput extends ExecuteInput {
 
-    private String id;
+    private boolean isReference;
+    private ComplexInputReference reference;
 
-    private String title;
-
-    private String abstrakt;
-
-    public String getId() {
-        return id;
+    public boolean isReference() {
+        return isReference;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setIsReference(boolean isReference) {
+        this.isReference = isReference;
     }
 
-    public String getTitle() {
-        return title;
+    public ComplexInputReference getReference() {
+        return reference;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getAbstract() {
-        return abstrakt;
-    }
-
-    public void setAbstract(String abstrakt) {
-        this.abstrakt = abstrakt;
+    public void setReference(ComplexInputReference reference) {
+        this.reference = reference;
+        setIsReference(true);
     }
 
 }
