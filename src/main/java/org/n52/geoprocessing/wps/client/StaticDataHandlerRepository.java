@@ -29,29 +29,29 @@ import org.n52.wps.io.ParserFactory;
  */
 public class StaticDataHandlerRepository {
 
-	private static GeneratorFactory genFactory;
-	private static ParserFactory parserFactory;
+    private static GeneratorFactory genFactory;
+    private static ParserFactory parserFactory;
 
-	public static GeneratorFactory getGeneratorFactory() {
-		if(genFactory == null) {
-			Generator[] generators = WPSConfig.getInstance().getActiveRegisteredGenerator();
+    public static GeneratorFactory getGeneratorFactory() {
+        if(genFactory == null) {
+            Generator[] generators = WPSConfig.getInstance().getActiveRegisteredGenerator();
 
-			GeneratorFactory.initialize(generators);
-			genFactory = GeneratorFactory.getInstance();
+            GeneratorFactory.initialize(generators);
+            genFactory = GeneratorFactory.getInstance();
 
 
 
-		}
-		return genFactory;
-	}
+        }
+        return genFactory;
+    }
 
-	public static ParserFactory getParserFactory() {
-		if(parserFactory == null) {
-			Parser[] parsers = WPSConfig.getInstance().getActiveRegisteredParser();
-			ParserFactory.initialize(parsers);
+    public static ParserFactory getParserFactory() {
+        if(parserFactory == null) {
+            Parser[] parsers = WPSConfig.getInstance().getActiveRegisteredParser();
+            ParserFactory.initialize(parsers);
 
-			parserFactory = ParserFactory.getInstance();
-		}
-		return parserFactory;
-	}
+            parserFactory = ParserFactory.getInstance();
+        }
+        return parserFactory;
+    }
 }

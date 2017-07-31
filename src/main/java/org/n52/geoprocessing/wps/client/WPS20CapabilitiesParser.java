@@ -48,6 +48,8 @@ public class WPS20CapabilitiesParser {
 
     public WPSCapabilities createWPSCapabilitiesOWS20(CapabilitiesDocument xmlObject) {
 
+        LOGGER.trace("Parsing capabilities: " + xmlObject);
+
         WPSCapabilities result = new WPSCapabilities();
 
         net.opengis.ows.x20.ServiceIdentificationDocument.ServiceIdentification xmlServiceIdentification =
@@ -100,18 +102,22 @@ public class WPS20CapabilitiesParser {
             LOGGER.info("Could not get service type versions from capabilities.", e);
         }
 
-        try {
-            LanguageStringType[] keyWordArray = xmlServiceIdentification.getKeywordsArray(0).getKeywordArray();
+        if(xmlServiceIdentification.getKeywordsArray() != null && xmlServiceIdentification.getKeywordsArray().length > 0){
+            try {
+                LanguageStringType[] keyWordArray = xmlServiceIdentification.getKeywordsArray(0).getKeywordArray();
 
-            List<String> keyWordList = new ArrayList<>();
+                List<String> keyWordList = new ArrayList<>();
 
-            for (LanguageStringType keyword : keyWordArray) {
-                keyWordList.add(keyword.getStringValue());
+                for (LanguageStringType keyword : keyWordArray) {
+                    keyWordList.add(keyword.getStringValue());
+                }
+
+                serviceIdentification.setKeyWords(keyWordList);
+            } catch (Exception e) {
+                LOGGER.info("Could not get keywords from capabilities.", e);
             }
-
-            serviceIdentification.setKeyWords(keyWordList);
-        } catch (Exception e) {
-            LOGGER.info("Could not get keywords from capabilities.", e);
+        }else{
+            LOGGER.info("Could not get keywords from capabilities, element is null.");
         }
 
         try {
@@ -202,18 +208,31 @@ public class WPS20CapabilitiesParser {
     }
 
     private Phone createPhone(TelephoneType xmlPhone) {
+
         Phone phone = new Phone();
 
-        try {
-            phone.setVoice(xmlPhone.getVoiceArray(0));
-        } catch (Exception e) {
-            LOGGER.info("Could not get voice from capabilities.", e);
+        if(xmlPhone == null){
+            return phone;
         }
 
-        try {
-            phone.setFacsimile(xmlPhone.getFacsimileArray(0));
-        } catch (Exception e) {
-            LOGGER.info("Could not get facsimile from capabilities.", e);
+        if(xmlPhone.getVoiceArray() != null && xmlPhone.getVoiceArray().length > 0){
+            try {
+                phone.setVoice(xmlPhone.getVoiceArray(0));
+            } catch (Exception e) {
+                LOGGER.info("Could not get voice from capabilities.", e);
+            }
+        }else{
+            LOGGER.info("Could not get voice from capabilities, element is emtpy.");
+        }
+
+        if(xmlPhone.getFacsimileArray() != null && xmlPhone.getFacsimileArray().length > 0){
+            try {
+                phone.setFacsimile(xmlPhone.getFacsimileArray(0));
+            } catch (Exception e) {
+                LOGGER.info("Could not get facsimile from capabilities.", e);
+            }
+        }else{
+            LOGGER.info("Could not get facsimile from capabilities, element is emtpy.");
         }
 
         return phone;
@@ -275,30 +294,42 @@ public class WPS20CapabilitiesParser {
 
     private Process createProcess(ProcessSummaryType processSummaryType) {
         Process process = new Process();
+        LOGGER.trace(processSummaryType.toString());
 
         try {
             process.setId(processSummaryType.getIdentifier().getStringValue());
         } catch (Exception e) {
-            LOGGER.info("Could not get id from process." + processSummaryType, e);
+            LOGGER.info("Could not get id from process.", e);
         }
 
-        LanguageStringType abstrakt = processSummaryType.getAbstractArray(0);
-        if (abstrakt != null) {
-            process.setAbstract(abstrakt.getStringValue());
-
+        if(processSummaryType.getAbstractArray().length > 0){
+            try {
+                LanguageStringType abstrakt = processSummaryType.getAbstractArray(0);//TODO
+                if (abstrakt != null) {
+                    process.setAbstract(abstrakt.getStringValue());
+                }
+            } catch (Exception e) {
+                LOGGER.info("Could not get abstract from process.", e);
+            }
+        }else{
+            LOGGER.info("Could not get abstract from process, element is emtpy.");
         }
 
-        try {
-            process.setTitle(processSummaryType.getTitleArray(0).getStringValue());
-        } catch (Exception e) {
-            LOGGER.info("Could not get title from process." + processSummaryType, e);
+        if(processSummaryType.getTitleArray().length > 0){
+            try {
+                process.setTitle(processSummaryType.getTitleArray(0).getStringValue());
+            } catch (Exception e) {
+                LOGGER.info("Could not get title from process.", e);
+            }
+        }else{
+            LOGGER.info("Could not get title from process, element is emtpy.");
         }
 
         List<?> jobControlOptions = processSummaryType.getJobControlOptions();
 
         for (Iterator<?> iterator = jobControlOptions.iterator(); iterator.hasNext();) {
-            String jonControlOption = (String) iterator.next();
-            if (jonControlOption.equals("async-execute")) {
+            String jobControlOption = (String) iterator.next();
+            if (jobControlOption.equals("async-execute")) {
                 process.setStatusSupported(true);
                 break;
             }

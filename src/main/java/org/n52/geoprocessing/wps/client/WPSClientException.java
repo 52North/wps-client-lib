@@ -18,25 +18,25 @@ package org.n52.geoprocessing.wps.client;
 
 public class WPSClientException extends Exception {
 
-	// Universal version identifier for a Serializable class.
-	// Should be used here, because Exception implements the java.io.Serializable
-	private static final long serialVersionUID = -6012433945141734834L;
-	private String exceptionText;
+    // Universal version identifier for a Serializable class.
+    // Should be used here, because Exception implements the java.io.Serializable
+    private static final long serialVersionUID = -6012433945141734834L;
+    private String exceptionText;
 
-	public WPSClientException(String message, String exceptionText) {
-		super(message);
-		this.exceptionText = exceptionText;
-	}
+    public WPSClientException(String message, String exceptionText) {
+        super(message);
+        this.exceptionText = exceptionText;
+    }
 
-	public WPSClientException(String message) {
-		super(message);
-	}
+    public WPSClientException(String message) {
+        super(message);
+    }
 
-	public WPSClientException(String message, Exception e) {
-		super(message);
-	}
+    public WPSClientException(String message, Exception e) {
+        super(message);
+    }
 
-	public String getServerException() {
-		return exceptionText;
-	}
+    public String getServerException() {
+        return exceptionText;
+    }
 }

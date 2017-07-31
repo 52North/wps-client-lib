@@ -18,18 +18,18 @@ package org.n52.geoprocessing.wps.client;
 
 public class ClientCapabiltiesRequest extends AbstractClientGETRequest {
 
-	private String REQUEST_REQ_PARAM_VALUE = "GetCapabilities";
+    private String REQUEST_REQ_PARAM_VALUE = "GetCapabilities";
 
-	public ClientCapabiltiesRequest(String version) {
-		super();
-		setRequestParamValue(REQUEST_REQ_PARAM_VALUE);
-		if(version != null && !version.isEmpty()){
-			requestParams.put(ACCEPT_VERSIONS_REQ_PARAM_NAME, version);
-		}
-	}
+    public ClientCapabiltiesRequest(String version) {
+        super();
+        setRequestParamValue(REQUEST_REQ_PARAM_VALUE);
+        if(version != null && !version.isEmpty()){
+            requestParams.put(ACCEPT_VERSIONS_REQ_PARAM_NAME, version);
+        }
+    }
 
-	public boolean valid() {
-		return true;
-	}
+    public boolean valid() {
+        return true;
+    }
 
 }

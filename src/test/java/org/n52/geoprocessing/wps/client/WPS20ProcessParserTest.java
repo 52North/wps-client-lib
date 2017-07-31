@@ -18,10 +18,14 @@ package org.n52.geoprocessing.wps.client;
 
 import org.junit.Test;
 import org.n52.geoprocessing.wps.client.model.Process;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import net.opengis.wps.x20.ProcessOfferingsDocument;
 
 public class WPS20ProcessParserTest {
+
+    private static Logger LOGGER = LoggerFactory.getLogger(WPS20ProcessParserTest.class);
 
     @Test
     public void testParseWPS20Process() throws Exception {
@@ -33,7 +37,7 @@ public class WPS20ProcessParserTest {
 
         process = WPS20ProcessParser.completeProcess(offeringsDocument.getProcessOfferings().getProcessOfferingArray(0), process);
 
-        System.out.println(process.getInputs().get(0));
+        LOGGER.info(process.getInputs().get(0).getId());
     }
 
 }

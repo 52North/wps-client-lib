@@ -23,48 +23,48 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 public abstract class AbstractClientGETRequest {
-	protected Map<String, String> requestParams;
+    protected Map<String, String> requestParams;
 
-	public static String SERVICE_REQ_PARAM_NAME = "Service";
-	public static String REQUEST_REQ_PARAM_NAME = "Request";
-	public static String SERVICE_REQ_PARAM_VALUE = "WPS";
-	public static String VERSION_REQ_PARAM_NAME = "version";
-	public static String ACCEPT_VERSIONS_REQ_PARAM_NAME = "acceptVersions";
-	public static String VERSION_REQ_100_PARAM_VALUE = "1.0.0";
-	public static String VERSION_REQ_20_PARAM_VALUE = "2.0.0";
+    public static String SERVICE_REQ_PARAM_NAME = "Service";
+    public static String REQUEST_REQ_PARAM_NAME = "Request";
+    public static String SERVICE_REQ_PARAM_VALUE = "WPS";
+    public static String VERSION_REQ_PARAM_NAME = "version";
+    public static String ACCEPT_VERSIONS_REQ_PARAM_NAME = "acceptVersions";
+    public static String VERSION_REQ_100_PARAM_VALUE = "1.0.0";
+    public static String VERSION_REQ_20_PARAM_VALUE = "2.0.0";
 
-	public AbstractClientGETRequest() {
-		requestParams = new HashMap<String, String>();
-		requestParams.put(SERVICE_REQ_PARAM_NAME, SERVICE_REQ_PARAM_VALUE);
-	}
+    public AbstractClientGETRequest() {
+        requestParams = new HashMap<String, String>();
+        requestParams.put(SERVICE_REQ_PARAM_NAME, SERVICE_REQ_PARAM_VALUE);
+    }
 
-	protected void setRequestParamValue(String s) {
-		requestParams.put(REQUEST_REQ_PARAM_NAME, s);
-	}
+    protected void setRequestParamValue(String s) {
+        requestParams.put(REQUEST_REQ_PARAM_NAME, s);
+    }
 
-	/**
-	 * adds to the url the designated parameter names and values, as configured before.
-	 * @param url
-	 * @return GetCapabilities URL
-	 */
-	public String getRequest(String url) {
+    /**
+     * adds to the url the designated parameter names and values, as configured before.
+     * @param url
+     * @return GetCapabilities URL
+     */
+    public String getRequest(String url) {
 
-		if(! url.contains("?")) {
-			url = url + "?";
-		}
+        if(! url.contains("?")) {
+            url = url + "?";
+        }
 
-		Iterator<Entry<String, String>> parameterIterator = requestParams.entrySet().iterator();
+        Iterator<Entry<String, String>> parameterIterator = requestParams.entrySet().iterator();
 
-		while (parameterIterator.hasNext()) {
-			Map.Entry<String, String> entry = (Map.Entry<String, String>) parameterIterator.next();
-			url = url + entry.getKey() + "=" + entry.getValue();
-			if(parameterIterator.hasNext()){
-				url = url + "&";
-			}
-		}
+        while (parameterIterator.hasNext()) {
+            Map.Entry<String, String> entry = parameterIterator.next();
+            url = url + entry.getKey() + "=" + entry.getValue();
+            if(parameterIterator.hasNext()){
+                url = url + "&";
+            }
+        }
 
-		return url;
-	}
+        return url;
+    }
 
-	public abstract boolean valid();
+    public abstract boolean valid();
 }

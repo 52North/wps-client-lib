@@ -36,78 +36,78 @@ import net.opengis.wps.x100.ProcessDescriptionType;
 
 public class WPSClientExample {
 
-	public void testExecute() {
+    public void testExecute() {
 
-		String wpsURL = "http://geoprocessing.demo.52north.org:8080/wps/WebProcessingService";
+        String wpsURL = "http://geoprocessing.demo.52north.org:8080/wps/WebProcessingService";
 
-		String processID = "org.n52.wps.server.algorithm.SimpleBufferAlgorithm";
+        String processID = "org.n52.wps.server.algorithm.SimpleBufferAlgorithm";
 
-		String version = "2.0.0";
+        String version = "2.0.0";
 
-//		try {
-//			ProcessDescriptionType describeProcessDocument = requestDescribeProcess(
-//					wpsURL, processID);
-//			System.out.println(describeProcessDocument);
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-		try {
+//        try {
+//            ProcessDescriptionType describeProcessDocument = requestDescribeProcess(
+//                    wpsURL, processID);
+//            System.out.println(describeProcessDocument);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+        try {
             WPSCapabilities cpbDoc = requestGetCapabilities(wpsURL, "1.0.0");
 
             System.out.println(cpbDoc);
 
-			Process describeProcessDocument = requestDescribeProcess(
-					wpsURL, processID, version);
+            Process describeProcessDocument = requestDescribeProcess(
+                    wpsURL, processID, version);
 
-		} catch (WPSClientException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+        } catch (WPSClientException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-	public WPSCapabilities requestGetCapabilities(String url, String version)
-			throws WPSClientException {
+    public WPSCapabilities requestGetCapabilities(String url, String version)
+            throws WPSClientException {
 
-		WPSClientSession wpsClient = WPSClientSession.getInstance();
+        WPSClientSession wpsClient = WPSClientSession.getInstance();
 
-		wpsClient.connect(url, version);
+        wpsClient.connect(url, version);
 
-		WPSCapabilities capabilities = wpsClient.getWPSCaps(url);
+        WPSCapabilities capabilities = wpsClient.getWPSCaps(url);
 
-		List<Process> processList = capabilities.getProcesses();
+        List<Process> processList = capabilities.getProcesses();
 
         System.out.println("Processes in capabilities:");
-		for (Process process : processList) {
-			System.out.println(process.getId());
-		}
-		return capabilities;
-	}
+        for (Process process : processList) {
+            System.out.println(process.getId());
+        }
+        return capabilities;
+    }
 
-	public Process requestDescribeProcess(String url,
-			String processID, String version) throws IOException {
+    public Process requestDescribeProcess(String url,
+            String processID, String version) throws IOException {
 
-		WPSClientSession wpsClient = WPSClientSession.getInstance();
+        WPSClientSession wpsClient = WPSClientSession.getInstance();
 
-		Process processDescription = wpsClient
-				.getProcessDescription(url, processID, version);
+        Process processDescription = wpsClient
+                .getProcessDescription(url, processID, version);
 
-		List<InputDescription> inputList = processDescription.getInputs();
+        List<InputDescription> inputList = processDescription.getInputs();
 
-		for (InputDescription input : inputList) {
-			System.out.println(input.getId());
-		}
-		return processDescription;
-	}
+        for (InputDescription input : inputList) {
+            System.out.println(input.getId());
+        }
+        return processDescription;
+    }
 
-	public static void main(String[] args) {
+    public static void main(String[] args) {
 
-		//TODO find way to initialize parsers/generators
+        //TODO find way to initialize parsers/generators
 
-		WPSClientExample client = new WPSClientExample();
-		client.testExecute();
-	}
+        WPSClientExample client = new WPSClientExample();
+        client.testExecute();
+    }
 
 }

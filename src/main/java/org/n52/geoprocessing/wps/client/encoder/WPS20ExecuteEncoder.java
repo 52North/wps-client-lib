@@ -38,7 +38,6 @@ import net.opengis.wps.x20.DataInputType;
 import net.opengis.wps.x20.DataTransmissionModeType;
 import net.opengis.wps.x20.ExecuteDocument;
 import net.opengis.wps.x20.ExecuteRequestType;
-import net.opengis.wps.x20.ExecuteRequestType.Response;
 import net.opengis.wps.x20.OutputDefinitionType;
 import net.opengis.wps.x20.ReferenceType;
 
@@ -54,15 +53,21 @@ public class WPS20ExecuteEncoder {
 
         executeRequest.setVersion(WPSClientSession.VERSION_200);
 
+        executeRequest.setService(WPSClientSession.SERVICE);
+
         executeRequest.addNewIdentifier().setStringValue(execute.getId());
 
-        executeRequest.setResponse(ExecuteRequestType.Response.Enum.forString(execute.getResponseMode().name()));
+        executeRequest.setResponse(ExecuteRequestType.Response.Enum.forString(execute.getResponseMode().name().toLowerCase()));
 
-        executeRequest.setMode(ExecuteRequestType.Mode.Enum.forString(execute.getExecutionMode().name()));
+        executeRequest.setMode(ExecuteRequestType.Mode.Enum.forString(execute.getExecutionMode().name().toLowerCase()));
 
         addInputs(execute.getInputs(), executeRequest);
 
-        addOutputs(execute.getOutputs(), executeRequest);
+        if (execute.getOutputs() != null) {
+            addOutputs(execute.getOutputs(), executeRequest);
+        }
+
+        LOGGER.trace("Encoded WPS 2.0.0 ExecuteDocument: " + executeDocument);
 
         return executeDocument;
 
@@ -80,7 +85,13 @@ public class WPS20ExecuteEncoder {
     private static void addInput(ExecuteInput input,
             DataInputType newInput) {
 
-        newInput.setId(input.getId());
+        String id = input.getId();
+
+        if(id == null || id.isEmpty()){
+            throw new IllegalArgumentException("Identifier for input cannot be empty.");
+        }
+
+        newInput.setId(id);
 
         if (input instanceof ComplexInput) {
             addComplexInput((ComplexInput) input, newInput);
@@ -122,16 +133,6 @@ public class WPS20ExecuteEncoder {
             }
         } else {
             Data data = newInput.addNewData();
-
-            data.setMimeType(format.getMimeType());
-
-            if (encoding != null && !encoding.isEmpty()) {
-                data.setEncoding(encoding);
-            }
-
-            if (schema != null && !schema.isEmpty()) {
-                data.setSchema(schema);
-            }
 
             Object value = input.getValue();
 
@@ -184,6 +185,17 @@ public class WPS20ExecuteEncoder {
                     LOGGER.error("error parsing stream", e);
                 }
             }
+
+            data.setMimeType(format.getMimeType());
+
+            if (encoding != null && !encoding.isEmpty()) {
+                data.setEncoding(encoding);
+            }
+
+            if (schema != null && !schema.isEmpty()) {
+                data.setSchema(schema);
+            }
+
         }
 
     }
@@ -202,6 +214,14 @@ public class WPS20ExecuteEncoder {
 
         OutputDefinitionType output = executeRequest.addNewOutput();
 
+        String id = executeOutput.getId();
+
+        if(id == null || id.isEmpty()){
+            throw new IllegalArgumentException("Identifier for output cannot be empty.");
+        }
+
+        output.setId(id);
+
         Format format = executeOutput.getFormat();
 
         String encoding = format.getEncoding();
@@ -218,7 +238,7 @@ public class WPS20ExecuteEncoder {
             output.setSchema(schema);
         }
 
-        output.setTransmission(DataTransmissionModeType.Enum.forString(executeOutput.getTransmissionMode().name()));
+        output.setTransmission(DataTransmissionModeType.Enum.forString(executeOutput.getTransmissionMode().name().toLowerCase()));
 
     }
 
