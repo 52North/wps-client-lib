@@ -26,8 +26,8 @@
 <!-- http://www.qos.ch/shop/products/professionalSupport -->
 <!-- -->
 <configuration>
-	<property name="logFile" value="${wps.logfile.name}" />
-	<appender name="wpsfile"
+	<property name="logFile" value="wps-client" />
+	<appender name="wpsclientfile"
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<!--See http://logback.qos.ch/manual/appenders.html#RollingFileAppender -->
 		<!--and http://logback.qos.ch/manual/appenders.html#TimeBasedRollingPolicy -->
@@ -44,7 +44,7 @@
 			<pattern>%d{ISO8601} [%t] %-5p %c: %m%n</pattern>
 		</encoder>
 	</appender>
-	<appender name="wpsconsole" class="ch.qos.logback.core.ConsoleAppender">
+	<appender name="wpsclientconsole" class="ch.qos.logback.core.ConsoleAppender">
 		<encoder>
 			<pattern>%d{ISO8601} [%t] %-5p %c: %m%n</pattern>
 		</encoder>
@@ -53,7 +53,7 @@
 	<logger name="org.n52.geoprocessing" level="INFO" />
 
 	<root level="INFO">
-<!-- 		<appender-ref ref="wpsfile" /> -->
-		<appender-ref ref="wpsconsole" />
+<!-- 		<appender-ref ref="wpsclientfile" /> -->
+		<appender-ref ref="wpsclientconsole" />
 	</root>
 </configuration>
