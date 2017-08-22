@@ -21,19 +21,18 @@ import org.n52.geoprocessing.wps.client.model.Process;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import net.opengis.wps.x20.ProcessOfferingsDocument;
+import net.opengis.wps.x100.ProcessDescriptionsDocument;
 
-public class WPS20ProcessParserTest {
+public class WPS100ProcessParserTest {
 
-    private static Logger LOGGER = LoggerFactory.getLogger(WPS20ProcessParserTest.class);
+    private static Logger LOGGER = LoggerFactory.getLogger(WPS100ProcessParserTest.class);
 
     @Test
     public void testParseWPS20Process() throws Exception {
 
-        ProcessOfferingsDocument offeringsDocument = ProcessOfferingsDocument.Factory
-                .parse(WPS20ProcessParserTest.class.getResourceAsStream("WPS20ProcessDescription.xml"));
+        ProcessDescriptionsDocument processDescriptionsDocument = ProcessDescriptionsDocument.Factory.parse(WPS100ProcessParserTest.class.getResourceAsStream("WPS100ProcessDescription.xml"));
 
-        Process process = WPS20ProcessParser.parseProcess(offeringsDocument.getProcessOfferings().getProcessOfferingArray(0));
+        Process process = WPS100ProcessParser.parseProcess(processDescriptionsDocument.getProcessDescriptions().getProcessDescriptionArray(0));
 
         LOGGER.info(process.getInputs().get(0).getId());
     }

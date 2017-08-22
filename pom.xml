@@ -34,7 +34,7 @@
 	</parent>
 	<groupId>org.n52.geoprocessing</groupId>
 	<artifactId>wps-client-lib</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0-SNAPSHOT</version>
 	<name>52 North WPS Client libary</name>
 	<inceptionYear>2017</inceptionYear>
 	<properties>
@@ -48,6 +48,26 @@
 		<maven.build.timestamp.format>yyyy</maven.build.timestamp.format>
 		<currentYear>2017</currentYear>
 	</properties>
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+            <comments>A business-friendly OSS license</comments>
+        </license>
+    </licenses>
+
+	<developers>
+		<developer>
+			<id>bpross-52n</id>
+			<name>Benjamin Pross</name>
+			<email>b.pross@52north.org</email>
+			<organization>${project.organization.name}</organization>
+			<organizationUrl>${project.organization.url}</organizationUrl>
+			<timezone>GMT+1</timezone>
+		</developer>
+	</developers>
+	
 	<dependencies>
 		<dependency>
 			<groupId>org.n52.wps</groupId>
@@ -77,31 +97,6 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.slf4j</groupId> -->
-<!-- 			<artifactId>jcl-over-slf4j</artifactId> -->
-<!-- 			<version>${slf4j.version}</version> -->
-<!-- 			<scope>runtime</scope> -->
-<!-- 		</dependency> -->
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.slf4j</groupId> -->
-<!-- 			<artifactId>slf4j-simple</artifactId> -->
-<!-- 			<version>${slf4j.version}</version> -->
-<!-- 			<scope>test</scope> -->
-<!-- 		</dependency> -->
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.slf4j</groupId> -->
-<!-- 			<artifactId>jul-to-slf4j</artifactId> -->
-<!-- 			<version>${slf4j.version}</version> -->
-<!-- 			<scope>runtime</scope> -->
-<!-- 		</dependency> -->
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.slf4j</groupId> -->
-<!-- 			<artifactId>log4j-over-slf4j</artifactId> -->
-<!-- 			<version>${slf4j.version}</version> -->
-<!-- 			<scope>runtime</scope> -->
-<!-- 		</dependency> -->
 		<dependency>
 			<groupId>commons-logging</groupId>
 			<artifactId>commons-logging</artifactId>
@@ -238,7 +233,7 @@
 					</includes>
 					<strictCheck>true</strictCheck>
 					<properties>
-						<year>2016</year>
+						<year>2017</year>
 					</properties>
 					<mapping>
 						<java>SLASHSTAR_STYLE</java>

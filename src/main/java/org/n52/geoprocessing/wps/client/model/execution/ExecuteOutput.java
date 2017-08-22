@@ -20,7 +20,7 @@ import org.n52.geoprocessing.wps.client.model.TransmissionMode;
 
 public class ExecuteOutput extends WPSExecuteParameter {
 
-    private TransmissionMode transmissionMode;
+    private TransmissionMode transmissionMode = TransmissionMode.VALUE;
 
     public TransmissionMode getTransmissionMode() {
         return transmissionMode;

@@ -77,7 +77,7 @@ public class ExecuteTest {
 //        String url = "http://geoprocessing.demo.52north.org:8080/wps/WebProcessingService";
         String url = "http://localhost:8080/wps/WebProcessingService";
 
-        String version = "2.0.0";
+        String version = "1.0.0";
 
         WPSClientSession session = WPSClientSession.getInstance();
 
@@ -94,7 +94,7 @@ public class ExecuteTest {
 //        String url = "http://geoprocessing.demo.52north.org:8080/wps/WebProcessingService";
         String url = "http://localhost:8080/wps/WebProcessingService";
 
-        String version = "2.0.0";
+        String version = "1.0.0";
 
         WPSClientSession session = WPSClientSession.getInstance();
 
@@ -105,7 +105,7 @@ public class ExecuteTest {
 //        assertTrue(response instanceof ExceptionReport);
     }
 
-    @Test
+//    @Test
     public void testExecuteAsyncRawData() throws WPSClientException, IOException {
 
 //        String url = "http://geoprocessing.demo.52north.org:8080/wps/WebProcessingService";

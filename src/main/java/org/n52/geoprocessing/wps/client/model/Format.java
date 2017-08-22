@@ -21,6 +21,7 @@ public class Format {
     private String mimeType;
     private String schema;
     private String encoding;
+    private boolean isDefault;
 
     public String getMimeType() {
         return mimeType;
@@ -44,6 +45,14 @@ public class Format {
 
     public void setEncoding(String encoding) {
         this.encoding = encoding;
+    }
+
+    public boolean isDefault() {
+        return isDefault;
+    }
+
+    public void setDefault(boolean isDefault) {
+        this.isDefault = isDefault;
     }
 
 }

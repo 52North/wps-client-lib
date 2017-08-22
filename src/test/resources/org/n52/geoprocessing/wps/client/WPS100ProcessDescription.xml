@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ﻿Copyright (C) ${inceptionYear} - ${currentYear} 52°North Initiative for Geospatial Open Source
+    Software GmbH
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<wps:ProcessDescriptions xmlns:wps="http://www.opengis.net/wps/1.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ows="http://www.opengis.net/ows/1.1"
+	xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd"
+	xml:lang="en-US" service="WPS" version="1.0.0">
+	<ProcessDescription statusSupported="true"
+		storeSupported="true" wps:processVersion="1.1.0">
+		<ows:Identifier>org.n52.wps.server.algorithm.SimpleBufferAlgorithm</ows:Identifier>
+		<ows:Title>org.n52.wps.server.algorithm.SimpleBufferAlgorithm</ows:Title>
+		<DataInputs>
+			<Input minOccurs="1" maxOccurs="1">
+				<ows:Identifier>data</ows:Identifier>
+				<ows:Title>data</ows:Title>
+				<ComplexData>
+					<Default>
+						<Format>
+							<MimeType>application/vnd.google-earth.kml+xml</MimeType>
+							<Schema>http://schemas.opengis.net/kml/2.2.0/ogckml22.xsd</Schema>
+						</Format>
+					</Default>
+					<Supported>
+						<Format>
+							<MimeType>application/vnd.google-earth.kml+xml</MimeType>
+							<Schema>http://schemas.opengis.net/kml/2.2.0/ogckml22.xsd</Schema>
+						</Format>
+						<Format>
+							<MimeType>application/x-zipped-shp</MimeType>
+						</Format>
+						<Format>
+							<MimeType>application/x-zipped-shp</MimeType>
+							<Encoding>base64</Encoding>
+						</Format>
+						<Format>
+							<MimeType>application/x-zipped-wkt</MimeType>
+							<Encoding>Base64</Encoding>
+						</Format>
+						<Format>
+							<MimeType>application/vnd.geo+json</MimeType>
+						</Format>
+						<Format>
+							<MimeType>text/xml</MimeType>
+							<Schema>http://schemas.opengis.net/gml/2.0.0/feature.xsd</Schema>
+						</Format>
+						<Format>
+							<MimeType>text/xml</MimeType>
+							<Schema>http://schemas.opengis.net/gml/2.1.1/feature.xsd</Schema>
+						</Format>
+						<Format>
+							<MimeType>text/xml</MimeType>
+							<Schema>http://schemas.opengis.net/gml/2.1.2.1/feature.xsd</Schema>
+						</Format>
+						<Format>
+							<MimeType>text/xml</MimeType>
+							<Schema>http://schemas.opengis.net/gml/2.1.2/feature.xsd</Schema>
+						</Format>
+						<Format>
+							<MimeType>text/xml; subtype=gml/2.0.0</MimeType>
+							<Schema>http://schemas.opengis.net/gml/2.0.0/feature.xsd</Schema>
+						</Format>
+						<Format>
+							<MimeType>text/xml; subtype=gml/2.1.1</MimeType>
+							<Schema>http://schemas.opengis.net/gml/2.1.1/feature.xsd</Schema>
+						</Format>
+						<Format>
+							<MimeType>text/xml; subtype=gml/2.1.2</MimeType>
+							<Schema>http://schemas.opengis.net/gml/2.1.2/feature.xsd</Schema>
+						</Format>
+						<Format>
+							<MimeType>text/xml; subtype=gml/2.1.2.1</MimeType>
+							<Schema>http://schemas.opengis.net/gml/2.1.2.1/feature.xsd</Schema>
+						</Format>
+						<Format>
+							<MimeType>text/xml</MimeType>
+							<Schema>http://schemas.opengis.net/gml/3.2.1/base/feature.xsd</Schema>
+						</Format>
+						<Format>
+							<MimeType>text/xml; subtype=gml/3.2.1</MimeType>
+							<Schema>http://schemas.opengis.net/gml/3.2.1/base/feature.xsd</Schema>
+						</Format>
+						<Format>
+							<MimeType>text/xml</MimeType>
+							<Schema>http://geoserver.itc.nl:8080/wps/schemas/gml/2.1.2/gmlpacket.xsd</Schema>
+						</Format>
+						<Format>
+							<MimeType>text/xml</MimeType>
+							<Schema>http://schemas.opengis.net/gml/2.1.2/gmlpacket.xsd</Schema>
+						</Format>
+						<Format>
+							<MimeType>text/xml</MimeType>
+							<Schema>http://www.opengeospatial.org/gmlpacket.xsd</Schema>
+						</Format>
+						<Format>
+							<MimeType>text/xml</MimeType>
+							<Schema>http://schemas.opengis.net/gml/3.0.0/base/feature.xsd</Schema>
+						</Format>
+						<Format>
+							<MimeType>text/xml</MimeType>
+							<Schema>http://schemas.opengis.net/gml/3.0.1/base/feature.xsd</Schema>
+						</Format>
+						<Format>
+							<MimeType>text/xml</MimeType>
+							<Schema>http://schemas.opengis.net/gml/3.1.0/base/feature.xsd</Schema>
+						</Format>
+						<Format>
+							<MimeType>text/xml</MimeType>
+							<Schema>http://schemas.opengis.net/gml/3.1.1/base/feature.xsd</Schema>
+						</Format>
+						<Format>
+							<MimeType>text/xml; subtype=gml/3.0.0</MimeType>
+							<Schema>http://schemas.opengis.net/gml/3.0.0/base/feature.xsd</Schema>
+						</Format>
+						<Format>
+							<MimeType>text/xml; subtype=gml/3.0.1</MimeType>
+							<Schema>http://schemas.opengis.net/gml/3.0.1/base/feature.xsd</Schema>
+						</Format>
+						<Format>
+							<MimeType>text/xml; subtype=gml/3.1.0</MimeType>
+							<Schema>http://schemas.opengis.net/gml/3.1.0/base/feature.xsd</Schema>
+						</Format>
+						<Format>
+							<MimeType>text/xml; subtype=gml/3.1.1</MimeType>
+							<Schema>http://schemas.opengis.net/gml/3.1.1/base/feature.xsd</Schema>
+						</Format>
+					</Supported>
+				</ComplexData>
+			</Input>
+			<Input minOccurs="1" maxOccurs="1">
+				<ows:Identifier>width</ows:Identifier>
+				<ows:Title>width</ows:Title>
+				<LiteralData>
+					<ows:DataType ows:reference="xs:double" />
+					<ows:AnyValue />
+				</LiteralData>
+			</Input>
+		</DataInputs>
+		<ProcessOutputs>
+			<Output>
+				<ows:Identifier>result</ows:Identifier>
+				<ows:Title>result</ows:Title>
+				<ComplexOutput>
+					<Default>
+						<Format>
+							<MimeType>application/vnd.google-earth.kml+xml</MimeType>
+							<Schema>http://schemas.opengis.net/kml/2.2.0/ogckml22.xsd</Schema>
+						</Format>
+					</Default>
+					<Supported>
+						<Format>
+							<MimeType>application/vnd.google-earth.kml+xml</MimeType>
+							<Schema>http://schemas.opengis.net/kml/2.2.0/ogckml22.xsd</Schema>
+						</Format>
+						<Format>
+							<MimeType>application/x-zipped-shp</MimeType>
+						</Format>
+						<Format>
+							<MimeType>application/x-zipped-shp</MimeType>
+							<Encoding>base64</Encoding>
+						</Format>
+						<Format>
+							<MimeType>text/xml</MimeType>
+						</Format>
+						<Format>
+							<MimeType>text/xml</MimeType>
+							<Encoding>base64</Encoding>
+						</Format>
+						<Format>
+							<MimeType>text/xml</MimeType>
+							<Schema>http://schemas.opengis.net/gml/2.0.0/feature.xsd</Schema>
+						</Format>
+						<Format>
+							<MimeType>text/xml</MimeType>
+							<Schema>http://schemas.opengis.net/gml/2.1.1/feature.xsd</Schema>
+						</Format>
+						<Format>
+							<MimeType>text/xml</MimeType>
+							<Schema>http://schemas.opengis.net/gml/2.1.2.1/feature.xsd</Schema>
+						</Format>
+						<Format>
+							<MimeType>text/xml</MimeType>
+							<Schema>http://schemas.opengis.net/gml/2.1.2/feature.xsd</Schema>
+						</Format>
+						<Format>
+							<MimeType>text/xml; subtype=gml/2.0.0</MimeType>
+							<Schema>http://schemas.opengis.net/gml/2.0.0/feature.xsd</Schema>
+						</Format>
+						<Format>
+							<MimeType>text/xml; subtype=gml/2.1.1</MimeType>
+							<Schema>http://schemas.opengis.net/gml/2.1.1/feature.xsd</Schema>
+						</Format>
+						<Format>
+							<MimeType>text/xml; subtype=gml/2.1.2</MimeType>
+							<Schema>http://schemas.opengis.net/gml/2.1.2/feature.xsd</Schema>
+						</Format>
+						<Format>
+							<MimeType>text/xml; subtype=gml/2.1.2.1</MimeType>
+							<Schema>http://schemas.opengis.net/gml/2.1.2.1/feature.xsd</Schema>
+						</Format>
+						<Format>
+							<MimeType>text/xml</MimeType>
+							<Schema>http://schemas.opengis.net/gml/3.0.0/base/feature.xsd</Schema>
+						</Format>
+						<Format>
+							<MimeType>text/xml</MimeType>
+							<Schema>http://schemas.opengis.net/gml/3.0.1/base/feature.xsd</Schema>
+						</Format>
+						<Format>
+							<MimeType>text/xml</MimeType>
+							<Schema>http://schemas.opengis.net/gml/3.1.0/base/feature.xsd</Schema>
+						</Format>
+						<Format>
+							<MimeType>text/xml</MimeType>
+							<Schema>http://schemas.opengis.net/gml/3.1.1/base/feature.xsd</Schema>
+						</Format>
+						<Format>
+							<MimeType>text/xml</MimeType>
+							<Schema>http://schemas.opengis.net/gml/3.2.1/base/feature.xsd</Schema>
+						</Format>
+						<Format>
+							<MimeType>text/xml; subtype=gml/3.0.0</MimeType>
+							<Schema>http://schemas.opengis.net/gml/3.0.0/base/feature.xsd</Schema>
+						</Format>
+						<Format>
+							<MimeType>text/xml; subtype=gml/3.0.1</MimeType>
+							<Schema>http://schemas.opengis.net/gml/3.0.1/base/feature.xsd</Schema>
+						</Format>
+						<Format>
+							<MimeType>text/xml; subtype=gml/3.1.0</MimeType>
+							<Schema>http://schemas.opengis.net/gml/3.1.0/base/feature.xsd</Schema>
+						</Format>
+						<Format>
+							<MimeType>text/xml; subtype=gml/3.1.1</MimeType>
+							<Schema>http://schemas.opengis.net/gml/3.1.1/base/feature.xsd</Schema>
+						</Format>
+						<Format>
+							<MimeType>text/xml; subtype=gml/3.2.1</MimeType>
+							<Schema>http://schemas.opengis.net/gml/3.2.1/base/feature.xsd</Schema>
+						</Format>
+						<Format>
+							<MimeType>text/xml</MimeType>
+							<Schema>http://geoserver.itc.nl:8080/wps/schemas/gml/2.1.2/gmlpacket.xsd</Schema>
+						</Format>
+						<Format>
+							<MimeType>text/xml</MimeType>
+							<Schema>http://schemas.opengis.net/gml/2.1.2/gmlpacket.xsd</Schema>
+						</Format>
+						<Format>
+							<MimeType>text/xml</MimeType>
+							<Schema>http://www.opengeospatial.org/gmlpacket.xsd</Schema>
+						</Format>
+						<Format>
+							<MimeType>application/vnd.geo+json</MimeType>
+						</Format>
+					</Supported>
+				</ComplexOutput>
+			</Output>
+			<Output>
+				<ows:Identifier>literalResult</ows:Identifier>
+				<ows:Title>literalResult</ows:Title>
+				<LiteralOutput>
+					<ows:DataType ows:reference="xs:double"></ows:DataType>
+					<UOMs>
+						<Default>
+							<ows:UOM ows:reference="http://www.opengis.net/gml/srs/epsg.xml#32118" />
+						</Default>
+						<Supported>
+							<ows:UOM ows:reference="http://www.opengis.net/gml/srs/epsg.xml#32118" />
+							<ows:UOM ows:reference="http://www.opengis.net/gml/srs/epsg.xml#4326" />
+						</Supported>
+					</UOMs>
+				</LiteralOutput>
+			</Output>
+		</ProcessOutputs>
+	</ProcessDescription>
+</wps:ProcessDescriptions>

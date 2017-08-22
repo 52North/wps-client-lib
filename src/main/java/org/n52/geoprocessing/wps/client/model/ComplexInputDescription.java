@@ -16,6 +16,8 @@
  */
 package org.n52.geoprocessing.wps.client.model;
 
-public class ComplexInputDescription extends WPSDescriptionParameter{
+public class ComplexInputDescription extends InputDescription{
 
+    //TODO not used
+    
 }

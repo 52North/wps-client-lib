@@ -30,8 +30,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.zip.GZIPInputStream;
 
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.apache.commons.configuration2.io.ClasspathLocationStrategy;
 import org.apache.commons.configuration2.io.CombinedLocationStrategy;
 import org.apache.commons.configuration2.io.DefaultFileSystem;
@@ -43,6 +41,7 @@ import org.apache.commons.configuration2.io.FileSystemLocationStrategy;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.XmlOptions;
+import org.n52.geoprocessing.wps.client.encoder.WPS100ExecuteEncoder;
 import org.n52.geoprocessing.wps.client.encoder.WPS20ExecuteEncoder;
 import org.n52.geoprocessing.wps.client.model.Process;
 import org.n52.geoprocessing.wps.client.model.ResponseMode;
@@ -51,18 +50,12 @@ import org.n52.geoprocessing.wps.client.model.execution.ExecutionMode;
 import org.n52.janmayen.Json;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import net.opengis.wps.x100.ExecuteDocument;
 import net.opengis.wps.x100.ExecuteResponseDocument;
 import net.opengis.wps.x100.ProcessDescriptionsDocument;
 import net.opengis.wps.x20.GetResultDocument;
-import net.opengis.wps.x20.GetStatusDocument;
 import net.opengis.wps.x20.ProcessOfferingDocument.ProcessOffering;
 import net.opengis.wps.x20.ProcessOfferingsDocument;
 import net.opengis.wps.x20.ResultDocument;
@@ -87,6 +80,8 @@ public class WPSClientSession {
 
     private XmlOptions options = null;
 
+    private boolean cancel;
+    
     public static final String VERSION_100 = "1.0.0";
 
     public static final String VERSION_200 = "2.0.0";
@@ -296,6 +291,18 @@ public class WPSClientSession {
         return processNames;
     }
 
+    public void cancelAsyncExecute(){
+        setCancel(true);
+    }
+    
+    private synchronized boolean isCancel() {
+        return cancel;
+    }
+
+    private synchronized void setCancel(boolean cancel) {
+        this.cancel = cancel;
+    }
+
     private List<Process> getProcessDescriptionsFromCache(String wpsUrl)
             throws IOException {
         return loggedServices.get(wpsUrl).getProcesses();
@@ -311,7 +318,7 @@ public class WPSClientSession {
 
         switch (version) {
         case VERSION_100:
-            return ExecuteDocument.Factory.newInstance();//TODO
+            return new WPS100ExecuteEncoder(execute).encode();
 
         case VERSION_200:
             return WPS20ExecuteEncoder.encode(execute);
@@ -606,6 +613,11 @@ public class WPSClientSession {
 
         }
 
+        if(isCancel()){
+            LOGGER.info("Asynchronous Execute operation canceled.");
+            return XmlObject.Factory.newInstance();//TODO
+        }
+        
         //assume process is still running, pause configured amount of time
         try {
             LOGGER.info("Let Thread sleep millis: " + delayForAsyncRequests);
