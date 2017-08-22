@@ -173,9 +173,11 @@ public class WPS20ProcessParser {
 
             String dataTypeString = literalDataType.getLiteralDataDomainArray(0).getDataType().getReference();
 
-            wpsParameter = new LiteralInputDescription();
+            if(wpsParameter instanceof InputDescription){
+                wpsParameter = new LiteralInputDescription();
 
-            wpsParameter = createLiteralInput(literalDataType, (LiteralInputDescription) wpsParameter, dataTypeString);
+                wpsParameter = createLiteralInput(literalDataType, (LiteralInputDescription) wpsParameter, dataTypeString);
+            }
 
             Format[] formatDescriptions = literalDataType.getFormatArray();
 
