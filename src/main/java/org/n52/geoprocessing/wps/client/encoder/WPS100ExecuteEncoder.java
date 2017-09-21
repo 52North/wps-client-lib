@@ -210,28 +210,28 @@ public class WPS100ExecuteEncoder {
 
     private void addOutputs(List<ExecuteOutput> outputs,
             net.opengis.wps.x100.ExecuteDocument.Execute executeRequest) {
-      
+
         //TODO differentiate between complex, literal and bbox output
         if (execute.getResponseMode().equals(ResponseMode.DOCUMENT)) {
 
             ResponseDocumentType responseForm = executeRequest.addNewResponseForm().addNewResponseDocument();
 
-            if(execute.getExecutionMode().equals(ExecutionMode.ASYNC)){                
+            if(execute.getExecutionMode().equals(ExecutionMode.ASYNC)){
                 responseForm.setStatus(true);
             }
-            
+
             for (ExecuteOutput executeOutput : outputs) {
                 DocumentOutputDefinitionType output = responseForm.addNewOutput();
                 addOutput(executeOutput, executeRequest, output);
             }
         }else if (execute.getResponseMode().equals(ResponseMode.DOCUMENT)) {
-            
+
             if(outputs.size() > 1){
                 LOGGER.info("Raw data was requested, but more than one output was requested. Using the first output.");
             }
-            
+
             ExecuteOutput executeOutput = outputs.get(0);
-            
+
             addRawData(executeOutput, executeRequest);
         }
 
@@ -239,9 +239,9 @@ public class WPS100ExecuteEncoder {
 
     private void addRawData(ExecuteOutput executeOutput,
             net.opengis.wps.x100.ExecuteDocument.Execute executeRequest) {
-        
-        OutputDefinitionType output = executeRequest.addNewResponseForm().addNewRawDataOutput(); 
-        
+
+        OutputDefinitionType output = executeRequest.addNewResponseForm().addNewRawDataOutput();
+
         String id = executeOutput.getId();
 
         if (id == null || id.isEmpty()) {
@@ -265,7 +265,7 @@ public class WPS100ExecuteEncoder {
         if (schema != null && !schema.isEmpty()) {
             output.setSchema(schema);
         }
-        
+
     }
 
     private void addOutput(ExecuteOutput executeOutput,

@@ -30,6 +30,7 @@ import org.n52.geoprocessing.wps.client.model.execution.ComplexInputReference;
 import org.n52.geoprocessing.wps.client.model.execution.Execute;
 import org.n52.geoprocessing.wps.client.model.execution.ExecuteInput;
 import org.n52.geoprocessing.wps.client.model.execution.ExecuteOutput;
+import org.n52.geoprocessing.wps.client.model.execution.LiteralInput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -95,8 +96,57 @@ public class WPS20ExecuteEncoder {
 
         if (input instanceof ComplexInput) {
             addComplexInput((ComplexInput) input, newInput);
-        }//TODO add literal input
+        }else if(input instanceof LiteralInput){
+            addLiteralInput((LiteralInput) input, newInput);
+        }
 
+    }
+
+    private static void addLiteralInput(LiteralInput input,
+            DataInputType newInput) {
+        Format format = input.getFormat();
+
+        String encoding = format.getEncoding();
+
+        String schema = format.getSchema();
+
+        String mimeType = format.getMimeType();
+
+        String valueString = "" + input.getValue();
+
+        Data data = newInput.addNewData();
+
+        if (encoding != null && !encoding.isEmpty()) {
+            data.setEncoding(encoding);
+        }
+
+        if (schema != null && !schema.isEmpty()) {
+            data.setSchema(schema);
+        }
+
+        if(mimeType != null){
+
+            if(mimeType.equals("text/plain")){
+
+                try {
+                    data.set(XmlObject.Factory.parse(valueString));
+                } catch (XmlException e) {
+
+                    LOGGER.warn("error parsing data String as xml node, trying to parse data as xs:string");
+
+                    XmlString xml = XmlString.Factory.newInstance();
+
+                    xml.setStringValue(valueString);
+
+                    data.set(xml);
+
+                }
+
+            }else if(mimeType.equals("text/xml")){
+                //TODO
+            }
+            data.setMimeType(mimeType);
+        }
     }
 
     private static void addComplexInput(ComplexInput input,

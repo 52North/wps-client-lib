@@ -16,7 +16,7 @@
  */
 package org.n52.geoprocessing.wps.client.model.execution;
 
-public class LiteralInput extends WPSExecuteParameter {
+public class LiteralInput extends ExecuteInput {
 
     private String dataType;
 

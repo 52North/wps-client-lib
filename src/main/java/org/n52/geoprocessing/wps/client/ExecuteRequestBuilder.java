@@ -21,6 +21,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
+import org.n52.geoprocessing.wps.client.model.ComplexInputDescription;
 import org.n52.geoprocessing.wps.client.model.Format;
 import org.n52.geoprocessing.wps.client.model.InputDescription;
 import org.n52.geoprocessing.wps.client.model.LiteralInputDescription;
@@ -33,6 +34,7 @@ import org.n52.geoprocessing.wps.client.model.execution.ComplexInputReference;
 import org.n52.geoprocessing.wps.client.model.execution.Execute;
 import org.n52.geoprocessing.wps.client.model.execution.ExecuteOutput;
 import org.n52.geoprocessing.wps.client.model.execution.ExecutionMode;
+import org.n52.geoprocessing.wps.client.model.execution.LiteralInput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -100,7 +102,7 @@ public class ExecuteRequestBuilder {
         setComplexData(input, value, schema, mimeType, encoding);
 
     }
-    
+
     /**
      * add an input element. sets the data in the xml request
      *
@@ -129,13 +131,13 @@ public class ExecuteRequestBuilder {
 //        if (!(inputDesc instanceof ComplexInputDescription)) {
 //            throw new IllegalArgumentException("inputDescription is not of type ComplexData: " + parameterID);
 //        }
-        
+
         ComplexInput input = new ComplexInput();
-        
+
         input.setId(inputDesc.getId());
-        
+
         setComplexData(input, value, schema, mimeType, encoding);
-        
+
     }
 
     private void setComplexData(ComplexInput input,
@@ -147,7 +149,7 @@ public class ExecuteRequestBuilder {
         input.setFormat(createFormat(schema, mimeType, encoding));
 
         input.setValue(value);
-        
+
         execute.addInput(input);
 
     }
@@ -251,34 +253,37 @@ public class ExecuteRequestBuilder {
 //
 //    }
 //
-//    /**
-//     * Add literal data to the request
-//     *
-//     * @param parameterID
-//     *            the ID of the input paramter according to the describe process
-//     * @param value
-//     *            the value. other types than strings have to be converted to
-//     *            string. The datatype is automatically determined and set
-//     *            accordingly to the process description
-//     */
-//    public void addLiteralData(String parameterID,
-//            String value) {
-//        InputDescriptionType inputDesc = this.getParameterDescription(parameterID);
-//        if (inputDesc == null) {
-//            throw new IllegalArgumentException("inputDescription is null for: " + parameterID);
-//        }
-//        if (inputDesc.getLiteralData() == null) {
-//            throw new IllegalArgumentException("inputDescription is not of type literalData: " + parameterID);
-//        }
-//        InputType input = execute.getExecute().getDataInputs().addNewInput();
-//        input.addNewIdentifier().setStringValue(parameterID);
-//        input.addNewData().addNewLiteralData().setStringValue(value);
-//        DomainMetadataType dataType = inputDesc.getLiteralData().getDataType();
-//        if (dataType != null) {
-//            input.getData().getLiteralData().setDataType(dataType.getReference());
-//        }
-//    }
-//
+    /**
+     * Add literal data to the request
+     *
+     * @param parameterID
+     *            the ID of the input paramter according to the describe process
+     * @param value
+     *            the value. other types than strings have to be converted to
+     *            string. The datatype is automatically determined and set
+     *            accordingly to the process description
+     */
+    public void addLiteralData(String parameterID,
+            String value,
+            String schema,
+            String encoding,
+            String mimetype) {
+        InputDescription inputDesc = this.getParameterDescription(parameterID);
+        if (inputDesc == null) {
+            throw new IllegalArgumentException("inputDescription is null for: " + parameterID);
+        }
+        if (inputDesc instanceof ComplexInputDescription) {
+            throw new IllegalArgumentException("inputDescription is not of type complex data: " + parameterID);
+        }
+
+        LiteralInput literalInput = new LiteralInput();
+        literalInput.setId(parameterID);
+        literalInput.setValue(value);
+        literalInput.setFormat(createFormat(schema, mimetype, encoding));
+        literalInput.setDataType(((LiteralInputDescription)inputDesc).getDataType());
+        execute.addInput(literalInput);
+    }
+
     /**
      * Sets a reference to input data
      *
@@ -293,7 +298,7 @@ public class ExecuteRequestBuilder {
      * @param mimetype
      *            mimetype of the input according to the process description.
      *            has to be set
-     * @throws MalformedURLException 
+     * @throws MalformedURLException
      */
     public void addComplexDataReference(String parameterID,
             String value,
@@ -312,8 +317,8 @@ public class ExecuteRequestBuilder {
         input.setId(parameterID);
         ComplexInputReference complexInputReference = new ComplexInputReference();
         complexInputReference.setHref(new URL(value));
+        input.setReference(complexInputReference);
         input.setFormat(createFormat(schema, mimetype, encoding));
-
         execute.addInput(input);
     }
 //
@@ -369,7 +374,7 @@ public class ExecuteRequestBuilder {
             LOGGER.info("Tried to set asReference, but it is not supported.");
             return false;
         }
-        
+
         ExecuteOutput executeOutput = getOutputDefinition(outputName);
 
         //if setAsReference, set respective Enum
