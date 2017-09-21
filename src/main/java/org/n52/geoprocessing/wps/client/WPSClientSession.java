@@ -18,6 +18,7 @@ package org.n52.geoprocessing.wps.client;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -38,6 +39,11 @@ import org.apache.commons.configuration2.io.FileLocator;
 import org.apache.commons.configuration2.io.FileLocatorUtils;
 import org.apache.commons.configuration2.io.FileSystem;
 import org.apache.commons.configuration2.io.FileSystemLocationStrategy;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.XmlOptions;
@@ -81,7 +87,7 @@ public class WPSClientSession {
     private XmlOptions options = null;
 
     private boolean cancel;
-    
+
     public static final String VERSION_100 = "1.0.0";
 
     public static final String VERSION_200 = "2.0.0";
@@ -294,7 +300,44 @@ public class WPSClientSession {
     public void cancelAsyncExecute(){
         setCancel(true);
     }
-    
+
+    public HttpResponse checkService(String url, String payload){
+
+        HttpResponse response = null;
+
+        if(payload == null || payload.isEmpty()){
+
+            HttpGet get = new HttpGet(url);
+
+            try {
+                response = HttpClientBuilder.create().build().execute(get);
+            } catch (IOException e) {
+                LOGGER.error("IOException while trying to access: " + url);
+            }
+        }else{
+
+            HttpPost post = new HttpPost(url);
+
+            StringEntity stringEntity = null;
+            try {
+                stringEntity = new StringEntity(payload);
+            } catch (UnsupportedEncodingException e) {
+                LOGGER.error("Unsupported encoding in payload: " + payload);
+            }
+
+            post.setEntity(stringEntity);
+
+            try {
+                response = HttpClientBuilder.create().build().execute(post);
+            } catch (IOException e) {
+                LOGGER.error("IOException while trying to access: " + url);
+            }
+        }
+
+        return response;
+
+    }
+
     private synchronized boolean isCancel() {
         return cancel;
     }
@@ -617,7 +660,7 @@ public class WPSClientSession {
             LOGGER.info("Asynchronous Execute operation canceled.");
             return XmlObject.Factory.newInstance();//TODO
         }
-        
+
         //assume process is still running, pause configured amount of time
         try {
             LOGGER.info("Let Thread sleep millis: " + delayForAsyncRequests);
