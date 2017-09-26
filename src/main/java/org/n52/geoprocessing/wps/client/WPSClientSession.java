@@ -16,20 +16,30 @@
  */
 package org.n52.geoprocessing.wps.client;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.zip.GZIPInputStream;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLContext;
 
 import org.apache.commons.configuration2.io.ClasspathLocationStrategy;
 import org.apache.commons.configuration2.io.CombinedLocationStrategy;
@@ -39,11 +49,30 @@ import org.apache.commons.configuration2.io.FileLocator;
 import org.apache.commons.configuration2.io.FileLocatorUtils;
 import org.apache.commons.configuration2.io.FileSystem;
 import org.apache.commons.configuration2.io.FileSystemLocationStrategy;
+import org.apache.http.HttpClientConnection;
+import org.apache.http.HttpException;
+import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.protocol.HttpClientContext;
+import org.apache.http.config.Registry;
+import org.apache.http.config.RegistryBuilder;
+import org.apache.http.conn.ConnectionPoolTimeoutException;
+import org.apache.http.conn.ConnectionRequest;
+import org.apache.http.conn.HttpClientConnectionManager;
+import org.apache.http.conn.routing.HttpRoute;
+import org.apache.http.conn.socket.ConnectionSocketFactory;
+import org.apache.http.conn.ssl.DefaultHostnameVerifier;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import org.apache.http.message.BasicHttpEntityEnclosingRequest;
+import org.apache.http.ssl.SSLContexts;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.XmlOptions;
@@ -61,7 +90,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import net.opengis.wps.x100.ExecuteResponseDocument;
 import net.opengis.wps.x100.ProcessDescriptionsDocument;
-import net.opengis.wps.x20.GetResultDocument;
 import net.opengis.wps.x20.ProcessOfferingDocument.ProcessOffering;
 import net.opengis.wps.x20.ProcessOfferingsDocument;
 import net.opengis.wps.x20.ResultDocument;
@@ -101,6 +129,18 @@ public class WPSClientSession {
     // a Map of <url, all available process descriptions>
     private Map<String, List<Process>> processDescriptions;
 
+    private CloseableHttpClient httpClient;
+
+    private HttpClientBuilder httpClientBuilder;
+
+    private HttpClientConnection conn;
+
+    private static final String JVM_KEYSTORE_PATH = "C:/Program Files/Java/jdk1.8.0_102/jre/lib/security/cacerts";
+
+    private String bearerToken = "";
+
+    private boolean useBearerToken = false;
+
     /**
      * Initializes a WPS client session.
      *
@@ -111,7 +151,9 @@ public class WPSClientSession {
         options.setLoadTrimTextBuffer();
         loggedServices = new HashMap<String, WPSCapabilities>();
         processDescriptions = new HashMap<String, List<Process>>();
-        loadProperties();
+        httpClientBuilder = HttpClientBuilder.create();
+//        httpClientBuilder.setConnectionManager(new BasicHttpClientConnectionManager());//TODO maybe shutdown manager
+        httpClient = httpClientBuilder.build();
     }
 
     /*
@@ -131,6 +173,44 @@ public class WPSClientSession {
      */
     public static void reset() {
         session = new WPSClientSession();
+    }
+
+    public void setUseClientCertificate(boolean useClientCertificate){
+
+        if(useClientCertificate){
+
+            try {
+
+                KeyStore clientCertificate = KeyStore.getInstance("pkcs12");
+                clientCertificate.load(WPSClientSession.class.getResourceAsStream("ogc-tb-13-x509-test-client.p12"), "changeit".toCharArray());
+                File jvmKeystore = new File(JVM_KEYSTORE_PATH);
+                KeyStore jvmTrustedCertificates = KeyStore.getInstance("jks");
+                jvmTrustedCertificates.load(new FileInputStream(jvmKeystore), "changeit".toCharArray());
+                if (!jvmTrustedCertificates.containsAlias("ogc-tb-13-x509-test-server")) {
+                    throw new IllegalArgumentException("Missing certificate with alias 'ogc-tb-13-x509-test-server'");
+                }
+                SSLContext sslContext = SSLContexts.custom()
+                        .loadKeyMaterial(clientCertificate, "changeit".toCharArray())
+                        .loadTrustMaterial(jvmKeystore)
+                        .build();
+                HostnameVerifier hostnameVerifier = new DefaultHostnameVerifier();
+                SSLConnectionSocketFactory sslConnectionFactory = new SSLConnectionSocketFactory(sslContext, hostnameVerifier);
+
+                Registry<ConnectionSocketFactory> registry = RegistryBuilder.<ConnectionSocketFactory> create()
+                        .register("https", sslConnectionFactory)
+                        .build();
+
+                httpClientBuilder = HttpClientBuilder.create();
+                httpClientBuilder.setSSLSocketFactory(sslConnectionFactory);
+                httpClientBuilder.setConnectionManager(new PoolingHttpClientConnectionManager(registry));
+                httpClient = httpClientBuilder.build();
+
+            } catch (Exception e) {
+                LOGGER.error("Could not set up http client with certificate.");
+            }
+
+        }
+
     }
 
     /**
@@ -301,16 +381,19 @@ public class WPSClientSession {
         setCancel(true);
     }
 
-    public HttpResponse checkService(String url, String payload){
+    public int checkService(String url, String payload){
 
-        HttpResponse response = null;
+//        CloseableHttpClient httpClient = httpClientBuilder.build();
+
+        CloseableHttpResponse response = null;
 
         if(payload == null || payload.isEmpty()){
 
             HttpGet get = new HttpGet(url);
 
             try {
-                response = HttpClientBuilder.create().build().execute(get);
+
+                response = httpClient.execute(get);
             } catch (IOException e) {
                 LOGGER.error("IOException while trying to access: " + url);
             }
@@ -328,14 +411,40 @@ public class WPSClientSession {
             post.setEntity(stringEntity);
 
             try {
-                response = HttpClientBuilder.create().build().execute(post);
+                response = httpClient.execute(post);
             } catch (IOException e) {
                 LOGGER.error("IOException while trying to access: " + url);
             }
         }
 
-        return response;
+        int result = response.getStatusLine().getStatusCode();
 
+        try {
+            response.close();
+        } catch (IOException e) {
+            LOGGER.error("Could not close HTTPResponse ", e);
+        }
+
+        return result;
+    }
+
+    private void configureConnection(String url, int port) throws InterruptedException, ExecutionException, IOException{
+
+        HttpClientContext context = HttpClientContext.create();
+        HttpClientConnectionManager connMrg = new BasicHttpClientConnectionManager();
+        HttpRoute route = new HttpRoute(new HttpHost(url, port));
+        // Request new connection. This can be a long process
+        ConnectionRequest connRequest = connMrg.requestConnection(route, null);
+        // Wait for connection up to 10 sec
+        conn = connRequest.get(10, TimeUnit.SECONDS);
+
+        // If not open
+        if (!conn.isOpen()) {
+            // establish connection based on its route info
+            connMrg.connect(conn, route, 1000, context);
+            // and mark it as route complete
+            connMrg.routeComplete(conn, route, context);
+        }
     }
 
     private synchronized boolean isCancel() {
@@ -377,8 +486,8 @@ public class WPSClientSession {
         url = req.getRequest(url);
         try {
             URL urlObj = new URL(url);
-            InputStream is = retrieveResponseOrExceptionReportInpustream(urlObj);
-            XmlObject xmlObject = checkInputStream(is);
+            String responseString = retrieveResponseOrExceptionReportInpustream(urlObj);
+            XmlObject xmlObject = checkInputStream(responseString);
             return createWPSCapabilities(xmlObject);
         } catch (MalformedURLException e) {
             throw new WPSClientException("Capabilities URL seems to be unvalid: " + url, e);
@@ -387,29 +496,81 @@ public class WPSClientSession {
         }
     }
 
-    private InputStream retrieveResponseOrExceptionReportInpustream(URL url) throws IOException {
+    private String retrieveResponseOrExceptionReportInpustream(URL url) throws WPSClientException, IOException {
 
-        URLConnection conn = url.openConnection();
+        HttpGet get = new HttpGet(url.toString());
 
-        conn.setDoOutput(true);
+        if(isUseBearerToken()){
+            get.addHeader("Authorization", getBearerToken());
+        }
 
-        return openConnection(conn);
+        CloseableHttpResponse response = httpClient.execute(get);
+
+        String responseString = parseInputStreamToString(response.getEntity().getContent());
+
+        try {
+            checkStatusCode(response);
+        } catch (Exception e) {
+            throw new WPSClientException("Got HTTP error code, response: " + responseString);
+        }finally {
+            response.close();
+        }
+
+        return responseString;
     }
 
-    private InputStream retrieveResponseOrExceptionReportInpustream(URL url,
-            XmlObject payload) throws IOException {
+    private void checkStatusCode(CloseableHttpResponse response) throws WPSClientException {
 
-        URLConnection conn = url.openConnection();
+        int statusCode = response.getStatusLine().getStatusCode();
 
-        conn.setRequestProperty("Accept-Encoding", "gzip");
-        conn.setRequestProperty("Content-Type", "text/xml");
-
-        conn.setDoOutput(true);
-
-        if (payload != null) {
-            payload.save(conn.getOutputStream());
+        if(statusCode >= 400){
+            throw new WPSClientException("Got HTTP error code: " + statusCode);
         }
-       return openConnection(conn);
+
+    }
+
+    private String retrieveResponseOrExceptionReportInpustream(URL url,
+            XmlObject payload) throws WPSClientException, IOException {
+
+        HttpPost post = new HttpPost(url.toString());
+
+        post.addHeader("Accept-Encoding", "gzip");
+        post.addHeader("Content-Type", "text/xml");
+
+        if(isUseBearerToken()){
+            post.addHeader("Authorization", getBearerToken());
+        }
+
+        post.setEntity(new StringEntity(payload.xmlText()));
+
+        CloseableHttpResponse response = httpClient.execute(post);
+
+        String responseString = parseInputStreamToString(response.getEntity().getContent());
+
+        try {
+            checkStatusCode(response);
+        } catch (Exception e) {
+            throw new WPSClientException("Got HTTP error code, response: " + responseString);
+        }finally {
+            response.close();
+        }
+
+        return responseString;
+    }
+
+    private String parseInputStreamToString(InputStream in) throws IOException{
+
+        String content = "";
+
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
+
+        String line = "";
+
+        while((line = bufferedReader.readLine()) != null){
+            content = content.concat(line);
+        }
+        return content;
+
     }
 
     private InputStream openConnection(URLConnection conn){
@@ -463,8 +624,8 @@ public class WPSClientSession {
         String requestURL = req.getRequest(url);
         try {
             URL urlObj = new URL(requestURL);
-            InputStream is = retrieveResponseOrExceptionReportInpustream(urlObj);
-            XmlObject doc = checkInputStream(is);
+            String responseString = retrieveResponseOrExceptionReportInpustream(urlObj);
+            XmlObject doc = checkInputStream(responseString);
 
             WPSCapabilities capabilities = getWPSCaps(url);
 
@@ -509,7 +670,7 @@ public class WPSClientSession {
         return null;
     }
 
-    private InputStream retrieveDataViaPOST(XmlObject obj,
+    private String retrieveDataViaPOST(XmlObject obj,
             String urlString) throws WPSClientException {
         try {
             URL url = new URL(urlString);
@@ -521,9 +682,12 @@ public class WPSClientSession {
         }
     }
 
-    private XmlObject checkInputStream(InputStream is) throws WPSClientException {
+    private XmlObject checkInputStream(String responseString) throws WPSClientException {
         try {
-            XmlObject parsedXmlObject = XmlObject.Factory.parse(is, options);
+
+            LOGGER.trace("Got response:" + responseString);
+
+            XmlObject parsedXmlObject = XmlObject.Factory.parse(responseString, options);
 
             String exceptionText = "";
             boolean isException = false;
@@ -550,8 +714,6 @@ public class WPSClientSession {
             return parsedXmlObject;
         } catch (XmlException e) {
             throw new WPSClientException("Error while parsing input.", e);
-        } catch (IOException e) {
-            throw new WPSClientException("Error occured while transfer", e);
         }
     }
 
@@ -571,13 +733,13 @@ public class WPSClientSession {
             XmlObject execute,
             boolean rawData, boolean requestAsync) throws WPSClientException, IOException {
 
-        InputStream is = retrieveDataViaPOST(execute, url);
+        String responseString = retrieveDataViaPOST(execute, url);
 
         if (rawData && !requestAsync) {
-            return is;
+            return responseString;
         }
 
-        XmlObject resultObj = checkInputStream(is);
+        XmlObject resultObj = checkInputStream(responseString);
 
         if (resultObj instanceof ExecuteResponseDocument) {
 
@@ -589,7 +751,7 @@ public class WPSClientSession {
         } else if (resultObj instanceof StatusInfoDocument) {
             return getAsyncDoc(url, resultObj);
         } else if (resultObj instanceof ResultDocument) {
-            return (GetResultDocument) resultObj;
+            return (ResultDocument) resultObj;
         }
         return resultObj;
     }
@@ -745,5 +907,21 @@ public class WPSClientSession {
         } else {
             LOGGER.info("Property delayForAsyncRequests not present, defaulting to: " + delayForAsyncRequests);
         }
+    }
+
+    public String getBearerToken() {
+        return bearerToken;
+    }
+
+    public void setBearerToken(String bearerToken) {
+        this.bearerToken = bearerToken;
+    }
+
+    public boolean isUseBearerToken() {
+        return useBearerToken;
+    }
+
+    public void setUseBearerToken(boolean useBearerToken) {
+        this.useBearerToken = useBearerToken;
     }
 }
