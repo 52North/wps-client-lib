@@ -30,4 +30,12 @@ public abstract class WPSDescriptionParameter extends WPSParameter {
         this.formats = formats;
     }
 
+    public Format getDefaultFormat() throws IllegalArgumentException{
+        for (Format format : formats) {
+            if(format.isDefault()) {
+                return format;
+            }
+        }
+        throw new IllegalArgumentException("Parameter " + getId() + " has no default format.");
+    }
 }
