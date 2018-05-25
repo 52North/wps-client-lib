@@ -64,7 +64,7 @@ public class GetClient {
         return url.openStream();
     }
 
-    public static void checkForExceptionReport(String targetURL, String payload, int expectedHTTPStatusCode, String... expectedExceptionParameters) throws IOException{
+    public static String checkForExceptionReport(String targetURL, String payload) throws IOException{
         // Send data
         String payloadClean = payload.replace("?", "");
         URL url = new URL(targetURL + "?" + payloadClean);
@@ -89,5 +89,7 @@ public class GetClient {
             data = error.read();
         }
         error.close();
+
+        return exceptionReport;
     }
 }

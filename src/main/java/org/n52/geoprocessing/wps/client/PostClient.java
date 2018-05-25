@@ -94,7 +94,7 @@ public class PostClient {
         }
     }
 
-    public static void checkForExceptionReport(String targetURL, String payload, int expectedHTTPStatusCode, String... expectedExceptionParameters) throws IOException{
+    public static String checkForExceptionReport(String targetURL, String payload) throws IOException{
         // Send data
         URL url = new URL(targetURL);
 
@@ -125,6 +125,8 @@ public class PostClient {
             data = error.read();
         }
         error.close();
+
+        return exceptionReport;
     }
 
     public static String getAsyncDoc(String response) throws IOException, ParserConfigurationException, SAXException {
