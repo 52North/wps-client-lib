@@ -30,6 +30,7 @@ import org.n52.geoprocessing.wps.client.model.WPSDescriptionParameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import net.opengis.ows.x11.ValueType;
 import net.opengis.wps.x100.ComplexDataCombinationType;
 import net.opengis.wps.x100.ComplexDataDescriptionType;
 import net.opengis.wps.x100.InputDescriptionType;
@@ -358,8 +359,25 @@ public class WPS100ProcessParser {
 
     private static AllowedValues createAllowedValues(
             net.opengis.ows.x11.AllowedValuesDocument.AllowedValues allowedValues) {
-        // TODO implement
-        return new AllowedValues();
+
+        ValueType[] allowedValueTypes = allowedValues.getValueArray();
+
+        AllowedValues allowedValuesSuperType = new AllowedValues(allowedValueTypes.length);
+
+        for (int i = 0; i < allowedValueTypes.length; i++) {
+
+            ValueType allowedValue = allowedValueTypes[i];
+
+            String allowedValueString = allowedValue.getStringValue();
+
+            allowedValuesSuperType.addAllowedValue(allowedValueString);
+
+            LOGGER.debug("Allowed value: " + allowedValueString);
+        }
+
+        //TODO range
+
+        return allowedValuesSuperType;
     }
 
     private static org.n52.geoprocessing.wps.client.model.Format createFormat(ComplexDataDescriptionType formatDescription, boolean isDefaultFormat) {

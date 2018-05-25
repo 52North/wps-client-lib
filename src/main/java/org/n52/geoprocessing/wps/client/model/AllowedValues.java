@@ -16,17 +16,24 @@
  */
 package org.n52.geoprocessing.wps.client.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class AllowedValues {
 
-    private Object allowedValue;
+    private List<String> allowedValues;
     private Range range;
 
-    public Object getAllowedValue() {
-        return allowedValue;
+    public AllowedValues(int size) {
+        allowedValues = new ArrayList<>(size);
     }
 
-    public void setAllowedValue(Object allowedValue) {
-        this.allowedValue = allowedValue;
+    public List<String> getAllowedValues() {
+        return allowedValues;
+    }
+
+    public void addAllowedValue(String allowedValue) {
+        this.allowedValues.add(allowedValue);
     }
 
     public Range getRange() {

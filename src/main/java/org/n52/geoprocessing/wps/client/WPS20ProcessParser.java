@@ -31,6 +31,7 @@ import org.n52.geoprocessing.wps.client.model.WPSDescriptionParameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import net.opengis.ows.x11.ValueType;
 import net.opengis.ows.x20.BoundingBoxType;
 import net.opengis.ows.x20.LanguageStringType;
 import net.opengis.wps.x20.ComplexDataType;
@@ -407,8 +408,25 @@ public class WPS20ProcessParser {
 
     private static AllowedValues createAllowedValues(
             net.opengis.ows.x20.AllowedValuesDocument.AllowedValues allowedValues) {
-        // TODO implement
-        return new AllowedValues();
+
+        net.opengis.ows.x20.ValueType[] allowedValueTypes = allowedValues.getValueArray();
+
+        AllowedValues allowedValuesSuperType = new AllowedValues(allowedValueTypes.length);
+
+        for (int i = 0; i < allowedValueTypes.length; i++) {
+
+            net.opengis.ows.x20.ValueType allowedValue = allowedValueTypes[i];
+
+            String allowedValueString = allowedValue.getStringValue();
+
+            allowedValuesSuperType.addAllowedValue(allowedValueString);
+
+            LOGGER.debug("Allowed value: " + allowedValueString);
+        }
+
+        //TODO range
+
+        return allowedValuesSuperType;
     }
 
     private static org.n52.geoprocessing.wps.client.model.Format createFormat(Format formatDescription) {
