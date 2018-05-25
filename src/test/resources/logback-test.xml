@@ -51,8 +51,9 @@
 	</appender>
 
 	<logger name="org.n52.geoprocessing" level="TRACE" />
+	<logger name="org.apache.http" level="TRACE" />
 
-	<root level="INFO">
+	<root level="TRACE">
 <!-- 		<appender-ref ref="wpsclientfile" /> -->
 		<appender-ref ref="wpsclientconsole" />
 	</root>
