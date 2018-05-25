@@ -39,6 +39,8 @@ import net.opengis.wps.x20.DataInputType;
 import net.opengis.wps.x20.DataTransmissionModeType;
 import net.opengis.wps.x20.ExecuteDocument;
 import net.opengis.wps.x20.ExecuteRequestType;
+import net.opengis.wps.x20.LiteralValueDocument;
+import net.opengis.wps.x20.LiteralValueDocument.LiteralValue;
 import net.opengis.wps.x20.OutputDefinitionType;
 import net.opengis.wps.x20.ReferenceType;
 
@@ -144,6 +146,20 @@ public class WPS20ExecuteEncoder {
 
             }else if(mimeType.equals("text/xml")){
                 //TODO
+                LiteralValueDocument literalValueDocument = LiteralValueDocument.Factory.newInstance();
+
+                LiteralValue literalValue = literalValueDocument.addNewLiteralValue();
+
+                try {
+                    literalValue.set(XmlObject.Factory.parse(valueString));
+                } catch (XmlException e) {
+
+                    LOGGER.warn("error parsing data String as xml node, trying to parse data as xs:string");
+
+                    literalValue.setStringValue(valueString);
+                }
+
+                data.set(literalValueDocument);
             }
             data.setMimeType(mimeType);
         }
