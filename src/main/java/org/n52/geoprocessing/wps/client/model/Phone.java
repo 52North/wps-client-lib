@@ -42,7 +42,7 @@ public class Phone {
         StringBuilder stringBuilder = new StringBuilder();
 
         stringBuilder.append("\tVoice: " + getVoice() + "\n");
-        stringBuilder.append("\t\t\t\t\t\t\t\tFacsimile: " + getFacsimile().trim() + "\n");
+        stringBuilder.append("\t\t\t\t\t\t\t\tFacsimile: " + getFacsimile() + "\n");
 
         return stringBuilder.toString();
     }
