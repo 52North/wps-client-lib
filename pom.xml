@@ -1,6 +1,6 @@
 <!--
 
-    ﻿Copyright (C) ${inceptionYear} - ${currentYear} 52°North Initiative for Geospatial Open Source
+    ﻿Copyright (C) 2018 52°North Initiative for Geospatial Open Source
     Software GmbH
 
     Licensed under the Apache License, Version 2.0 (the "License");
@@ -46,7 +46,7 @@
 		<org.springframework.version>4.1.6.RELEASE</org.springframework.version>
 		<org.spring-security.version>4.0.1.RELEASE</org.spring-security.version>
 		<maven.build.timestamp.format>yyyy</maven.build.timestamp.format>
-		<currentYear>2017</currentYear>
+		<currentYear>2018</currentYear>
 	</properties>
     <licenses>
         <license>
@@ -249,7 +249,7 @@
 					</includes>
 					<strictCheck>true</strictCheck>
 					<properties>
-						<year>2017</year>
+						<year>2018</year>
 					</properties>
 					<mapping>
 						<java>SLASHSTAR_STYLE</java>
