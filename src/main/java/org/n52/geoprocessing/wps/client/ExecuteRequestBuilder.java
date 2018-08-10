@@ -54,7 +54,7 @@ public class ExecuteRequestBuilder {
     public ExecuteRequestBuilder(Process processDesc) {
         this.processDesc = processDesc;
         execute = new Execute();
-        //set synchronous execute by default
+        // set synchronous execute by default
         execute.setExecutionMode(ExecutionMode.SYNC);
         execute.setId(processDesc.getId());
     }
@@ -90,9 +90,10 @@ public class ExecuteRequestBuilder {
         if (inputDesc == null) {
             throw new IllegalArgumentException("inputDesription is null for: " + parameterID);
         }
-//        if (!(inputDesc instanceof ComplexInputDescription)) {
-//            throw new IllegalArgumentException("inputDescription is not of type ComplexData: " + parameterID);
-//        }
+        // if (!(inputDesc instanceof ComplexInputDescription)) {
+        // throw new IllegalArgumentException("inputDescription is not of type
+        // ComplexData: " + parameterID);
+        // }
 
         ComplexInput input = new ComplexInput();
 
@@ -127,9 +128,10 @@ public class ExecuteRequestBuilder {
         if (inputDesc == null) {
             throw new IllegalArgumentException("inputDesription is null for: " + parameterID);
         }
-//        if (!(inputDesc instanceof ComplexInputDescription)) {
-//            throw new IllegalArgumentException("inputDescription is not of type ComplexData: " + parameterID);
-//        }
+        // if (!(inputDesc instanceof ComplexInputDescription)) {
+        // throw new IllegalArgumentException("inputDescription is not of type
+        // ComplexData: " + parameterID);
+        // }
 
         ComplexInput input = new ComplexInput();
 
@@ -172,7 +174,6 @@ public class ExecuteRequestBuilder {
         return format;
     }
 
-
     /**
      * Add literal data to the request
      *
@@ -200,7 +201,7 @@ public class ExecuteRequestBuilder {
         literalInput.setId(parameterID);
         literalInput.setValue(value);
         literalInput.setFormat(createFormat(schema, mimetype, encoding));
-        literalInput.setDataType(((LiteralInputDescription)inputDesc).getDataType());
+        literalInput.setDataType(((LiteralInputDescription) inputDesc).getDataType());
         execute.addInput(literalInput);
     }
 
@@ -242,7 +243,6 @@ public class ExecuteRequestBuilder {
         execute.addInput(input);
     }
 
-    
     /**
      * this sets store for the specific output.
      *
@@ -253,15 +253,15 @@ public class ExecuteRequestBuilder {
     public boolean setAsReference(String outputName,
             boolean asReference) {
 
-        if(!processDesc.isReferenceSupported()){
+        if (!processDesc.isReferenceSupported()) {
             LOGGER.info("Tried to set asReference, but it is not supported.");
             return false;
         }
 
         ExecuteOutput executeOutput = getOutputDefinition(outputName);
 
-        //if setAsReference, set respective Enum
-        if(asReference){
+        // if setAsReference, set respective Enum
+        if (asReference) {
             executeOutput.setTransmissionMode(TransmissionMode.REFERENCE);
         }
 
@@ -269,8 +269,7 @@ public class ExecuteRequestBuilder {
     }
 
     private ExecuteOutput getOutputDefinition(String outputName) {
-        List<ExecuteOutput> outputs =
-                execute.getOutputs();
+        List<ExecuteOutput> outputs = execute.getOutputs();
         for (ExecuteOutput outputDef : outputs) {
             if (outputDef.getId().equals(outputName)) {
                 return outputDef;
@@ -328,7 +327,7 @@ public class ExecuteRequestBuilder {
     private void setOutput(String outputIdentifier,
             String schema,
             String encoding,
-            String mimeType){
+            String mimeType) {
 
         ExecuteOutput output = new ExecuteOutput();
 
@@ -348,7 +347,6 @@ public class ExecuteRequestBuilder {
     public Execute getExecute() {
         return execute;
     }
-
 
     /**
      *
