@@ -33,6 +33,7 @@ import org.n52.geoprocessing.wps.client.model.execution.Execute;
 import org.n52.geoprocessing.wps.client.model.execution.ExecuteInput;
 import org.n52.geoprocessing.wps.client.model.execution.ExecuteOutput;
 import org.n52.geoprocessing.wps.client.model.execution.ExecutionMode;
+import org.n52.geoprocessing.wps.client.model.execution.LiteralInput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,6 +43,7 @@ import net.opengis.wps.x100.DocumentOutputDefinitionType;
 import net.opengis.wps.x100.ExecuteDocument;
 import net.opengis.wps.x100.InputReferenceType;
 import net.opengis.wps.x100.InputType;
+import net.opengis.wps.x100.LiteralDataType;
 import net.opengis.wps.x100.OutputDefinitionType;
 import net.opengis.wps.x100.ResponseDocumentType;
 
@@ -103,8 +105,21 @@ public class WPS100ExecuteEncoder {
 
         if (input instanceof ComplexInput) {
             addComplexInput((ComplexInput) input, newInput);
-        }//TODO add literal input
+        }else if(input instanceof LiteralInput){
+            addLiteralInput((LiteralInput) input, newInput);
+        }//TODO BBox input
 
+    }
+
+    //TODO UOM etc.
+    private void addLiteralInput(LiteralInput input,
+            InputType newInput) {
+
+        String valueString = "" + input.getValue();
+
+        LiteralDataType data = newInput.addNewData().addNewLiteralData();
+
+        data.setStringValue(valueString);
     }
 
     private void addComplexInput(ComplexInput input,

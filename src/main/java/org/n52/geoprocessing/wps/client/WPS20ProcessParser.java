@@ -31,7 +31,6 @@ import org.n52.geoprocessing.wps.client.model.WPSDescriptionParameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import net.opengis.ows.x11.ValueType;
 import net.opengis.ows.x20.BoundingBoxType;
 import net.opengis.ows.x20.LanguageStringType;
 import net.opengis.wps.x20.ComplexDataType;
