@@ -135,8 +135,6 @@ public class WPSClientSession {
 
     private HttpClientConnection conn;
 
-    private static final String JVM_KEYSTORE_PATH = "C:/Program Files/Java/jdk1.8.0_102/jre/lib/security/cacerts";
-
     private String bearerToken = "";
 
     private boolean useBearerToken = false;
@@ -173,44 +171,6 @@ public class WPSClientSession {
      */
     public static void reset() {
         session = new WPSClientSession();
-    }
-
-    public void setUseClientCertificate(boolean useClientCertificate){
-
-        if(useClientCertificate){
-
-            try {
-
-                KeyStore clientCertificate = KeyStore.getInstance("pkcs12");
-                clientCertificate.load(WPSClientSession.class.getResourceAsStream("ogc-tb-13-x509-test-client.p12"), "changeit".toCharArray());
-                File jvmKeystore = new File(JVM_KEYSTORE_PATH);
-                KeyStore jvmTrustedCertificates = KeyStore.getInstance("jks");
-                jvmTrustedCertificates.load(new FileInputStream(jvmKeystore), "changeit".toCharArray());
-                if (!jvmTrustedCertificates.containsAlias("ogc-tb-13-x509-test-server")) {
-                    throw new IllegalArgumentException("Missing certificate with alias 'ogc-tb-13-x509-test-server'");
-                }
-                SSLContext sslContext = SSLContexts.custom()
-                        .loadKeyMaterial(clientCertificate, "changeit".toCharArray())
-                        .loadTrustMaterial(jvmKeystore)
-                        .build();
-                HostnameVerifier hostnameVerifier = new DefaultHostnameVerifier();
-                SSLConnectionSocketFactory sslConnectionFactory = new SSLConnectionSocketFactory(sslContext, hostnameVerifier);
-
-                Registry<ConnectionSocketFactory> registry = RegistryBuilder.<ConnectionSocketFactory> create()
-                        .register("https", sslConnectionFactory)
-                        .build();
-
-                httpClientBuilder = HttpClientBuilder.create();
-                httpClientBuilder.setSSLSocketFactory(sslConnectionFactory);
-                httpClientBuilder.setConnectionManager(new PoolingHttpClientConnectionManager(registry));
-                httpClient = httpClientBuilder.build();
-
-            } catch (Exception e) {
-                LOGGER.error("Could not set up http client with certificate.");
-            }
-
-        }
-
     }
 
     /**
@@ -426,6 +386,22 @@ public class WPSClientSession {
         }
 
         return result;
+    }
+
+    public String getBearerToken() {
+        return bearerToken;
+    }
+
+    public void setBearerToken(String bearerToken) {
+        this.bearerToken = bearerToken;
+    }
+
+    public boolean isUseBearerToken() {
+        return useBearerToken;
+    }
+
+    public void setUseBearerToken(boolean useBearerToken) {
+        this.useBearerToken = useBearerToken;
     }
 
     private void configureConnection(String url, int port) throws InterruptedException, ExecutionException, IOException{
@@ -907,21 +883,5 @@ public class WPSClientSession {
         } else {
             LOGGER.info("Property delayForAsyncRequests not present, defaulting to: " + delayForAsyncRequests);
         }
-    }
-
-    public String getBearerToken() {
-        return bearerToken;
-    }
-
-    public void setBearerToken(String bearerToken) {
-        this.bearerToken = bearerToken;
-    }
-
-    public boolean isUseBearerToken() {
-        return useBearerToken;
-    }
-
-    public void setUseBearerToken(boolean useBearerToken) {
-        this.useBearerToken = useBearerToken;
     }
 }
