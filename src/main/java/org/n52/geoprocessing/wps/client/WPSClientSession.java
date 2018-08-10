@@ -17,29 +17,18 @@
 package org.n52.geoprocessing.wps.client;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
-import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.zip.GZIPInputStream;
-
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLContext;
 
 import org.apache.commons.configuration2.io.ClasspathLocationStrategy;
 import org.apache.commons.configuration2.io.CombinedLocationStrategy;
@@ -49,30 +38,12 @@ import org.apache.commons.configuration2.io.FileLocator;
 import org.apache.commons.configuration2.io.FileLocatorUtils;
 import org.apache.commons.configuration2.io.FileSystem;
 import org.apache.commons.configuration2.io.FileSystemLocationStrategy;
-import org.apache.http.HttpClientConnection;
-import org.apache.http.HttpException;
-import org.apache.http.HttpHost;
-import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.protocol.HttpClientContext;
-import org.apache.http.config.Registry;
-import org.apache.http.config.RegistryBuilder;
-import org.apache.http.conn.ConnectionPoolTimeoutException;
-import org.apache.http.conn.ConnectionRequest;
-import org.apache.http.conn.HttpClientConnectionManager;
-import org.apache.http.conn.routing.HttpRoute;
-import org.apache.http.conn.socket.ConnectionSocketFactory;
-import org.apache.http.conn.ssl.DefaultHostnameVerifier;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
-import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
-import org.apache.http.message.BasicHttpEntityEnclosingRequest;
-import org.apache.http.ssl.SSLContexts;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.XmlOptions;
@@ -133,8 +104,6 @@ public class WPSClientSession {
 
     private HttpClientBuilder httpClientBuilder;
 
-    private HttpClientConnection conn;
-
     private String bearerToken = "";
 
     private boolean useBearerToken = false;
@@ -152,6 +121,7 @@ public class WPSClientSession {
         httpClientBuilder = HttpClientBuilder.create();
 //        httpClientBuilder.setConnectionManager(new BasicHttpClientConnectionManager());//TODO maybe shutdown manager
         httpClient = httpClientBuilder.build();
+        loadProperties();
     }
 
     /*
@@ -404,25 +374,6 @@ public class WPSClientSession {
         this.useBearerToken = useBearerToken;
     }
 
-    private void configureConnection(String url, int port) throws InterruptedException, ExecutionException, IOException{
-
-        HttpClientContext context = HttpClientContext.create();
-        HttpClientConnectionManager connMrg = new BasicHttpClientConnectionManager();
-        HttpRoute route = new HttpRoute(new HttpHost(url, port));
-        // Request new connection. This can be a long process
-        ConnectionRequest connRequest = connMrg.requestConnection(route, null);
-        // Wait for connection up to 10 sec
-        conn = connRequest.get(10, TimeUnit.SECONDS);
-
-        // If not open
-        if (!conn.isOpen()) {
-            // establish connection based on its route info
-            connMrg.connect(conn, route, 1000, context);
-            // and mark it as route complete
-            connMrg.routeComplete(conn, route, context);
-        }
-    }
-
     private synchronized boolean isCancel() {
         return cancel;
     }
@@ -546,30 +497,6 @@ public class WPSClientSession {
             content = content.concat(line);
         }
         return content;
-
-    }
-
-    private InputStream openConnection(URLConnection conn){
-
-        try {
-            InputStream inputstream = null;
-
-            String encoding = conn.getContentEncoding();
-            if (encoding != null && encoding.equalsIgnoreCase("gzip")) {
-                inputstream = new GZIPInputStream(conn.getInputStream());
-            } else {
-                inputstream = conn.getInputStream();
-            }
-            return inputstream;
-        } catch (IOException e) {
-            LOGGER.info("Could not open Inputstream for request: " + conn.getURL());
-        }
-
-        InputStream error = ((HttpURLConnection) conn).getErrorStream();
-
-        LOGGER.info("Returning ErrorStream.");
-
-        return error;
 
     }
 
