@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    ﻿Copyright (C) ${inceptionYear} - ${currentYear} 52°North Initiative for Geospatial Open Source
+    ﻿Copyright (C) 2018 52°North Initiative for Geospatial Open Source
     Software GmbH
 
     Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,99 +17,167 @@
     limitations under the License.
 
 -->
-<wps:ProcessOfferings xmlns:wps="http://www.opengis.net/wps/2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ows="http://www.opengis.net/ows/2.0" xsi:schemaLocation="http://www.opengis.net/wps/2.0 http://schemas.opengis.net/wps/2.0/wps.xsd">
-  <wps:ProcessOffering processVersion="1.1.0" jobControlOptions="sync-execute async-execute" outputTransmission="value reference">
-    <wps:Process>
-      <ows:Title>org.n52.wps.server.algorithm.SimpleBufferAlgorithm</ows:Title>
-      <ows:Identifier>org.n52.wps.server.algorithm.SimpleBufferAlgorithm</ows:Identifier>
-      <wps:Input minOccurs="1" maxOccurs="1">
-        <ows:Title>data</ows:Title>
-        <ows:Identifier>data</ows:Identifier>
-        <ns:ComplexData xmlns:ns="http://www.opengis.net/wps/2.0">
-          <ns:Format default="true" mimeType="application/vnd.google-earth.kml+xml" schema="http://schemas.opengis.net/kml/2.2.0/ogckml22.xsd"/>
-          <ns:Format mimeType="application/x-zipped-shp"/>
-          <ns:Format mimeType="application/x-zipped-shp" encoding="base64"/>
-          <ns:Format mimeType="application/x-zipped-wkt" encoding="Base64"/>
-          <ns:Format mimeType="application/vnd.geo+json"/>
-          <ns:Format mimeType="text/xml" schema="http://schemas.opengis.net/gml/2.0.0/feature.xsd"/>
-          <ns:Format mimeType="text/xml" schema="http://schemas.opengis.net/gml/2.1.1/feature.xsd"/>
-          <ns:Format mimeType="text/xml" schema="http://schemas.opengis.net/gml/2.1.2.1/feature.xsd"/>
-          <ns:Format mimeType="text/xml" schema="http://schemas.opengis.net/gml/2.1.2/feature.xsd"/>
-          <ns:Format mimeType="text/xml; subtype=gml/2.0.0" schema="http://schemas.opengis.net/gml/2.0.0/feature.xsd"/>
-          <ns:Format mimeType="text/xml; subtype=gml/2.1.1" schema="http://schemas.opengis.net/gml/2.1.1/feature.xsd"/>
-          <ns:Format mimeType="text/xml; subtype=gml/2.1.2" schema="http://schemas.opengis.net/gml/2.1.2/feature.xsd"/>
-          <ns:Format mimeType="text/xml; subtype=gml/2.1.2.1" schema="http://schemas.opengis.net/gml/2.1.2.1/feature.xsd"/>
-          <ns:Format mimeType="text/xml" schema="http://schemas.opengis.net/gml/3.2.1/base/feature.xsd"/>
-          <ns:Format mimeType="text/xml; subtype=gml/3.2.1" schema="http://schemas.opengis.net/gml/3.2.1/base/feature.xsd"/>
-          <ns:Format mimeType="text/xml" schema="http://geoserver.itc.nl:8080/wps/schemas/gml/2.1.2/gmlpacket.xsd"/>
-          <ns:Format mimeType="text/xml" schema="http://schemas.opengis.net/gml/2.1.2/gmlpacket.xsd"/>
-          <ns:Format mimeType="text/xml" schema="http://www.opengeospatial.org/gmlpacket.xsd"/>
-          <ns:Format mimeType="text/xml" schema="http://schemas.opengis.net/gml/3.0.0/base/feature.xsd"/>
-          <ns:Format mimeType="text/xml" schema="http://schemas.opengis.net/gml/3.0.1/base/feature.xsd"/>
-          <ns:Format mimeType="text/xml" schema="http://schemas.opengis.net/gml/3.1.0/base/feature.xsd"/>
-          <ns:Format mimeType="text/xml" schema="http://schemas.opengis.net/gml/3.1.1/base/feature.xsd"/>
-          <ns:Format mimeType="text/xml; subtype=gml/3.0.0" schema="http://schemas.opengis.net/gml/3.0.0/base/feature.xsd"/>
-          <ns:Format mimeType="text/xml; subtype=gml/3.0.1" schema="http://schemas.opengis.net/gml/3.0.1/base/feature.xsd"/>
-          <ns:Format mimeType="text/xml; subtype=gml/3.1.0" schema="http://schemas.opengis.net/gml/3.1.0/base/feature.xsd"/>
-          <ns:Format mimeType="text/xml; subtype=gml/3.1.1" schema="http://schemas.opengis.net/gml/3.1.1/base/feature.xsd"/>
-        </ns:ComplexData>
-      </wps:Input>
-      <wps:Input minOccurs="1" maxOccurs="1">
-        <ows:Title>width</ows:Title>
-        <ows:Identifier>width</ows:Identifier>
-        <ns:LiteralData xmlns:ns="http://www.opengis.net/wps/2.0">
-          <ns:Format default="true" mimeType="text/plain"/>
-          <ns:Format mimeType="text/xml"/>
-          <LiteralDataDomain>
-          <ows:AnyValue/>
-            <ows:DataType ows:reference="xs:double"/>
-          <ows:DefaultValue>0.01</ows:DefaultValue>
-          </LiteralDataDomain>
-        </ns:LiteralData>
-      </wps:Input>
-      <wps:Input>
-      <ows:Title>efewf</ows:Title>
-      <ows:Identifier>eqwfq2f2f</ows:Identifier>
-      <wps:BoundingBoxData>
-      <wps:Format/>
-      <wps:SupportedCRS>
-      </wps:SupportedCRS>
-      </wps:BoundingBoxData>
-      </wps:Input>
-      <wps:Output>
-        <ows:Title>result</ows:Title>
-        <ows:Identifier>result</ows:Identifier>
-        <ns:ComplexData xmlns:ns="http://www.opengis.net/wps/2.0">
-          <ns:Format default="true" mimeType="application/WMS"/>
-          <ns:Format mimeType="application/vnd.google-earth.kml+xml" schema="http://schemas.opengis.net/kml/2.2.0/ogckml22.xsd"/>
-          <ns:Format mimeType="application/x-zipped-shp"/>
-          <ns:Format mimeType="application/x-zipped-shp" encoding="base64"/>
-          <ns:Format mimeType="text/xml"/>
-          <ns:Format mimeType="text/xml" encoding="base64"/>
-          <ns:Format mimeType="text/xml" schema="http://schemas.opengis.net/gml/2.0.0/feature.xsd"/>
-          <ns:Format mimeType="text/xml" schema="http://schemas.opengis.net/gml/2.1.1/feature.xsd"/>
-          <ns:Format mimeType="text/xml" schema="http://schemas.opengis.net/gml/2.1.2.1/feature.xsd"/>
-          <ns:Format mimeType="text/xml" schema="http://schemas.opengis.net/gml/2.1.2/feature.xsd"/>
-          <ns:Format mimeType="text/xml; subtype=gml/2.0.0" schema="http://schemas.opengis.net/gml/2.0.0/feature.xsd"/>
-          <ns:Format mimeType="text/xml; subtype=gml/2.1.1" schema="http://schemas.opengis.net/gml/2.1.1/feature.xsd"/>
-          <ns:Format mimeType="text/xml; subtype=gml/2.1.2" schema="http://schemas.opengis.net/gml/2.1.2/feature.xsd"/>
-          <ns:Format mimeType="text/xml; subtype=gml/2.1.2.1" schema="http://schemas.opengis.net/gml/2.1.2.1/feature.xsd"/>
-          <ns:Format mimeType="text/xml" schema="http://schemas.opengis.net/gml/3.0.0/base/feature.xsd"/>
-          <ns:Format mimeType="text/xml" schema="http://schemas.opengis.net/gml/3.0.1/base/feature.xsd"/>
-          <ns:Format mimeType="text/xml" schema="http://schemas.opengis.net/gml/3.1.0/base/feature.xsd"/>
-          <ns:Format mimeType="text/xml" schema="http://schemas.opengis.net/gml/3.1.1/base/feature.xsd"/>
-          <ns:Format mimeType="text/xml" schema="http://schemas.opengis.net/gml/3.2.1/base/feature.xsd"/>
-          <ns:Format mimeType="text/xml; subtype=gml/3.0.0" schema="http://schemas.opengis.net/gml/3.0.0/base/feature.xsd"/>
-          <ns:Format mimeType="text/xml; subtype=gml/3.0.1" schema="http://schemas.opengis.net/gml/3.0.1/base/feature.xsd"/>
-          <ns:Format mimeType="text/xml; subtype=gml/3.1.0" schema="http://schemas.opengis.net/gml/3.1.0/base/feature.xsd"/>
-          <ns:Format mimeType="text/xml; subtype=gml/3.1.1" schema="http://schemas.opengis.net/gml/3.1.1/base/feature.xsd"/>
-          <ns:Format mimeType="text/xml; subtype=gml/3.2.1" schema="http://schemas.opengis.net/gml/3.2.1/base/feature.xsd"/>
-          <ns:Format mimeType="text/xml" schema="http://geoserver.itc.nl:8080/wps/schemas/gml/2.1.2/gmlpacket.xsd"/>
-          <ns:Format mimeType="text/xml" schema="http://schemas.opengis.net/gml/2.1.2/gmlpacket.xsd"/>
-          <ns:Format mimeType="text/xml" schema="http://www.opengeospatial.org/gmlpacket.xsd"/>
-          <ns:Format mimeType="application/vnd.geo+json"/>
-        </ns:ComplexData>
-      </wps:Output>
-    </wps:Process>
-  </wps:ProcessOffering>
+<!-- ﻿Copyright (C) ${inceptionYear} - ${currentYear} 52°North Initiative
+	for Geospatial Open Source Software GmbH Licensed under the Apache License,
+	Version 2.0 (the "License"); you may not use this file except in compliance
+	with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+	Unless required by applicable law or agreed to in writing, software distributed
+	under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES
+	OR CONDITIONS OF ANY KIND, either express or implied. See the License for
+	the specific language governing permissions and limitations under the License. -->
+<wps:ProcessOfferings xmlns:wps="http://www.opengis.net/wps/2.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ows="http://www.opengis.net/ows/2.0"
+	xsi:schemaLocation="http://www.opengis.net/wps/2.0 http://schemas.opengis.net/wps/2.0/wps.xsd">
+	<wps:ProcessOffering processVersion="1.1.0"
+		jobControlOptions="sync-execute async-execute" outputTransmission="value reference">
+		<wps:Process>
+			<ows:Title>org.n52.wps.server.algorithm.SimpleBufferAlgorithm</ows:Title>
+			<ows:Identifier>org.n52.wps.server.algorithm.SimpleBufferAlgorithm</ows:Identifier>
+			<wps:Input minOccurs="1" maxOccurs="1">
+				<ows:Title>data</ows:Title>
+				<ows:Identifier>data</ows:Identifier>
+				<ns:ComplexData xmlns:ns="http://www.opengis.net/wps/2.0">
+					<ns:Format default="true" mimeType="application/vnd.google-earth.kml+xml"
+						schema="http://schemas.opengis.net/kml/2.2.0/ogckml22.xsd" />
+					<ns:Format mimeType="application/x-zipped-shp" />
+					<ns:Format mimeType="application/x-zipped-shp" encoding="base64" />
+					<ns:Format mimeType="application/x-zipped-wkt" encoding="Base64" />
+					<ns:Format mimeType="application/vnd.geo+json" />
+					<ns:Format mimeType="text/xml"
+						schema="http://schemas.opengis.net/gml/2.0.0/feature.xsd" />
+					<ns:Format mimeType="text/xml"
+						schema="http://schemas.opengis.net/gml/2.1.1/feature.xsd" />
+					<ns:Format mimeType="text/xml"
+						schema="http://schemas.opengis.net/gml/2.1.2.1/feature.xsd" />
+					<ns:Format mimeType="text/xml"
+						schema="http://schemas.opengis.net/gml/2.1.2/feature.xsd" />
+					<ns:Format mimeType="text/xml; subtype=gml/2.0.0"
+						schema="http://schemas.opengis.net/gml/2.0.0/feature.xsd" />
+					<ns:Format mimeType="text/xml; subtype=gml/2.1.1"
+						schema="http://schemas.opengis.net/gml/2.1.1/feature.xsd" />
+					<ns:Format mimeType="text/xml; subtype=gml/2.1.2"
+						schema="http://schemas.opengis.net/gml/2.1.2/feature.xsd" />
+					<ns:Format mimeType="text/xml; subtype=gml/2.1.2.1"
+						schema="http://schemas.opengis.net/gml/2.1.2.1/feature.xsd" />
+					<ns:Format mimeType="text/xml"
+						schema="http://schemas.opengis.net/gml/3.2.1/base/feature.xsd" />
+					<ns:Format mimeType="text/xml; subtype=gml/3.2.1"
+						schema="http://schemas.opengis.net/gml/3.2.1/base/feature.xsd" />
+					<ns:Format mimeType="text/xml"
+						schema="http://geoserver.itc.nl:8080/wps/schemas/gml/2.1.2/gmlpacket.xsd" />
+					<ns:Format mimeType="text/xml"
+						schema="http://schemas.opengis.net/gml/2.1.2/gmlpacket.xsd" />
+					<ns:Format mimeType="text/xml"
+						schema="http://www.opengeospatial.org/gmlpacket.xsd" />
+					<ns:Format mimeType="text/xml"
+						schema="http://schemas.opengis.net/gml/3.0.0/base/feature.xsd" />
+					<ns:Format mimeType="text/xml"
+						schema="http://schemas.opengis.net/gml/3.0.1/base/feature.xsd" />
+					<ns:Format mimeType="text/xml"
+						schema="http://schemas.opengis.net/gml/3.1.0/base/feature.xsd" />
+					<ns:Format mimeType="text/xml"
+						schema="http://schemas.opengis.net/gml/3.1.1/base/feature.xsd" />
+					<ns:Format mimeType="text/xml; subtype=gml/3.0.0"
+						schema="http://schemas.opengis.net/gml/3.0.0/base/feature.xsd" />
+					<ns:Format mimeType="text/xml; subtype=gml/3.0.1"
+						schema="http://schemas.opengis.net/gml/3.0.1/base/feature.xsd" />
+					<ns:Format mimeType="text/xml; subtype=gml/3.1.0"
+						schema="http://schemas.opengis.net/gml/3.1.0/base/feature.xsd" />
+					<ns:Format mimeType="text/xml; subtype=gml/3.1.1"
+						schema="http://schemas.opengis.net/gml/3.1.1/base/feature.xsd" />
+				</ns:ComplexData>
+			</wps:Input>
+			<wps:Input minOccurs="1" maxOccurs="1">
+				<ows:Title>width</ows:Title>
+				<ows:Identifier>width</ows:Identifier>
+				<ns:LiteralData xmlns:ns="http://www.opengis.net/wps/2.0">
+					<ns:Format default="true" mimeType="text/plain" />
+					<ns:Format mimeType="text/xml" />
+					<LiteralDataDomain>
+						<ows:AnyValue />
+						<ows:DataType ows:reference="xs:double" />
+						<ows:DefaultValue>0.01</ows:DefaultValue>
+					</LiteralDataDomain>
+				</ns:LiteralData>
+			</wps:Input>
+			<wps:Input>
+				<ows:Title>efewf</ows:Title>
+				<ows:Identifier>eqwfq2f2f</ows:Identifier>
+				<wps:BoundingBoxData>
+					<wps:Format />
+					<wps:SupportedCRS>
+					</wps:SupportedCRS>
+				</wps:BoundingBoxData>
+			</wps:Input>
+			<wps:Output>
+				<ows:Title>result</ows:Title>
+				<ows:Identifier>result</ows:Identifier>
+				<ns:ComplexData xmlns:ns="http://www.opengis.net/wps/2.0">
+					<ns:Format default="true" mimeType="application/WMS" />
+					<ns:Format mimeType="application/vnd.google-earth.kml+xml"
+						schema="http://schemas.opengis.net/kml/2.2.0/ogckml22.xsd" />
+					<ns:Format mimeType="application/x-zipped-shp" />
+					<ns:Format mimeType="application/x-zipped-shp" encoding="base64" />
+					<ns:Format mimeType="text/xml" />
+					<ns:Format mimeType="text/xml" encoding="base64" />
+					<ns:Format mimeType="text/xml"
+						schema="http://schemas.opengis.net/gml/2.0.0/feature.xsd" />
+					<ns:Format mimeType="text/xml"
+						schema="http://schemas.opengis.net/gml/2.1.1/feature.xsd" />
+					<ns:Format mimeType="text/xml"
+						schema="http://schemas.opengis.net/gml/2.1.2.1/feature.xsd" />
+					<ns:Format mimeType="text/xml"
+						schema="http://schemas.opengis.net/gml/2.1.2/feature.xsd" />
+					<ns:Format mimeType="text/xml; subtype=gml/2.0.0"
+						schema="http://schemas.opengis.net/gml/2.0.0/feature.xsd" />
+					<ns:Format mimeType="text/xml; subtype=gml/2.1.1"
+						schema="http://schemas.opengis.net/gml/2.1.1/feature.xsd" />
+					<ns:Format mimeType="text/xml; subtype=gml/2.1.2"
+						schema="http://schemas.opengis.net/gml/2.1.2/feature.xsd" />
+					<ns:Format mimeType="text/xml; subtype=gml/2.1.2.1"
+						schema="http://schemas.opengis.net/gml/2.1.2.1/feature.xsd" />
+					<ns:Format mimeType="text/xml"
+						schema="http://schemas.opengis.net/gml/3.0.0/base/feature.xsd" />
+					<ns:Format mimeType="text/xml"
+						schema="http://schemas.opengis.net/gml/3.0.1/base/feature.xsd" />
+					<ns:Format mimeType="text/xml"
+						schema="http://schemas.opengis.net/gml/3.1.0/base/feature.xsd" />
+					<ns:Format mimeType="text/xml"
+						schema="http://schemas.opengis.net/gml/3.1.1/base/feature.xsd" />
+					<ns:Format mimeType="text/xml"
+						schema="http://schemas.opengis.net/gml/3.2.1/base/feature.xsd" />
+					<ns:Format mimeType="text/xml; subtype=gml/3.0.0"
+						schema="http://schemas.opengis.net/gml/3.0.0/base/feature.xsd" />
+					<ns:Format mimeType="text/xml; subtype=gml/3.0.1"
+						schema="http://schemas.opengis.net/gml/3.0.1/base/feature.xsd" />
+					<ns:Format mimeType="text/xml; subtype=gml/3.1.0"
+						schema="http://schemas.opengis.net/gml/3.1.0/base/feature.xsd" />
+					<ns:Format mimeType="text/xml; subtype=gml/3.1.1"
+						schema="http://schemas.opengis.net/gml/3.1.1/base/feature.xsd" />
+					<ns:Format mimeType="text/xml; subtype=gml/3.2.1"
+						schema="http://schemas.opengis.net/gml/3.2.1/base/feature.xsd" />
+					<ns:Format mimeType="text/xml"
+						schema="http://geoserver.itc.nl:8080/wps/schemas/gml/2.1.2/gmlpacket.xsd" />
+					<ns:Format mimeType="text/xml"
+						schema="http://schemas.opengis.net/gml/2.1.2/gmlpacket.xsd" />
+					<ns:Format mimeType="text/xml"
+						schema="http://www.opengeospatial.org/gmlpacket.xsd" />
+					<ns:Format mimeType="application/vnd.geo+json" />
+				</ns:ComplexData>
+			</wps:Output>
+			<wps:Output>
+				<ows:Title></ows:Title>
+				<ows:Abstract></ows:Abstract>
+				<ows:Identifier></ows:Identifier>
+				<wps:LiteralData>
+					<wps:Format default="true" mimeType="text/plain" />
+					<wps:Format mimeType="text/xml" />
+					<LiteralDataDomain>
+						<ows:AnyValue />
+						<ows:DataType ows:reference="xs:double" />
+					</LiteralDataDomain>
+				</wps:LiteralData>
+			</wps:Output>
+		</wps:Process>
+	</wps:ProcessOffering>
 </wps:ProcessOfferings>

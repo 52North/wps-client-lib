@@ -1,5 +1,5 @@
 /*
- * ﻿Copyright (C) ${inceptionYear} - ${currentYear} 52°North Initiative for Geospatial Open Source
+ * ﻿Copyright (C) 2018 52°North Initiative for Geospatial Open Source
  * Software GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,21 +16,19 @@
  */
 package org.n52.geoprocessing.wps.client;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.zip.GZIPInputStream;
-
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.configuration2.io.ClasspathLocationStrategy;
 import org.apache.commons.configuration2.io.CombinedLocationStrategy;
@@ -40,9 +38,16 @@ import org.apache.commons.configuration2.io.FileLocator;
 import org.apache.commons.configuration2.io.FileLocatorUtils;
 import org.apache.commons.configuration2.io.FileSystem;
 import org.apache.commons.configuration2.io.FileSystemLocationStrategy;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.XmlOptions;
+import org.n52.geoprocessing.wps.client.encoder.WPS100ExecuteEncoder;
 import org.n52.geoprocessing.wps.client.encoder.WPS20ExecuteEncoder;
 import org.n52.geoprocessing.wps.client.model.Process;
 import org.n52.geoprocessing.wps.client.model.ResponseMode;
@@ -51,18 +56,11 @@ import org.n52.geoprocessing.wps.client.model.execution.ExecutionMode;
 import org.n52.janmayen.Json;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import net.opengis.wps.x100.ExecuteDocument;
 import net.opengis.wps.x100.ExecuteResponseDocument;
 import net.opengis.wps.x100.ProcessDescriptionsDocument;
-import net.opengis.wps.x20.GetResultDocument;
-import net.opengis.wps.x20.GetStatusDocument;
 import net.opengis.wps.x20.ProcessOfferingDocument.ProcessOffering;
 import net.opengis.wps.x20.ProcessOfferingsDocument;
 import net.opengis.wps.x20.ResultDocument;
@@ -87,6 +85,8 @@ public class WPSClientSession {
 
     private XmlOptions options = null;
 
+    private boolean cancel;
+
     public static final String VERSION_100 = "1.0.0";
 
     public static final String VERSION_200 = "2.0.0";
@@ -100,6 +100,14 @@ public class WPSClientSession {
     // a Map of <url, all available process descriptions>
     private Map<String, List<Process>> processDescriptions;
 
+    private CloseableHttpClient httpClient;
+
+    private HttpClientBuilder httpClientBuilder;
+
+    private String bearerToken = "";
+
+    private boolean useBearerToken = false;
+
     /**
      * Initializes a WPS client session.
      *
@@ -110,6 +118,9 @@ public class WPSClientSession {
         options.setLoadTrimTextBuffer();
         loggedServices = new HashMap<String, WPSCapabilities>();
         processDescriptions = new HashMap<String, List<Process>>();
+        httpClientBuilder = HttpClientBuilder.create();
+//        httpClientBuilder.setConnectionManager(new BasicHttpClientConnectionManager());//TODO maybe shutdown manager
+        httpClient = httpClientBuilder.build();
         loadProperties();
     }
 
@@ -296,6 +307,81 @@ public class WPSClientSession {
         return processNames;
     }
 
+    public void cancelAsyncExecute(){
+        setCancel(true);
+    }
+
+    public int checkService(String url, String payload){
+
+//        CloseableHttpClient httpClient = httpClientBuilder.build();
+
+        CloseableHttpResponse response = null;
+
+        if(payload == null || payload.isEmpty()){
+
+            HttpGet get = new HttpGet(url);
+
+            try {
+
+                response = httpClient.execute(get);
+            } catch (IOException e) {
+                LOGGER.error("IOException while trying to access: " + url);
+            }
+        }else{
+
+            HttpPost post = new HttpPost(url);
+
+            StringEntity stringEntity = null;
+            try {
+                stringEntity = new StringEntity(payload);
+            } catch (UnsupportedEncodingException e) {
+                LOGGER.error("Unsupported encoding in payload: " + payload);
+            }
+
+            post.setEntity(stringEntity);
+
+            try {
+                response = httpClient.execute(post);
+            } catch (IOException e) {
+                LOGGER.error("IOException while trying to access: " + url);
+            }
+        }
+
+        int result = response.getStatusLine().getStatusCode();
+
+        try {
+            response.close();
+        } catch (IOException e) {
+            LOGGER.error("Could not close HTTPResponse ", e);
+        }
+
+        return result;
+    }
+
+    public String getBearerToken() {
+        return bearerToken;
+    }
+
+    public void setBearerToken(String bearerToken) {
+        this.bearerToken = bearerToken;
+    }
+
+    public boolean isUseBearerToken() {
+        return useBearerToken;
+    }
+
+    public void setUseBearerToken(boolean useBearerToken) {
+        this.useBearerToken = useBearerToken;
+    }
+
+    private synchronized boolean isCancel() {
+        return cancel;
+    }
+
+    private synchronized void setCancel(boolean cancel) {
+        this.cancel = cancel;
+    }
+
     private List<Process> getProcessDescriptionsFromCache(String wpsUrl)
             throws IOException {
         return loggedServices.get(wpsUrl).getProcesses();
@@ -311,7 +397,7 @@ public class WPSClientSession {
 
         switch (version) {
         case VERSION_100:
-            return ExecuteDocument.Factory.newInstance();//TODO
+            return new WPS100ExecuteEncoder(execute).encode();
 
         case VERSION_200:
             return WPS20ExecuteEncoder.encode(execute);
@@ -327,8 +413,8 @@ public class WPSClientSession {
         url = req.getRequest(url);
         try {
             URL urlObj = new URL(url);
-            InputStream is = retrieveResponseOrExceptionReportInpustream(urlObj);
-            XmlObject xmlObject = checkInputStream(is);
+            String responseString = retrieveResponseOrExceptionReportInpustream(urlObj);
+            XmlObject xmlObject = checkInputStream(responseString);
             return createWPSCapabilities(xmlObject);
         } catch (MalformedURLException e) {
             throw new WPSClientException("Capabilities URL seems to be unvalid: " + url, e);
@@ -337,52 +423,80 @@ public class WPSClientSession {
         }
     }
 
-    private InputStream retrieveResponseOrExceptionReportInpustream(URL url) throws IOException {
+    private String retrieveResponseOrExceptionReportInpustream(URL url) throws WPSClientException, IOException {
 
-        URLConnection conn = url.openConnection();
+        HttpGet get = new HttpGet(url.toString());
 
-        conn.setDoOutput(true);
-
-        return openConnection(conn);
-    }
-
-    private InputStream retrieveResponseOrExceptionReportInpustream(URL url,
-            XmlObject payload) throws IOException {
-
-        URLConnection conn = url.openConnection();
-
-        conn.setRequestProperty("Accept-Encoding", "gzip");
-        conn.setRequestProperty("Content-Type", "text/xml");
-
-        conn.setDoOutput(true);
-
-        if (payload != null) {
-            payload.save(conn.getOutputStream());
+        if(isUseBearerToken()){
+            get.addHeader("Authorization", getBearerToken());
         }
-       return openConnection(conn);
-    }
 
-    private InputStream openConnection(URLConnection conn){
+        CloseableHttpResponse response = httpClient.execute(get);
+
+        String responseString = parseInputStreamToString(response.getEntity().getContent());
 
         try {
-            InputStream inputstream = null;
-
-            String encoding = conn.getContentEncoding();
-            if (encoding != null && encoding.equalsIgnoreCase("gzip")) {
-                inputstream = new GZIPInputStream(conn.getInputStream());
-            } else {
-                inputstream = conn.getInputStream();
-            }
-            return inputstream;
-        } catch (IOException e) {
-            LOGGER.info("Could not open Inputstream for request: " + conn.getURL());
+            checkStatusCode(response);
+        } catch (Exception e) {
+            throw new WPSClientException("Got HTTP error code, response: " + responseString);
+        }finally {
+            response.close();
         }
 
-        InputStream error = ((HttpURLConnection) conn).getErrorStream();
+        return responseString;
+    }
 
-        LOGGER.info("Returning ErrorStream.");
+    private void checkStatusCode(CloseableHttpResponse response) throws WPSClientException {
 
-        return error;
+        int statusCode = response.getStatusLine().getStatusCode();
+
+        if(statusCode >= 400){
+            throw new WPSClientException("Got HTTP error code: " + statusCode);
+        }
+
+    }
+
+    private String retrieveResponseOrExceptionReportInpustream(URL url,
+            XmlObject payload) throws WPSClientException, IOException {
+
+        HttpPost post = new HttpPost(url.toString());
+
+        post.addHeader("Accept-Encoding", "gzip");
+        post.addHeader("Content-Type", "text/xml");
+
+        if(isUseBearerToken()){
+            post.addHeader("Authorization", getBearerToken());
+        }
+
+        post.setEntity(new StringEntity(payload.xmlText()));
+
+        CloseableHttpResponse response = httpClient.execute(post);
+
+        String responseString = parseInputStreamToString(response.getEntity().getContent());
+
+        try {
+            checkStatusCode(response);
+        } catch (Exception e) {
+            throw new WPSClientException("Got HTTP error code, response: " + responseString);
+        }finally {
+            response.close();
+        }
+
+        return responseString;
+    }
+
+    private String parseInputStreamToString(InputStream in) throws IOException{
+
+        String content = "";
+
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
+
+        String line = "";
+
+        while((line = bufferedReader.readLine()) != null){
+            content = content.concat(line);
+        }
+        return content;
 
     }
 
@@ -413,8 +527,8 @@ public class WPSClientSession {
         String requestURL = req.getRequest(url);
         try {
             URL urlObj = new URL(requestURL);
-            InputStream is = retrieveResponseOrExceptionReportInpustream(urlObj);
-            XmlObject doc = checkInputStream(is);
+            String responseString = retrieveResponseOrExceptionReportInpustream(urlObj);
+            XmlObject doc = checkInputStream(responseString);
 
             WPSCapabilities capabilities = getWPSCaps(url);
 
@@ -459,7 +573,7 @@ public class WPSClientSession {
         return null;
     }
 
-    private InputStream retrieveDataViaPOST(XmlObject obj,
+    private String retrieveDataViaPOST(XmlObject obj,
             String urlString) throws WPSClientException {
         try {
             URL url = new URL(urlString);
@@ -471,9 +585,12 @@ public class WPSClientSession {
         }
     }
 
-    private XmlObject checkInputStream(InputStream is) throws WPSClientException {
+    private XmlObject checkInputStream(String responseString) throws WPSClientException {
         try {
-            XmlObject parsedXmlObject = XmlObject.Factory.parse(is, options);
+
+            LOGGER.trace("Got response:" + responseString);
+
+            XmlObject parsedXmlObject = XmlObject.Factory.parse(responseString, options);
 
             String exceptionText = "";
             boolean isException = false;
@@ -500,8 +617,6 @@ public class WPSClientSession {
             return parsedXmlObject;
         } catch (XmlException e) {
             throw new WPSClientException("Error while parsing input.", e);
-        } catch (IOException e) {
-            throw new WPSClientException("Error occured while transfer", e);
         }
     }
 
@@ -521,13 +636,13 @@ public class WPSClientSession {
             XmlObject execute,
             boolean rawData, boolean requestAsync) throws WPSClientException, IOException {
 
-        InputStream is = retrieveDataViaPOST(execute, url);
+        String responseString = retrieveDataViaPOST(execute, url);
 
         if (rawData && !requestAsync) {
-            return is;
+            return responseString;
         }
 
-        XmlObject resultObj = checkInputStream(is);
+        XmlObject resultObj = checkInputStream(responseString);
 
         if (resultObj instanceof ExecuteResponseDocument) {
 
@@ -539,7 +654,7 @@ public class WPSClientSession {
         } else if (resultObj instanceof StatusInfoDocument) {
             return getAsyncDoc(url, resultObj);
         } else if (resultObj instanceof ResultDocument) {
-            return (GetResultDocument) resultObj;
+            return (ResultDocument) resultObj;
         }
         return resultObj;
     }
@@ -604,6 +719,11 @@ public class WPSClientSession {
 
             getStatusURL = createGetStatusURLWPS20(url, jobID);
 
+        }
+
+        if(isCancel()){
+            LOGGER.info("Asynchronous Execute operation canceled.");
+            return XmlObject.Factory.newInstance();//TODO
         }
 
         //assume process is still running, pause configured amount of time

@@ -1,5 +1,5 @@
 /*
- * ﻿Copyright (C) ${inceptionYear} - ${currentYear} 52°North Initiative for Geospatial Open Source
+ * ﻿Copyright (C) 2018 52°North Initiative for Geospatial Open Source
  * Software GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,6 +21,7 @@ public class Format {
     private String mimeType;
     private String schema;
     private String encoding;
+    private boolean isDefault;
 
     public String getMimeType() {
         return mimeType;
@@ -44,6 +45,14 @@ public class Format {
 
     public void setEncoding(String encoding) {
         this.encoding = encoding;
+    }
+
+    public boolean isDefault() {
+        return isDefault;
+    }
+
+    public void setDefault(boolean isDefault) {
+        this.isDefault = isDefault;
     }
 
 }

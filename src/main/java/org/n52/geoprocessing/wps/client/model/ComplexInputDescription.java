@@ -1,5 +1,5 @@
 /*
- * ﻿Copyright (C) ${inceptionYear} - ${currentYear} 52°North Initiative for Geospatial Open Source
+ * ﻿Copyright (C) 2018 52°North Initiative for Geospatial Open Source
  * Software GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,6 +16,8 @@
  */
 package org.n52.geoprocessing.wps.client.model;
 
-public class ComplexInputDescription extends WPSDescriptionParameter{
+public class ComplexInputDescription extends InputDescription{
+
+    //TODO not used
 
 }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    ﻿Copyright (C) ${inceptionYear} - ${currentYear} 52°North Initiative for Geospatial Open Source
+    ﻿Copyright (C) 2018 52°North Initiative for Geospatial Open Source
     Software GmbH
 
     Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,6 @@
     limitations under the License.
 
 -->
-
 <!-- For assistance related to logback-translator or configuration -->
 <!-- files in general, please contact the logback user mailing list -->
 <!-- at http://www.qos.ch/mailman/listinfo/logback-user -->
@@ -26,8 +25,8 @@
 <!-- http://www.qos.ch/shop/products/professionalSupport -->
 <!-- -->
 <configuration>
-	<property name="logFile" value="${wps.logfile.name}" />
-	<appender name="wpsfile"
+	<property name="logFile" value="wps-client" />
+	<appender name="wpsclientfile"
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<!--See http://logback.qos.ch/manual/appenders.html#RollingFileAppender -->
 		<!--and http://logback.qos.ch/manual/appenders.html#TimeBasedRollingPolicy -->
@@ -44,16 +43,17 @@
 			<pattern>%d{ISO8601} [%t] %-5p %c: %m%n</pattern>
 		</encoder>
 	</appender>
-	<appender name="wpsconsole" class="ch.qos.logback.core.ConsoleAppender">
+	<appender name="wpsclientconsole" class="ch.qos.logback.core.ConsoleAppender">
 		<encoder>
 			<pattern>%d{ISO8601} [%t] %-5p %c: %m%n</pattern>
 		</encoder>
 	</appender>
 
 	<logger name="org.n52.geoprocessing" level="TRACE" />
+	<logger name="org.apache.http" level="TRACE" />
 
-	<root level="INFO">
-<!-- 		<appender-ref ref="wpsfile" /> -->
-		<appender-ref ref="wpsconsole" />
+	<root level="TRACE">
+<!-- 		<appender-ref ref="wpsclientfile" /> -->
+		<appender-ref ref="wpsclientconsole" />
 	</root>
 </configuration>

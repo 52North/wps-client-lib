@@ -1,5 +1,5 @@
 /*
- * ﻿Copyright (C) ${inceptionYear} - ${currentYear} 52°North Initiative for Geospatial Open Source
+ * ﻿Copyright (C) 2018 52°North Initiative for Geospatial Open Source
  * Software GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -77,7 +77,7 @@ public class ExecuteTest {
 //        String url = "http://geoprocessing.demo.52north.org:8080/wps/WebProcessingService";
         String url = "http://localhost:8080/wps/WebProcessingService";
 
-        String version = "2.0.0";
+        String version = "1.0.0";
 
         WPSClientSession session = WPSClientSession.getInstance();
 
@@ -94,7 +94,7 @@ public class ExecuteTest {
 //        String url = "http://geoprocessing.demo.52north.org:8080/wps/WebProcessingService";
         String url = "http://localhost:8080/wps/WebProcessingService";
 
-        String version = "2.0.0";
+        String version = "1.0.0";
 
         WPSClientSession session = WPSClientSession.getInstance();
 
@@ -105,7 +105,7 @@ public class ExecuteTest {
 //        assertTrue(response instanceof ExceptionReport);
     }
 
-    @Test
+//    @Test
     public void testExecuteAsyncRawData() throws WPSClientException, IOException {
 
 //        String url = "http://geoprocessing.demo.52north.org:8080/wps/WebProcessingService";

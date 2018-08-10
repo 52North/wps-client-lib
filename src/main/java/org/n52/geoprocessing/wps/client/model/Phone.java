@@ -1,5 +1,5 @@
 /*
- * ﻿Copyright (C) ${inceptionYear} - ${currentYear} 52°North Initiative for Geospatial Open Source
+ * ﻿Copyright (C) 2018 52°North Initiative for Geospatial Open Source
  * Software GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -42,7 +42,7 @@ public class Phone {
         StringBuilder stringBuilder = new StringBuilder();
 
         stringBuilder.append("\tVoice: " + getVoice() + "\n");
-        stringBuilder.append("\t\t\t\t\t\t\t\tFacsimile: " + getFacsimile().trim() + "\n");
+        stringBuilder.append("\t\t\t\t\t\t\t\tFacsimile: " + getFacsimile() + "\n");
 
         return stringBuilder.toString();
     }

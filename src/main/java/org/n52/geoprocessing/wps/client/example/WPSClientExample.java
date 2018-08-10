@@ -1,5 +1,5 @@
 /*
- * ﻿Copyright (C) ${inceptionYear} - ${currentYear} 52°North Initiative for Geospatial Open Source
+ * ﻿Copyright (C) 2018 52°North Initiative for Geospatial Open Source
  * Software GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,12 +20,14 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 
+import org.n52.geoprocessing.wps.client.ExecuteRequestBuilder;
 import org.n52.geoprocessing.wps.client.ExecuteResponseAnalyser;
 import org.n52.geoprocessing.wps.client.WPSClientException;
 import org.n52.geoprocessing.wps.client.WPSClientSession;
 import org.n52.geoprocessing.wps.client.model.InputDescription;
 import org.n52.geoprocessing.wps.client.model.Process;
 import org.n52.geoprocessing.wps.client.model.WPSCapabilities;
+import org.n52.geoprocessing.wps.client.model.execution.Execute;
 
 import net.opengis.wps.x100.CapabilitiesDocument;
 import net.opengis.wps.x100.ExecuteDocument;
@@ -40,7 +42,7 @@ public class WPSClientExample {
 
         String wpsURL = "http://geoprocessing.demo.52north.org:8080/wps/WebProcessingService";
 
-        String processID = "org.n52.wps.server.algorithm.SimpleBufferAlgorithm";
+        String processID = "org.n52.wps.server.algorithm.test.EchoProcess";
 
         String version = "2.0.0";
 
@@ -52,12 +54,20 @@ public class WPSClientExample {
 //            e.printStackTrace();
 //        }
         try {
-            WPSCapabilities cpbDoc = requestGetCapabilities(wpsURL, "1.0.0");
+            WPSCapabilities cpbDoc = requestGetCapabilities(wpsURL, version);
 
             System.out.println(cpbDoc);
 
             Process describeProcessDocument = requestDescribeProcess(
                     wpsURL, processID, version);
+
+            ExecuteRequestBuilder builder = new ExecuteRequestBuilder(describeProcessDocument);
+
+            builder.addComplexData("complexInput", "<test>input</test>", "", "", "text/xml");
+
+            builder.setResponseDocument("complexOutput", "", "", "text/xml");
+
+            execute(wpsURL, builder.getExecute(), version);
 
         } catch (WPSClientException e) {
             e.printStackTrace();
@@ -66,6 +76,21 @@ public class WPSClientExample {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void execute(String url, Execute execute, String version){
+
+        WPSClientSession wpsClient = WPSClientSession.getInstance();
+
+        try {
+            Object o = wpsClient.execute(url, execute, version);
+
+            System.out.println(o);
+
+        } catch (WPSClientException | IOException e) {
+            System.out.println(e.getMessage());
+        }
+
     }
 
     public WPSCapabilities requestGetCapabilities(String url, String version)

@@ -1,5 +1,5 @@
 /*
- * ﻿Copyright (C) ${inceptionYear} - ${currentYear} 52°North Initiative for Geospatial Open Source
+ * ﻿Copyright (C) 2018 52°North Initiative for Geospatial Open Source
  * Software GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -94,7 +94,7 @@ public class PostClient {
         }
     }
 
-    public static void checkForExceptionReport(String targetURL, String payload, int expectedHTTPStatusCode, String... expectedExceptionParameters) throws IOException{
+    public static String checkForExceptionReport(String targetURL, String payload) throws IOException{
         // Send data
         URL url = new URL(targetURL);
 
@@ -125,6 +125,8 @@ public class PostClient {
             data = error.read();
         }
         error.close();
+
+        return exceptionReport;
     }
 
     public static String getAsyncDoc(String response) throws IOException, ParserConfigurationException, SAXException {

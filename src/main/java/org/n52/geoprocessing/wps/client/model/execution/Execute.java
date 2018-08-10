@@ -1,5 +1,5 @@
 /*
- * ﻿Copyright (C) ${inceptionYear} - ${currentYear} 52°North Initiative for Geospatial Open Source
+ * ﻿Copyright (C) 2018 52°North Initiative for Geospatial Open Source
  * Software GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,6 +16,7 @@
  */
 package org.n52.geoprocessing.wps.client.model.execution;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.n52.geoprocessing.wps.client.model.ResponseMode;
@@ -70,6 +71,22 @@ public class Execute {
 
     public void setExecutionMode(ExecutionMode executionMode) {
         this.executionMode = executionMode;
+    }
+
+    public boolean addOutput(ExecuteOutput output){
+
+        if(getOutputs() == null){
+            setOutputs(new ArrayList<ExecuteOutput>());
+        }
+        return getOutputs().add(output);
+    }
+
+    public boolean addInput(ExecuteInput input) {
+        if(getInputs() == null){
+            setInputs(new ArrayList<ExecuteInput>());
+        }
+        return getInputs().add(input);
+
     }
 
 }

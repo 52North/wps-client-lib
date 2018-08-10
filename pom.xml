@@ -1,6 +1,6 @@
 <!--
 
-    ﻿Copyright (C) ${inceptionYear} - ${currentYear} 52°North Initiative for Geospatial Open Source
+    ﻿Copyright (C) 2018 52°North Initiative for Geospatial Open Source
     Software GmbH
 
     Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,11 +30,11 @@
 	<parent>
 		<groupId>org.n52</groupId>
 		<artifactId>parent</artifactId>
-		<version>2</version>
+		<version>12</version>
 	</parent>
 	<groupId>org.n52.geoprocessing</groupId>
 	<artifactId>wps-client-lib</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0-SNAPSHOT</version>
 	<name>52 North WPS Client libary</name>
 	<inceptionYear>2017</inceptionYear>
 	<properties>
@@ -46,8 +46,28 @@
 		<org.springframework.version>4.1.6.RELEASE</org.springframework.version>
 		<org.spring-security.version>4.0.1.RELEASE</org.spring-security.version>
 		<maven.build.timestamp.format>yyyy</maven.build.timestamp.format>
-		<currentYear>2017</currentYear>
+		<currentYear>2018</currentYear>
 	</properties>
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+            <comments>A business-friendly OSS license</comments>
+        </license>
+    </licenses>
+
+	<developers>
+		<developer>
+			<id>bpross-52n</id>
+			<name>Benjamin Pross</name>
+			<email>b.pross@52north.org</email>
+			<organization>${project.organization.name}</organization>
+			<organizationUrl>${project.organization.url}</organizationUrl>
+			<timezone>GMT+1</timezone>
+		</developer>
+	</developers>
+	
 	<dependencies>
 		<dependency>
 			<groupId>org.n52.wps</groupId>
@@ -77,31 +97,6 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.slf4j</groupId> -->
-<!-- 			<artifactId>jcl-over-slf4j</artifactId> -->
-<!-- 			<version>${slf4j.version}</version> -->
-<!-- 			<scope>runtime</scope> -->
-<!-- 		</dependency> -->
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.slf4j</groupId> -->
-<!-- 			<artifactId>slf4j-simple</artifactId> -->
-<!-- 			<version>${slf4j.version}</version> -->
-<!-- 			<scope>test</scope> -->
-<!-- 		</dependency> -->
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.slf4j</groupId> -->
-<!-- 			<artifactId>jul-to-slf4j</artifactId> -->
-<!-- 			<version>${slf4j.version}</version> -->
-<!-- 			<scope>runtime</scope> -->
-<!-- 		</dependency> -->
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.slf4j</groupId> -->
-<!-- 			<artifactId>log4j-over-slf4j</artifactId> -->
-<!-- 			<version>${slf4j.version}</version> -->
-<!-- 			<scope>runtime</scope> -->
-<!-- 		</dependency> -->
 		<dependency>
 			<groupId>commons-logging</groupId>
 			<artifactId>commons-logging</artifactId>
@@ -124,6 +119,12 @@
 			<groupId>org.n52.wps</groupId>
 			<artifactId>52n-wps-io</artifactId>
 			<version>3.6.1</version>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-codec</groupId>
+					<artifactId>commons-codec</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.n52.sensorweb</groupId>
@@ -193,6 +194,16 @@
 			<artifactId>janmayen</artifactId>
 			<version>1.1.0</version>
 		</dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpcore</artifactId>
+            <version>4.4.6</version>
+        </dependency>
 	</dependencies>
 	<build>
 		<plugins>
@@ -238,7 +249,7 @@
 					</includes>
 					<strictCheck>true</strictCheck>
 					<properties>
-						<year>2016</year>
+						<year>2018</year>
 					</properties>
 					<mapping>
 						<java>SLASHSTAR_STYLE</java>
@@ -275,6 +286,23 @@
 						<goals>
 							<goal>generate</goal>
 						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<executions>
+					<execution>
+						<configuration>
+							<descriptors>
+								<descriptor>src/main/config/assemble.xml</descriptor>
+							</descriptors>
+						</configuration>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<phase>install</phase>
 					</execution>
 				</executions>
 			</plugin>

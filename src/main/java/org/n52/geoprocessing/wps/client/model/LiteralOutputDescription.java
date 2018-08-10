@@ -14,11 +14,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.n52.geoprocessing.wps.client.model.execution;
+package org.n52.geoprocessing.wps.client.model;
 
-public class LiteralInput extends ExecuteInput {
+public class LiteralOutputDescription extends OutputDescription {
+
+    private Object defaultValue;
+
+    private AllowedValues allowedValues;
+
+    private boolean anyValue;
 
     private String dataType;
+
+    public Object getDefaultValue() {
+        return defaultValue;
+    }
+
+    public void setDefaultValue(Object defaultValue) {
+        this.defaultValue = defaultValue;
+    }
+
+    public AllowedValues getAllowedValues() {
+        return allowedValues;
+    }
+
+    public void setAllowedValues(AllowedValues allowedValues) {
+        this.allowedValues = allowedValues;
+    }
+
+    public boolean isAnyValue() {
+        return anyValue;
+    }
+
+    public void setAnyValue(boolean anyValue) {
+        this.anyValue = anyValue;
+    }
 
     public String getDataType() {
         return dataType;

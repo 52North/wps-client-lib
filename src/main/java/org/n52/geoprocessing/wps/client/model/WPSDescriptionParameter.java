@@ -1,5 +1,5 @@
 /*
- * ﻿Copyright (C) ${inceptionYear} - ${currentYear} 52°North Initiative for Geospatial Open Source
+ * ﻿Copyright (C) 2018 52°North Initiative for Geospatial Open Source
  * Software GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,4 +30,12 @@ public abstract class WPSDescriptionParameter extends WPSParameter {
         this.formats = formats;
     }
 
+    public Format getDefaultFormat() throws IllegalArgumentException{
+        for (Format format : formats) {
+            if(format.isDefault()) {
+                return format;
+            }
+        }
+        throw new IllegalArgumentException("Parameter " + getId() + " has no default format.");
+    }
 }

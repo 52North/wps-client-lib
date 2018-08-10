@@ -1,5 +1,5 @@
 /*
- * ﻿Copyright (C) ${inceptionYear} - ${currentYear} 52°North Initiative for Geospatial Open Source
+ * ﻿Copyright (C) 2018 52°North Initiative for Geospatial Open Source
  * Software GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,8 +25,8 @@ import java.util.Map.Entry;
 public abstract class AbstractClientGETRequest {
     protected Map<String, String> requestParams;
 
-    public static String SERVICE_REQ_PARAM_NAME = "Service";
-    public static String REQUEST_REQ_PARAM_NAME = "Request";
+    public static String SERVICE_REQ_PARAM_NAME = "service";
+    public static String REQUEST_REQ_PARAM_NAME = "request";
     public static String SERVICE_REQ_PARAM_VALUE = "WPS";
     public static String VERSION_REQ_PARAM_NAME = "version";
     public static String ACCEPT_VERSIONS_REQ_PARAM_NAME = "acceptVersions";

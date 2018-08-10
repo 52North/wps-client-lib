@@ -1,5 +1,5 @@
 /*
- * ﻿Copyright (C) ${inceptionYear} - ${currentYear} 52°North Initiative for Geospatial Open Source
+ * ﻿Copyright (C) 2018 52°North Initiative for Geospatial Open Source
  * Software GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,19 +18,22 @@ package org.n52.geoprocessing.wps.client;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.n52.geoprocessing.wps.client.model.AllowedValues;
 import org.n52.geoprocessing.wps.client.model.InputDescription;
 import org.n52.geoprocessing.wps.client.model.LiteralInputDescription;
+import org.n52.geoprocessing.wps.client.model.LiteralOutputDescription;
 import org.n52.geoprocessing.wps.client.model.OutputDescription;
 import org.n52.geoprocessing.wps.client.model.Process;
 import org.n52.geoprocessing.wps.client.model.WPSDescriptionParameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import net.opengis.ows.x11.ValueType;
 import net.opengis.ows.x20.BoundingBoxType;
-import net.opengis.wps.x20.BoundingBoxDataDocument.BoundingBoxData;
+import net.opengis.ows.x20.LanguageStringType;
 import net.opengis.wps.x20.ComplexDataType;
 import net.opengis.wps.x20.DataDescriptionType;
 import net.opengis.wps.x20.FormatDocument.Format;
@@ -38,11 +41,146 @@ import net.opengis.wps.x20.InputDescriptionType;
 import net.opengis.wps.x20.LiteralDataType;
 import net.opengis.wps.x20.LiteralDataType.LiteralDataDomain;
 import net.opengis.wps.x20.OutputDescriptionType;
+import net.opengis.wps.x20.ProcessDescriptionType;
 import net.opengis.wps.x20.ProcessOfferingDocument.ProcessOffering;
+import net.opengis.wps.x20.ProcessSummaryType;
 
 public class WPS20ProcessParser {
 
     private static Logger LOGGER = LoggerFactory.getLogger(WPS20ProcessParser.class);
+
+    public static Process parseProcess(ProcessOffering processOffering){
+
+        return completeProcess(processOffering, createProcess(processOffering));
+
+    }
+
+    public static Process createProcess(ProcessSummaryType processSummaryType) {
+
+        LOGGER.trace(processSummaryType.toString());
+
+        String id = "";
+
+        try {
+            id = processSummaryType.getIdentifier().getStringValue();
+        } catch (Exception e) {
+            LOGGER.info("Could not get id from process.", e);
+        }
+
+        String abstrakt = "";
+
+        if(processSummaryType.getAbstractArray().length > 0){
+            try {
+                LanguageStringType abstraktType = processSummaryType.getAbstractArray(0);//TODO
+                if (abstrakt != null) {
+                    abstrakt = abstraktType.getStringValue();
+                }
+            } catch (Exception e) {
+                LOGGER.info("Could not get abstract from process.", e);
+            }
+        }else{
+            LOGGER.info("Could not get abstract from process, element is emtpy.");
+        }
+
+        String title = "";
+
+        if(processSummaryType.getTitleArray().length > 0){
+            try {
+                title = processSummaryType.getTitleArray(0).getStringValue();
+            } catch (Exception e) {
+                LOGGER.info("Could not get title from process.", e);
+            }
+        }else{
+            LOGGER.info("Could not get title from process, element is emtpy.");
+        }
+
+        List<?> jobControlOptions = processSummaryType.getJobControlOptions();
+
+        List<?> transmissionModes = processSummaryType.getOutputTransmission();
+
+        return createProcess(id, abstrakt, title, jobControlOptions, transmissionModes);
+    }
+
+    private static Process createProcess(ProcessOffering processOffering) {
+
+        ProcessDescriptionType processDescriptionType = processOffering.getProcess();
+
+        LOGGER.trace(processDescriptionType.toString());
+
+        String id = "";
+
+        try {
+            id = processDescriptionType.getIdentifier().getStringValue();
+        } catch (Exception e) {
+            LOGGER.info("Could not get id from process.", e);
+        }
+
+        String abstrakt = "";
+
+        if(processDescriptionType.getAbstractArray().length > 0){
+            try {
+                LanguageStringType abstraktType = processDescriptionType.getAbstractArray(0);//TODO
+                if (abstrakt != null) {
+                    abstrakt = abstraktType.getStringValue();
+                }
+            } catch (Exception e) {
+                LOGGER.info("Could not get abstract from process.", e);
+            }
+        }else{
+            LOGGER.info("Could not get abstract from process, element is emtpy.");
+        }
+
+        String title = "";
+
+        if(processDescriptionType.getTitleArray().length > 0){
+            try {
+                title = processDescriptionType.getTitleArray(0).getStringValue();
+            } catch (Exception e) {
+                LOGGER.info("Could not get title from process.", e);
+            }
+        }else{
+            LOGGER.info("Could not get title from process, element is emtpy.");
+        }
+
+        List<?> jobControlOptions = processOffering.getJobControlOptions();
+
+        List<?> transmissionModes = processOffering.getOutputTransmission();
+
+        return createProcess(id, abstrakt, title, jobControlOptions, transmissionModes);
+    }
+
+    private static Process createProcess(String id,
+            String abstrakt,
+            String title,
+            List<?> jobControlOptions,
+            List<?> transmissionModes) {
+
+        Process process = new Process();
+        process.setId(id);
+
+        process.setAbstract(abstrakt);
+
+        process.setTitle(title);
+
+        for (Iterator<?> iterator = jobControlOptions.iterator(); iterator.hasNext();) {
+            String jobControlOption = (String) iterator.next();
+            if (jobControlOption.equals("async-execute")) {
+                process.setStatusSupported(true);
+                break;
+            }
+        }
+
+        for (Iterator<?> iterator = transmissionModes.iterator(); iterator.hasNext();) {
+            String transmissionMode = (String) iterator.next();
+            if (transmissionMode.equals("reference")) {
+                process.setReferenceSupported(true);
+                break;
+            }
+        }
+
+        return process;
+
+    }
 
     public static Process completeProcess(ProcessOffering processOffering,
             Process process) {
@@ -177,6 +315,10 @@ public class WPS20ProcessParser {
                 wpsParameter = new LiteralInputDescription();
 
                 wpsParameter = createLiteralInput(literalDataType, (LiteralInputDescription) wpsParameter, dataTypeString);
+            }else if(wpsParameter instanceof OutputDescription){
+                wpsParameter = new LiteralOutputDescription();
+
+                wpsParameter = createLiteralOutput(literalDataType, (LiteralOutputDescription) wpsParameter, dataTypeString);
             }
 
             Format[] formatDescriptions = literalDataType.getFormatArray();
@@ -191,7 +333,7 @@ public class WPS20ProcessParser {
 
         } else if (dataType instanceof BoundingBoxType) {
 
-            BoundingBoxData boundingBoxDataType = (BoundingBoxData) dataType;
+            //BoundingBoxData boundingBoxDataType = (BoundingBoxData) dataType;
             // boundingBoxDataType.
 
             // TODO supported crs
@@ -232,10 +374,59 @@ public class WPS20ProcessParser {
         return literalInput;
     }
 
+    private static OutputDescription createLiteralOutput(LiteralDataType literalDataType,
+            LiteralOutputDescription literalOutput,
+            String dataTypeString) {
+
+        literalOutput.setDataType(dataTypeString);
+
+        try {
+
+            boolean anyValue = false;
+
+            LiteralDataDomain literalDataDomain = literalDataType.getLiteralDataDomainArray(0);
+
+            if (literalDataDomain.isSetAnyValue()) {
+                anyValue = true;
+                literalOutput.setAnyValue(anyValue);
+            }
+
+            if (literalDataDomain.isSetAllowedValues()) {
+                literalOutput.setAllowedValues(createAllowedValues(literalDataDomain.getAllowedValues()));
+            }
+
+            if (literalDataDomain.isSetDefaultValue()) {
+                literalOutput.setDefaultValue(literalDataDomain.getDefaultValue().getStringValue());
+            }
+
+        } catch (Exception e) {
+            LOGGER.info("LiteralInput has no LiteralDataDomain: " + literalOutput.getId());
+        }
+
+        return literalOutput;
+    }
+
     private static AllowedValues createAllowedValues(
             net.opengis.ows.x20.AllowedValuesDocument.AllowedValues allowedValues) {
-        // TODO implement
-        return new AllowedValues();
+
+        net.opengis.ows.x20.ValueType[] allowedValueTypes = allowedValues.getValueArray();
+
+        AllowedValues allowedValuesSuperType = new AllowedValues(allowedValueTypes.length);
+
+        for (int i = 0; i < allowedValueTypes.length; i++) {
+
+            net.opengis.ows.x20.ValueType allowedValue = allowedValueTypes[i];
+
+            String allowedValueString = allowedValue.getStringValue();
+
+            allowedValuesSuperType.addAllowedValue(allowedValueString);
+
+            LOGGER.debug("Allowed value: " + allowedValueString);
+        }
+
+        //TODO range
+
+        return allowedValuesSuperType;
     }
 
     private static org.n52.geoprocessing.wps.client.model.Format createFormat(Format formatDescription) {

@@ -1,5 +1,5 @@
 /*
- * ﻿Copyright (C) ${inceptionYear} - ${currentYear} 52°North Initiative for Geospatial Open Source
+ * ﻿Copyright (C) 2018 52°North Initiative for Geospatial Open Source
  * Software GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,7 +18,6 @@ package org.n52.geoprocessing.wps.client;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
 import org.n52.geoprocessing.wps.client.model.Address;
@@ -285,67 +284,11 @@ public class WPS20CapabilitiesParser {
 
         for (ProcessSummaryType processSummaryType : processSummaryTypes) {
 
-            processes.add(createProcess(processSummaryType));
+            processes.add(WPS20ProcessParser.createProcess(processSummaryType));
 
         }
 
         return processes;
-    }
-
-    private Process createProcess(ProcessSummaryType processSummaryType) {
-        Process process = new Process();
-        LOGGER.trace(processSummaryType.toString());
-
-        try {
-            process.setId(processSummaryType.getIdentifier().getStringValue());
-        } catch (Exception e) {
-            LOGGER.info("Could not get id from process.", e);
-        }
-
-        if(processSummaryType.getAbstractArray().length > 0){
-            try {
-                LanguageStringType abstrakt = processSummaryType.getAbstractArray(0);//TODO
-                if (abstrakt != null) {
-                    process.setAbstract(abstrakt.getStringValue());
-                }
-            } catch (Exception e) {
-                LOGGER.info("Could not get abstract from process.", e);
-            }
-        }else{
-            LOGGER.info("Could not get abstract from process, element is emtpy.");
-        }
-
-        if(processSummaryType.getTitleArray().length > 0){
-            try {
-                process.setTitle(processSummaryType.getTitleArray(0).getStringValue());
-            } catch (Exception e) {
-                LOGGER.info("Could not get title from process.", e);
-            }
-        }else{
-            LOGGER.info("Could not get title from process, element is emtpy.");
-        }
-
-        List<?> jobControlOptions = processSummaryType.getJobControlOptions();
-
-        for (Iterator<?> iterator = jobControlOptions.iterator(); iterator.hasNext();) {
-            String jobControlOption = (String) iterator.next();
-            if (jobControlOption.equals("async-execute")) {
-                process.setStatusSupported(true);
-                break;
-            }
-        }
-
-        List<?> transmissionModes = processSummaryType.getOutputTransmission();
-
-        for (Iterator<?> iterator = transmissionModes.iterator(); iterator.hasNext();) {
-            String transmissionMode = (String) iterator.next();
-            if (transmissionMode.equals("reference")) {
-                process.setReferenceSupported(true);
-                break;
-            }
-        }
-
-        return process;
     }
 
 }
