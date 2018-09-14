@@ -40,7 +40,7 @@
 	<properties>
 		<version.java>1.8</version.java>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<slf4j.version>1.7.21</slf4j.version>
+		<slf4j.version>1.7.25</slf4j.version>
 		<common-xml.version>2.3.0</common-xml.version>
 		<logback.version>1.0.13</logback.version>
 		<org.springframework.version>4.1.6.RELEASE</org.springframework.version>
@@ -69,11 +69,11 @@
 	</developers>
 	
 	<dependencies>
-		<dependency>
-			<groupId>org.n52.wps</groupId>
-			<artifactId>52n-xml-wps-v20</artifactId>
-			<version>${common-xml.version}</version>
-		</dependency>
+<!-- 		<dependency> -->
+<!-- 			<groupId>org.n52.wps</groupId> -->
+<!-- 			<artifactId>52n-xml-wps-v20</artifactId> -->
+<!-- 			<version>${common-xml.version}</version> -->
+<!-- 		</dependency> -->
 		<dependency>
 			<groupId>org.n52.sensorweb</groupId>
 			<artifactId>52n-xml-wps-v100</artifactId>
@@ -107,7 +107,13 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>20.0</version>
+            <version>23.4-jre</version>
+            <exclusions>
+               <exclusion>
+                   <groupId>com.google.code.findbugs</groupId>
+                   <artifactId>jsr305</artifactId>
+               </exclusion>
+            </exclusions>
         </dependency>
 		<dependency>
 			<groupId>junit</groupId>
@@ -161,6 +167,10 @@
 					<groupId>org.slf4j</groupId>
 					<artifactId>slf4j-api</artifactId>
 				</exclusion>
+				<exclusion>
+					<artifactId>woodstox-core-asl</artifactId>
+					<groupId>org.codehaus.woodstox</groupId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>
@@ -187,23 +197,33 @@
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
-			<version>2.8.5</version>
+			<version>2.9.2</version>
 		</dependency>
 		<dependency>
-			<groupId>org.n52.janmayen</groupId>
+			<groupId>org.n52.arctic-sea</groupId>
 			<artifactId>janmayen</artifactId>
-			<version>1.1.0</version>
+			<version>5.0.0</version>
 		</dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>4.5.3</version>
+            <version>4.5.6</version>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpcore</artifactId>
-            <version>4.4.6</version>
+            <version>4.4.10</version>
         </dependency>
+		<dependency>
+			<groupId>org.n52.wps</groupId>
+			<artifactId>iceland-stream</artifactId>
+			<version>1.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.n52.wps</groupId>
+			<artifactId>xml</artifactId>
+			<version>1.0.1-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>

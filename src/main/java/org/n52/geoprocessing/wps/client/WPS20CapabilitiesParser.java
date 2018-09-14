@@ -16,14 +16,19 @@
  */
 package org.n52.geoprocessing.wps.client;
 
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+
+import org.n52.geoprocessing.wps.client.decoder.stream.GetCapabilitiesResponseDecoder;
 import org.n52.geoprocessing.wps.client.model.Address;
 import org.n52.geoprocessing.wps.client.model.ContactInfo;
 import org.n52.geoprocessing.wps.client.model.Phone;
-import org.n52.geoprocessing.wps.client.model.Process;
 import org.n52.geoprocessing.wps.client.model.ServiceContact;
 import org.n52.geoprocessing.wps.client.model.ServiceIdentification;
 import org.n52.geoprocessing.wps.client.model.ServiceProvider;
@@ -36,8 +41,6 @@ import net.opengis.ows.x20.ContactType;
 import net.opengis.ows.x20.LanguageStringType;
 import net.opengis.ows.x20.ResponsiblePartySubsetType;
 import net.opengis.ows.x20.TelephoneType;
-import net.opengis.wps.x20.CapabilitiesDocument;
-import net.opengis.wps.x20.ProcessSummaryType;
 
 public class WPS20CapabilitiesParser {
 
@@ -45,31 +48,31 @@ public class WPS20CapabilitiesParser {
 
     public WPS20CapabilitiesParser() {}
 
-    public WPSCapabilities createWPSCapabilitiesOWS20(CapabilitiesDocument xmlObject) {
+    public WPSCapabilities createWPSCapabilitiesOWS20(InputStream in) throws XMLStreamException {
 
-        LOGGER.trace("Parsing capabilities: " + xmlObject);
+//        LOGGER.trace("Parsing capabilities: " + xmlObject);
+        
+//        WPSCapabilities result = new WPSCapabilities();
+//
+//        net.opengis.ows.x20.ServiceIdentificationDocument.ServiceIdentification xmlServiceIdentification =
+//                xmlObject.getCapabilities().getServiceIdentification();
+//
+//        ServiceIdentification serviceIdentification = createServiceIdentification(xmlServiceIdentification);
+//
+//        result.setServiceIdentification(serviceIdentification);
+//
+//        net.opengis.ows.x20.ServiceProviderDocument.ServiceProvider xmlServiceProvider =
+//                xmlObject.getCapabilities().getServiceProvider();
+//
+//        ServiceProvider serviceProvider = createServiceProvider(xmlServiceProvider);
+//
+//        result.setServiceProvider(serviceProvider);
+//
+//        List<Process> processes = createProcesses(xmlObject.getCapabilities().getContents().getProcessSummaryArray());
+//
+//        result.setProcesses(processes);
 
-        WPSCapabilities result = new WPSCapabilities();
-
-        net.opengis.ows.x20.ServiceIdentificationDocument.ServiceIdentification xmlServiceIdentification =
-                xmlObject.getCapabilities().getServiceIdentification();
-
-        ServiceIdentification serviceIdentification = createServiceIdentification(xmlServiceIdentification);
-
-        result.setServiceIdentification(serviceIdentification);
-
-        net.opengis.ows.x20.ServiceProviderDocument.ServiceProvider xmlServiceProvider =
-                xmlObject.getCapabilities().getServiceProvider();
-
-        ServiceProvider serviceProvider = createServiceProvider(xmlServiceProvider);
-
-        result.setServiceProvider(serviceProvider);
-
-        List<Process> processes = createProcesses(xmlObject.getCapabilities().getContents().getProcessSummaryArray());
-
-        result.setProcesses(processes);
-
-        return result;
+        return new GetCapabilitiesResponseDecoder().readElement(XMLInputFactory.newInstance().createXMLEventReader(new InputStreamReader(in)));
     }
 
     private ServiceIdentification createServiceIdentification(
@@ -279,16 +282,16 @@ public class WPS20CapabilitiesParser {
         return address;
     }
 
-    private List<Process> createProcesses(ProcessSummaryType[] processSummaryTypes) {
-        List<Process> processes = new ArrayList<>();
-
-        for (ProcessSummaryType processSummaryType : processSummaryTypes) {
-
-            processes.add(WPS20ProcessParser.createProcess(processSummaryType));
-
-        }
-
-        return processes;
-    }
+//    private List<Process> createProcesses(ProcessSummaryType[] processSummaryTypes) {
+//        List<Process> processes = new ArrayList<>();
+//
+//        for (ProcessSummaryType processSummaryType : processSummaryTypes) {
+//
+//            processes.add(WPS20ProcessParser.createProcess(processSummaryType));
+//
+//        }
+//
+//        return processes;
+//    }
 
 }

@@ -20,6 +20,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
 
+import javax.xml.stream.XMLStreamException;
+
 import org.junit.Test;
 import org.n52.geoprocessing.wps.client.encoder.WPS20ExecuteEncoder;
 import org.n52.geoprocessing.wps.client.model.Format;
@@ -31,6 +33,7 @@ import org.n52.geoprocessing.wps.client.model.execution.Execute;
 import org.n52.geoprocessing.wps.client.model.execution.ExecuteInput;
 import org.n52.geoprocessing.wps.client.model.execution.ExecuteOutput;
 import org.n52.geoprocessing.wps.client.model.execution.ExecutionMode;
+import org.n52.svalbard.encode.exception.EncodingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,7 +78,12 @@ public class ExecuteEncoderTest {
 
         execute.setOutputs(Arrays.asList(new ExecuteOutput[]{output}));
 
-        WPS20ExecuteEncoder.encode(execute);
+        try {
+            WPS20ExecuteEncoder.encode(execute);
+        } catch (EncodingException | XMLStreamException e) {
+            // TODO Auto-generated catch block
+            LOGGER.error("");
+        }
 
     }
 
@@ -120,7 +128,12 @@ public class ExecuteEncoderTest {
 
         execute.setOutputs(Arrays.asList(new ExecuteOutput[]{output}));
 
-        WPS20ExecuteEncoder.encode(execute);
+        try {
+            WPS20ExecuteEncoder.encode(execute);
+        } catch (EncodingException | XMLStreamException e) {
+            // TODO Auto-generated catch block
+            LOGGER.error("");
+        }
 
     }
 

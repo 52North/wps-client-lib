@@ -30,14 +30,17 @@ This project includes:
   52North WPS Commons under Apache License, Version 2.0
   52North WPS Input/Output API under Apache License, Version 2.0
   52°North Jan Mayen under The Apache Software License, Version 2.0
-  Apache Commons Codec under The Apache Software License, Version 2.0
+  Animal Sniffer Annotations under MIT license
+  Apache Commons Codec under Apache License, Version 2.0
   Apache Commons Configuration under Apache License, Version 2.0
   Apache Commons Lang under The Apache Software License, Version 2.0
   Apache HttpClient under Apache License, Version 2.0
   Apache HttpCore under Apache License, Version 2.0
   Commons IO under The Apache Software License, Version 2.0
+  error-prone annotations under Apache 2.0
   FindBugs-jsr305 under The Apache Software License, Version 2.0
   Guava: Google Core Libraries for Java under The Apache Software License, Version 2.0
+  J2ObjC Annotations under The Apache Software License, Version 2.0
   Jackson-annotations under The Apache Software License, Version 2.0
   Jackson-core under The Apache Software License, Version 2.0
   jackson-databind under The Apache Software License, Version 2.0
