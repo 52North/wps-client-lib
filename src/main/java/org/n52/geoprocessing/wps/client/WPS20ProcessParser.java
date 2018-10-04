@@ -33,16 +33,16 @@ import org.slf4j.LoggerFactory;
 public class WPS20ProcessParser {
 
     private static Logger LOGGER = LoggerFactory.getLogger(WPS20ProcessParser.class);
-   
+
     public static Process parseProcess(InputStream in) throws XMLStreamException {
-        
+
         XMLEventReader xmlReader = XMLInputFactory.newInstance().createXMLEventReader(new InputStreamReader(in));
 
         List<org.n52.geoprocessing.wps.client.model.Process> processes = new DescribeProcessResponseDecoder().readElement(xmlReader);
-        
+
         return processes.get(0);
     }
-    
+
     private static Process createProcess(String id,
             String abstrakt,
             String title,

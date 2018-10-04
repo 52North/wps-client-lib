@@ -1,3 +1,19 @@
+/*
+ * ﻿Copyright (C) 2018 52°North Initiative for Geospatial Open Source
+ * Software GmbH
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.n52.geoprocessing.wps.client.encoder.stream;
 
 import java.util.Collections;
@@ -6,12 +22,12 @@ import java.util.List;
 import javax.xml.stream.XMLStreamException;
 
 import org.n52.geoprocessing.wps.client.model.Format;
-import org.n52.geoprocessing.wps.client.model.execution.ComplexInput;
-import org.n52.geoprocessing.wps.client.model.execution.ComplexInputReference;
+import org.n52.geoprocessing.wps.client.model.execution.ComplexData;
+import org.n52.geoprocessing.wps.client.model.execution.ComplexDataReference;
 import org.n52.geoprocessing.wps.client.model.execution.Execute;
-import org.n52.geoprocessing.wps.client.model.execution.ExecuteInput;
+import org.n52.geoprocessing.wps.client.model.execution.Data;
 import org.n52.geoprocessing.wps.client.model.execution.ExecuteOutput;
-import org.n52.geoprocessing.wps.client.model.execution.LiteralInput;
+import org.n52.geoprocessing.wps.client.model.execution.LiteralData;
 import org.n52.geoprocessing.wps.client.model.execution.WPSExecuteParameter;
 import org.n52.javaps.service.xml.OWSConstants;
 import org.n52.javaps.service.xml.WPSConstants;
@@ -71,14 +87,14 @@ public class ExecuteRequestEncoder extends AbstractMultiElementXmlStreamWriter {
         for (ExecuteOutput executeOutput : outputs) {
             element(WPSConstants.Elem.QN_OUTPUT, executeOutput, x -> {
                 attr(WPSConstants.Attr.AN_ID, executeOutput.getId());
-                attr(WPSConstants.Attr.AN_TRANSMISSION, executeOutput.getTransmissionMode().toString().toLowerCase());                
+                attr(WPSConstants.Attr.AN_TRANSMISSION, executeOutput.getTransmissionMode().toString().toLowerCase());
                 setFormat(executeOutput);
             });
         }
     }
 
-    private void writeInputElements(List<ExecuteInput> inputs) throws XMLStreamException {
-        for (ExecuteInput executeInput : inputs) {
+    private void writeInputElements(List<Data> inputs) throws XMLStreamException {
+        for (Data executeInput : inputs) {
             element(WPSConstants.Elem.QN_INPUT, executeInput, x -> {
                 attr(WPSConstants.Attr.AN_ID, executeInput.getId());
                 String title = executeInput.getTitle();
@@ -89,16 +105,16 @@ public class ExecuteRequestEncoder extends AbstractMultiElementXmlStreamWriter {
                 if (abstrakt != null && !abstrakt.isEmpty()) {
                     element(OWSConstants.Elem.QN_ABSTRACT, abstrakt);
                 }
-                if (executeInput instanceof ComplexInput) {
-                    writeComplexInput((ComplexInput) executeInput);
-                } else if (executeInput instanceof LiteralInput) {
-                    writeLiteralInput((LiteralInput) executeInput);
+                if (executeInput instanceof ComplexData) {
+                    writeComplexInput((ComplexData) executeInput);
+                } else if (executeInput instanceof LiteralData) {
+                    writeLiteralInput((LiteralData) executeInput);
                 }
             });
         }
     }
 
-    private void writeLiteralInput(LiteralInput executeInput) throws XMLStreamException {
+    private void writeLiteralInput(LiteralData executeInput) throws XMLStreamException {
 
             Format format = executeInput.getFormat();
             String mimeType = "";
@@ -126,7 +142,7 @@ public class ExecuteRequestEncoder extends AbstractMultiElementXmlStreamWriter {
             }
     }
 
-    private void writeComplexInput(ComplexInput executeInput) throws XMLStreamException {
+    private void writeComplexInput(ComplexData executeInput) throws XMLStreamException {
         if (executeInput.isReference()) {
             writeComplexInputReference(executeInput);
         } else {
@@ -137,9 +153,9 @@ public class ExecuteRequestEncoder extends AbstractMultiElementXmlStreamWriter {
         }
     }
 
-    private void writeComplexInputReference(ComplexInput executeInput) throws XMLStreamException {
+    private void writeComplexInputReference(ComplexData executeInput) throws XMLStreamException {
 
-        ComplexInputReference reference = executeInput.getReference();
+        ComplexDataReference reference = executeInput.getReference();
 
         element(WPSConstants.Elem.QN_REFERENCE, reference, x -> {
             attr(XLinkConstants.Attr.QN_HREF, reference.getHref().toString());

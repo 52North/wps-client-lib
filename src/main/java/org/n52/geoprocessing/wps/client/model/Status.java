@@ -14,18 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.n52.geoprocessing.wps.client.model.execution;
+package org.n52.geoprocessing.wps.client.model;
 
-public class ExecuteInput extends WPSExecuteParameter{
+public enum Status {
 
-    private Object value;
-
-    public Object getValue() {
-        return value;
-    }
-
-    public void setValue(Object value) {
-        this.value = value;
-    }
+    ACCEPTED, RUNNING, FAILED, SUCCEEDED, UNKNOWN
 
 }

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ﻿Copyright (C) 2018 52°North Initiative for Geospatial Open Source
+    Software GmbH
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<ows:ExceptionReport xmlns:ows="http://www.opengis.net/ows/1.1" version="1.0.0">
+  <ows:Exception exceptionCode="InvalidParameterValue" locator="input identifier">
+    <ows:ExceptionText>Input Identifier is not valid: dat2a</ows:ExceptionText>
+  </ows:Exception>
+  <ows:Exception exceptionCode="JAVA_StackTrace">
+    <ows:ExceptionText>org.n52.wps.server.ExceptionReport: Input Identifier is not valid: dat2a
+	at org.n52.wps.server.request.ExecuteRequest.validate(ExecuteRequest.java:622)
+	at org.n52.wps.server.request.ExecuteRequest.&lt;init>(ExecuteRequest.java:125)
+	at org.n52.wps.server.handler.RequestHandler.&lt;init>(RequestHandler.java:253)
+	at org.n52.wps.server.WebProcessingService.doPost(WebProcessingService.java:331)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:661)
+	at org.n52.wps.server.WebProcessingService.service(WebProcessingService.java:362)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:742)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:231)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:52)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at com.thetransactioncompany.cors.CORSFilter.doFilter(CORSFilter.java:169)
+	at com.thetransactioncompany.cors.CORSFilter.doFilter(CORSFilter.java:232)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:198)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:96)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:496)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:140)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:81)
+	at org.apache.catalina.valves.AbstractAccessLogValve.invoke(AbstractAccessLogValve.java:650)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:87)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:342)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:803)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:66)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:790)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1459)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:49)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.lang.Thread.run(Unknown Source)</ows:ExceptionText>
+  </ows:Exception>
+  <ows:Exception exceptionCode="JAVA_RootCause"/>
+</ows:ExceptionReport>

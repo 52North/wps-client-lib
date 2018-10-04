@@ -72,6 +72,7 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import net.opengis.wps.x100.ExecuteResponseDocument;
+import net.opengis.wps.x100.ProcessDescriptionType;
 import net.opengis.wps.x100.ProcessDescriptionsDocument;
 
 /**
@@ -408,12 +409,12 @@ public class WPSClientSession {
             return new WPS100ExecuteEncoder(execute).encode();
 
         case VERSION_200:
-            
+
             ExecuteRequestEncoder executeRequestWriter = new ExecuteRequestEncoder();
 
             OutputStream out  = new ByteArrayOutputStream();
-            
-            try {                
+
+            try {
                 executeRequestWriter.setContext(
                         new XmlStreamWritingContext(out, new ElementXmlStreamWriterRepository(Arrays.asList(ExecuteRequestEncoder::new))::get));
                 executeRequestWriter.writeElement(execute);
@@ -421,7 +422,7 @@ public class WPSClientSession {
                 // TODO Auto-generated catch block
                 LOGGER.error("");
             }
-            
+
             return out;
 
         default:
@@ -586,22 +587,35 @@ public class WPSClientSession {
             ProcessDescriptionsDocument doc,
             WPSCapabilities capabilities) {
 
-        return null;
+        List<Process> processes = new ArrayList<>();
+
+        ProcessDescriptionType[] processDescriptions = doc.getProcessDescriptions().getProcessDescriptionArray();
+
+        for (ProcessDescriptionType processOffering : processDescriptions) {
+
+            String id = processOffering.getIdentifier().getStringValue();
+
+            Process process = capabilities.getProcess(id);
+
+            processes.add(WPS100ProcessParser.completeProcess(processOffering, process));
+        }
+
+        return processes;
     }
 
     private String retrieveDataViaPOST(Object executeObject,
             String urlString) throws WPSClientException {
         try {
             URL url = new URL(urlString);
-            
+
             String content = "";
-            
+
             if(executeObject instanceof XMLObject){
                 content = ((XmlObject)executeObject).xmlText();
             }else if(executeObject instanceof ByteArrayOutputStream){
                 content = ((ByteArrayOutputStream)executeObject).toString();
             }
-            
+
             return retrieveResponseOrExceptionReportInpustream(url, content);
         } catch (MalformedURLException e) {
             throw new WPSClientException("URL seems to be invalid: " + urlString, e);
@@ -626,7 +640,7 @@ public class WPSClientSession {
                 exceptionText = exceptionDoc.xmlText(options);
                 isException = true;
 
-            } 
+            }
 //            else if (parsedXmlObject instanceof net.opengis.ows.x20.ExceptionReportDocument) {
 //                net.opengis.ows.x20.ExceptionReportDocument exceptionDoc =
 //                        (net.opengis.ows.x20.ExceptionReportDocument) parsedXmlObject;
@@ -639,7 +653,7 @@ public class WPSClientSession {
                 LOGGER.trace(exceptionText);
 //                throw new WPSClientException("Error occurred while executing query: ", exceptionText);
             }
-            
+
             if(parsedXmlObject.getDomNode().getFirstChild().getNamespaceURI().equals("http://www.opengis.net/wps/1.0.0")){
                 return parsedXmlObject;
             }else {
@@ -683,7 +697,7 @@ public class WPSClientSession {
             }
 
             return (ExecuteResponseDocument) resultObj;
-        } 
+        }
 //        else if (resultObj instanceof StatusInfoDocument) {//TODO
 //            return getAsyncDoc(url, resultObj);
 //        } else if (resultObj instanceof ResultDocument) {

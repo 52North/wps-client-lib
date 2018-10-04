@@ -14,42 +14,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.n52.geoprocessing.wps.client.model.execution;
+package org.n52.geoprocessing.wps.client.model;
 
-import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.apache.xmlbeans.XmlObject;
+public class ExceptionReport extends WPSResponse{
 
-public class ComplexInputReference {
+    private List<OWSException> exceptions;
 
-    private URL href;
-
-    private URL bodyReference;
-
-    private XmlObject body;
-
-    public URL getHref() {
-        return href;
+    public ExceptionReport() {
+        this.exceptions = new ArrayList<>();
+    }
+    public ExceptionReport(List<OWSException> exceptions) {
+        this.exceptions = exceptions;
     }
 
-    public void setHref(URL href) {
-        this.href = href;
+    public void setExceptions(List<OWSException> exceptions){
+        this.exceptions = exceptions;
     }
 
-    public URL getBodyReference() {
-        return bodyReference;
+    public List<OWSException> getExceptions() {
+        return exceptions;
     }
-
-    public void setBodyReference(URL bodyReference) {
-        this.bodyReference = bodyReference;
-    }
-
-    public XmlObject getBody() {
-        return body;
-    }
-
-    public void setBody(XmlObject body) {
-        this.body = body;
+    public boolean addException(OWSException exception){
+        return exceptions.add(exception);
     }
 
 }

@@ -35,20 +35,21 @@ import org.n52.geoprocessing.wps.client.model.ServiceContact;
 import org.n52.geoprocessing.wps.client.model.ServiceIdentification;
 import org.n52.geoprocessing.wps.client.model.ServiceProvider;
 import org.n52.geoprocessing.wps.client.model.WPSCapabilities;
-import org.n52.javaps.service.xml.OWSConstants;
-import org.n52.javaps.service.xml.WPSConstants;
+import org.n52.geoprocessing.wps.client.xml.OWS11Constants;
+import org.n52.geoprocessing.wps.client.xml.WPS100Constants;
 import org.n52.svalbard.decode.stream.StreamReaderKey;
 import org.n52.svalbard.decode.stream.xml.AbstractElementXmlStreamReader;
 
-public class GetCapabilitiesResponseDecoder extends AbstractElementXmlStreamReader {
+public class GetCapabilities100ResponseDecoder extends AbstractElementXmlStreamReader {
 
+    @Override
     public WPSCapabilities readElement(XMLEventReader reader) throws XMLStreamException {
 
         while (reader.hasNext()) {
             XMLEvent event = reader.nextEvent();
             if (event.isStartElement()) {
                 StartElement start = event.asStartElement();
-                if (start.getName().equals(WPSConstants.Elem.QN_CAPABILITIES)) {
+                if (start.getName().equals(WPS100Constants.Elem.QN_CAPABILITIES)) {
                     return readCapabilities(start, reader);
                 }
             }
@@ -65,16 +66,18 @@ public class GetCapabilitiesResponseDecoder extends AbstractElementXmlStreamRead
             XMLEvent event = reader.nextEvent();
             if (event.isStartElement()) {
                 StartElement elem = event.asStartElement();
-                if (elem.getName().equals(OWSConstants.Elem.QN_SERVICE_IDENTIFICATION)) {
+                if (elem.getName().equals(OWS11Constants.Elem.QN_SERVICE_IDENTIFICATION)) {
                     wpsCapabilities.setServiceIdentification(readServiceIdentification(elem, reader));
-                } else if (elem.getName().equals(OWSConstants.Elem.QN_SERVICE_PROVIDER)) {
+                } else if (elem.getName().equals(OWS11Constants.Elem.QN_SERVICE_PROVIDER)) {
                     wpsCapabilities.setServiceProvider(readServiceProvider(elem, reader));
-                } else if (elem.getName().equals(OWSConstants.Elem.QN_OPERATIONS_METADATA)) {
+                } else if (elem.getName().equals(OWS11Constants.Elem.QN_OPERATIONS_METADATA)) {
                     readOperationsMetadata(elem, reader);
-                } else if (elem.getName().equals(OWSConstants.Elem.QN_LANGUAGES)) {
+                } else if (elem.getName().equals(WPS100Constants.Elem.QN_LANGUAGES)) {
                     readLanguages(elem, reader);
-                } else if (elem.getName().equals(WPSConstants.Elem.QN_CONTENTS)) {
+                } else if (elem.getName().equals(WPS100Constants.Elem.QN_PROCESS_OFFERINGS)) {
                     wpsCapabilities.setProcesses(readContents(elem, reader));
+                } else if (elem.getName().equals(WPS100Constants.Elem.QN_WSDL)) {
+                    //TODO
                 } else {
                     throw unexpectedTag(elem);
                 }
@@ -93,7 +96,7 @@ public class GetCapabilitiesResponseDecoder extends AbstractElementXmlStreamRead
             if (event.isEndElement()) {
                 EndElement endElement = event.asEndElement();
 
-                if (endElement.getName().equals(OWSConstants.Elem.QN_OPERATIONS_METADATA)) {
+                if (endElement.getName().equals(WPS100Constants.Elem.QN_LANGUAGES)) {
                     return;
                 }
             }
@@ -110,7 +113,7 @@ public class GetCapabilitiesResponseDecoder extends AbstractElementXmlStreamRead
 
                 EndElement endElement = event.asEndElement();
 
-                if (endElement.getName().equals(OWSConstants.Elem.QN_LANGUAGES)) {
+                if (endElement.getName().equals(OWS11Constants.Elem.QN_OPERATIONS_METADATA)) {
                     return;
                 }
             }
@@ -127,14 +130,14 @@ public class GetCapabilitiesResponseDecoder extends AbstractElementXmlStreamRead
             XMLEvent event = reader.nextEvent();
             if (event.isStartElement()) {
                 StartElement start = event.asStartElement();
-                if (start.getName().equals(WPSConstants.Elem.QN_PROCESS_SUMMARY)) {
+                if (start.getName().equals(WPS100Constants.Elem.QN_PROCESS)) {
                     processes.add(createProcessSummary(start, reader));
                 }
             } else if (event.isEndElement()) {
 
                 EndElement endElement = event.asEndElement();
 
-                if (endElement.getName().equals(WPSConstants.Elem.QN_CONTENTS)) {
+                if (endElement.getName().equals(WPS100Constants.Elem.QN_PROCESS_OFFERINGS)) {
                     return processes;
                 }
             }
@@ -147,30 +150,30 @@ public class GetCapabilitiesResponseDecoder extends AbstractElementXmlStreamRead
             XMLEventReader reader) throws XMLStreamException {
         Process process = new Process();
 
-        String jobControlOptions = getAttribute(elem, WPSConstants.Attr.AN_JOB_CONTROL_OPTIONS).get();
-        if(jobControlOptions.contains("async-execute")){
-            process.setStatusSupported(true);
-        }
-
-        String outputTransmission = getAttribute(elem, WPSConstants.Attr.AN_OUTPUT_TRANSMISSION).get();
-        if(outputTransmission.contains("reference")){
-            process.setReferenceSupported(true);
-        }
+//        String jobControlOptions = getAttribute(elem, WPS100Constants.Attr.AN_JOB_CONTROL_OPTIONS).get();
+//        if(jobControlOptions.contains("async-execute")){
+//            process.setStatusSupported(true);
+//        }
+//
+//        String outputTransmission = getAttribute(elem, WPS100Constants.Attr.AN_OUTPUT_TRANSMISSION).get();
+//        if(outputTransmission.contains("reference")){
+//            process.setReferenceSupported(true);
+//        }
 
         while (reader.hasNext()) {
             XMLEvent event = reader.nextEvent();
             if (event.isStartElement()) {
                 StartElement start = event.asStartElement();
-                if (start.getName().equals(OWSConstants.Elem.QN_TITLE)) {
+                if (start.getName().equals(OWS11Constants.Elem.QN_TITLE)) {
                     process.setTitle(reader.getElementText());
-                } else if (start.getName().equals(OWSConstants.Elem.QN_ABSTRACT)) {
+                } else if (start.getName().equals(OWS11Constants.Elem.QN_ABSTRACT)) {
                     process.setAbstract(reader.getElementText());
-                } else if (start.getName().equals(OWSConstants.Elem.QN_IDENTIFIER)) {
+                } else if (start.getName().equals(OWS11Constants.Elem.QN_IDENTIFIER)) {
                     process.setId(reader.getElementText());
-                } else if (start.getName().equals(OWSConstants.Elem.QN_KEYWORDS)) {
+                } else if (start.getName().equals(OWS11Constants.Elem.QN_KEYWORDS)) {
 //                    process.setKeyWords(readKeywords(start, reader));//TODO
                     readKeywords(start, reader);//just consume keywords for now
-                } else if (start.getName().equals(OWSConstants.Elem.QN_METADATA)) {
+                } else if (start.getName().equals(OWS11Constants.Elem.QN_METADATA)) {
                   //do nothing
               }else {
                     throw unexpectedTag(start);
@@ -179,7 +182,7 @@ public class GetCapabilitiesResponseDecoder extends AbstractElementXmlStreamRead
 
                 EndElement endElement = event.asEndElement();
 
-                if (endElement.getName().equals(WPSConstants.Elem.QN_PROCESS_SUMMARY)) {
+                if (endElement.getName().equals(WPS100Constants.Elem.QN_PROCESS)) {
                     return process;
                 }
             }
@@ -196,11 +199,11 @@ public class GetCapabilitiesResponseDecoder extends AbstractElementXmlStreamRead
             XMLEvent event = reader.nextEvent();
             if (event.isStartElement()) {
                 StartElement start = event.asStartElement();
-                if (start.getName().equals(OWSConstants.Elem.QN_PROVIDER_NAME)) {
+                if (start.getName().equals(OWS11Constants.Elem.QN_PROVIDER_NAME)) {
                     serviceProvider.setProviderName(reader.getElementText());
-                } else if (start.getName().equals(OWSConstants.Elem.QN_PROVIDER_SITE)) {
+                } else if (start.getName().equals(OWS11Constants.Elem.QN_PROVIDER_SITE)) {
                     serviceProvider.setProviderSite(reader.getElementText());
-                } else if (start.getName().equals(OWSConstants.Elem.QN_SERVICE_CONTACT)) {
+                } else if (start.getName().equals(OWS11Constants.Elem.QN_SERVICE_CONTACT)) {
                     serviceProvider.setServiceContact(readServiceContact(elem, reader));
                 } else {
                     throw unexpectedTag(start);
@@ -209,7 +212,7 @@ public class GetCapabilitiesResponseDecoder extends AbstractElementXmlStreamRead
 
                 EndElement endElement = event.asEndElement();
 
-                if (endElement.getName().equals(OWSConstants.Elem.QN_SERVICE_PROVIDER)) {
+                if (endElement.getName().equals(OWS11Constants.Elem.QN_SERVICE_PROVIDER)) {
                     return serviceProvider;
                 }
             }
@@ -226,22 +229,20 @@ public class GetCapabilitiesResponseDecoder extends AbstractElementXmlStreamRead
             XMLEvent event = reader.nextEvent();
             if (event.isStartElement()) {
                 StartElement start = event.asStartElement();
-                if (start.getName().equals(OWSConstants.Elem.QN_INDIVIDUAL_NAME)) {
+                if (start.getName().equals(OWS11Constants.Elem.QN_INDIVIDUAL_NAME)) {
                     serviceContact.setIndividualName(reader.getElementText());
-                } else if (start.getName().equals(OWSConstants.Elem.QN_POSITION_NAME)) {
+                } else if (start.getName().equals(OWS11Constants.Elem.QN_POSITION_NAME)) {
                     serviceContact.setPositionName(reader.getElementText());
-                } else if (start.getName().equals(OWSConstants.Elem.QN_CONTACT_INFO)) {
+                } else if (start.getName().equals(OWS11Constants.Elem.QN_CONTACT_INFO)) {
                     serviceContact.setContactInfo(readContactInfo(elem, reader));
-                } else if (start.getName().equals(OWSConstants.Elem.QN_ROLE)) {
-                    //TODO
-                }  else {
+                } else {
                     throw unexpectedTag(start);
                 }
             } else if (event.isEndElement()) {
 
                 EndElement endElement = event.asEndElement();
 
-                if (endElement.getName().equals(OWSConstants.Elem.QN_SERVICE_CONTACT)) {
+                if (endElement.getName().equals(OWS11Constants.Elem.QN_SERVICE_CONTACT)) {
                     return serviceContact;
                 }
             }
@@ -259,15 +260,15 @@ public class GetCapabilitiesResponseDecoder extends AbstractElementXmlStreamRead
             XMLEvent event = reader.nextEvent();
             if (event.isStartElement()) {
                 StartElement start = event.asStartElement();
-                if (start.getName().equals(OWSConstants.Elem.QN_ADDRESS)) {
+                if (start.getName().equals(OWS11Constants.Elem.QN_ADDRESS)) {
                     contactInfo.setAddress(readAddress(start, reader));
-                } else if (start.getName().equals(OWSConstants.Elem.QN_PHONE)) {
+                } else if (start.getName().equals(OWS11Constants.Elem.QN_PHONE)) {
                     contactInfo.setPhone(readPhone(start, reader));
-                } else if (start.getName().equals(OWSConstants.Elem.QN_ONLINE_RESOURCE)) {
+                } else if (start.getName().equals(OWS11Constants.Elem.QN_ONLINE_RESOURCE)) {
                     //TODO
-                } else if (start.getName().equals(OWSConstants.Elem.QN_HOURS_OF_SERVICE)) {
+                } else if (start.getName().equals(OWS11Constants.Elem.QN_HOURS_OF_SERVICE)) {
                     //TODO
-                } else if (start.getName().equals(OWSConstants.Elem.QN_CONTACT_INSTRUCTIONS)) {
+                } else if (start.getName().equals(OWS11Constants.Elem.QN_CONTACT_INSTRUCTIONS)) {
                     //TODO
                 }  else {
                     throw unexpectedTag(start);
@@ -276,7 +277,7 @@ public class GetCapabilitiesResponseDecoder extends AbstractElementXmlStreamRead
 
                 EndElement endElement = event.asEndElement();
 
-                if (endElement.getName().equals(OWSConstants.Elem.QN_CONTACT_INFO)) {
+                if (endElement.getName().equals(OWS11Constants.Elem.QN_CONTACT_INFO)) {
                     return contactInfo;
                 }
             }
@@ -293,9 +294,9 @@ public class GetCapabilitiesResponseDecoder extends AbstractElementXmlStreamRead
             XMLEvent event = reader.nextEvent();
             if (event.isStartElement()) {
                 StartElement start = event.asStartElement();
-                if (start.getName().equals(OWSConstants.Elem.QN_VOICE)) {
+                if (start.getName().equals(OWS11Constants.Elem.QN_VOICE)) {
                     phone.setVoice(reader.getElementText());
-                } else if (start.getName().equals(OWSConstants.Elem.QN_FACSIMILE)) {
+                } else if (start.getName().equals(OWS11Constants.Elem.QN_FACSIMILE)) {
                     phone.setFacsimile(reader.getElementText());
                 }  else {
                     throw unexpectedTag(start);
@@ -304,7 +305,7 @@ public class GetCapabilitiesResponseDecoder extends AbstractElementXmlStreamRead
 
                 EndElement endElement = event.asEndElement();
 
-                if (endElement.getName().equals(OWSConstants.Elem.QN_PHONE)) {
+                if (endElement.getName().equals(OWS11Constants.Elem.QN_PHONE)) {
                     return phone;
                 }
             }
@@ -322,17 +323,17 @@ public class GetCapabilitiesResponseDecoder extends AbstractElementXmlStreamRead
             XMLEvent event = reader.nextEvent();
             if (event.isStartElement()) {
                 StartElement start = event.asStartElement();
-                if (start.getName().equals(OWSConstants.Elem.QN_DELIVERY_POINT)) {
+                if (start.getName().equals(OWS11Constants.Elem.QN_DELIVERY_POINT)) {
                     address.setDeliveryPoint(reader.getElementText());
-                } else if (start.getName().equals(OWSConstants.Elem.QN_CITY)) {
+                } else if (start.getName().equals(OWS11Constants.Elem.QN_CITY)) {
                     address.setCity(reader.getElementText());
-                }  else if (start.getName().equals(OWSConstants.Elem.QN_ADMINISTRATIVE_AREA)) {
+                }  else if (start.getName().equals(OWS11Constants.Elem.QN_ADMINISTRATIVE_AREA)) {
                     address.setAdministrativeArea(reader.getElementText());
-                } else if (start.getName().equals(OWSConstants.Elem.QN_POSTAL_CODE)) {
+                } else if (start.getName().equals(OWS11Constants.Elem.QN_POSTAL_CODE)) {
                     address.setPostalCode(reader.getElementText());
-                } else if (start.getName().equals(OWSConstants.Elem.QN_COUNTRY)) {
+                } else if (start.getName().equals(OWS11Constants.Elem.QN_COUNTRY)) {
                     address.setCountry(reader.getElementText());
-                } else if (start.getName().equals(OWSConstants.Elem.QN_ELECTRONIC_MAIL_ADDRESS)) {
+                } else if (start.getName().equals(OWS11Constants.Elem.QN_ELECTRONIC_MAIL_ADDRESS)) {
                     address.setElectronicMailAddress(reader.getElementText());
                 } else {
                     throw unexpectedTag(start);
@@ -341,7 +342,7 @@ public class GetCapabilitiesResponseDecoder extends AbstractElementXmlStreamRead
 
                 EndElement endElement = event.asEndElement();
 
-                if (endElement.getName().equals(OWSConstants.Elem.QN_ADDRESS)) {
+                if (endElement.getName().equals(OWS11Constants.Elem.QN_ADDRESS)) {
                     return address;
                 }
             }
@@ -362,20 +363,22 @@ public class GetCapabilitiesResponseDecoder extends AbstractElementXmlStreamRead
             XMLEvent event = reader.nextEvent();
             if (event.isStartElement()) {
                 StartElement start = event.asStartElement();
-                if (start.getName().equals(OWSConstants.Elem.QN_TITLE)) {
+                if (start.getName().equals(OWS11Constants.Elem.QN_TITLE)) {
                     serviceIdentification.setTitle(reader.getElementText());
-                } else if (start.getName().equals(OWSConstants.Elem.QN_ABSTRACT)) {
+                } else if (start.getName().equals(OWS11Constants.Elem.QN_ABSTRACT)) {
                     serviceIdentification.setAbstract(reader.getElementText());
-                } else if (start.getName().equals(OWSConstants.Elem.QN_KEYWORDS)) {
+                } else if (start.getName().equals(OWS11Constants.Elem.QN_KEYWORDS)) {
                     serviceIdentification.setKeyWords(readKeywords(start, reader));
-                } else if (start.getName().equals(OWSConstants.Elem.QN_ACCESS_CONSTRAINTS)) {
+                } else if (start.getName().equals(OWS11Constants.Elem.QN_ACCESS_CONSTRAINTS)) {
                     accessConstraints.add(reader.getElementText());
-                } else if (start.getName().equals(OWSConstants.Elem.QN_FEES)) {
+                } else if (start.getName().equals(OWS11Constants.Elem.QN_FEES)) {
                     serviceIdentification.setFees(reader.getElementText());
-                } else if (start.getName().equals(OWSConstants.Elem.QN_SERVICE_TYPE_VERSION)) {
+                } else if (start.getName().equals(OWS11Constants.Elem.QN_SERVICE_TYPE_VERSION)) {
                     serviceTypeVersions.add(reader.getElementText());
-                } else if (start.getName().equals(OWSConstants.Elem.QN_SERVICE_TYPE)) {
+                } else if (start.getName().equals(OWS11Constants.Elem.QN_SERVICE_TYPE)) {
                     // do nothing
+                } else if (start.getName().equals(OWS11Constants.Elem.QN_PROFILE)) {
+                    //TODO
                 } else {
                     throw unexpectedTag(start);
                 }
@@ -383,7 +386,7 @@ public class GetCapabilitiesResponseDecoder extends AbstractElementXmlStreamRead
 
                 EndElement endElement = event.asEndElement();
 
-                if (endElement.getName().equals(OWSConstants.Elem.QN_SERVICE_IDENTIFICATION)) {
+                if (endElement.getName().equals(OWS11Constants.Elem.QN_SERVICE_IDENTIFICATION)) {
                     serviceIdentification.setServiceTypeVersions(serviceTypeVersions);
                     serviceIdentification.setAccessConstraints(accessConstraints);
 
@@ -403,7 +406,7 @@ public class GetCapabilitiesResponseDecoder extends AbstractElementXmlStreamRead
             XMLEvent event = reader.nextEvent();
             if (event.isStartElement()) {
                 StartElement elem = event.asStartElement();
-                if (elem.getName().equals(OWSConstants.Elem.QN_KEYWORD)) {
+                if (elem.getName().equals(OWS11Constants.Elem.QN_KEYWORD)) {
                     keywords.add(reader.getElementText());
                 } else {
                     throw unexpectedTag(elem);

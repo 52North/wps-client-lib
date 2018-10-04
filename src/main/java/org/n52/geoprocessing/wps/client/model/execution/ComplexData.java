@@ -14,10 +14,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.n52.geoprocessing.wps.client.model;
+package org.n52.geoprocessing.wps.client.model.execution;
 
-public class BoundingBoxInput extends InputDescription {
+public class ComplexData extends Data {
 
+    private boolean isReference;
+    private ComplexDataReference reference;
 
+    public boolean isReference() {
+        return isReference;
+    }
+
+    public void setIsReference(boolean isReference) {
+        this.isReference = isReference;
+    }
+
+    public ComplexDataReference getReference() {
+        return reference;
+    }
+
+    public void setReference(ComplexDataReference reference) {
+        this.reference = reference;
+        setIsReference(true);
+    }
 
 }

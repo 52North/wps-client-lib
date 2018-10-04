@@ -14,28 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.n52.geoprocessing.wps.client.model.execution;
+package org.n52.geoprocessing.wps.client.model;
 
-public class ComplexInput extends ExecuteInput {
+public enum DataType {
 
-    private boolean isReference;
-    private ComplexInputReference reference;
-
-    public boolean isReference() {
-        return isReference;
-    }
-
-    public void setIsReference(boolean isReference) {
-        this.isReference = isReference;
-    }
-
-    public ComplexInputReference getReference() {
-        return reference;
-    }
-
-    public void setReference(ComplexInputReference reference) {
-        this.reference = reference;
-        setIsReference(true);
-    }
+    COMPLEX, LITERAL, BOUNDINGBOX
 
 }

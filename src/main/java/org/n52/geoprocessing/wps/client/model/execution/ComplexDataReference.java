@@ -16,37 +16,40 @@
  */
 package org.n52.geoprocessing.wps.client.model.execution;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.net.URL;
 
-import org.n52.geoprocessing.wps.client.model.Format;
-import org.n52.geoprocessing.wps.client.model.WPSParameter;
+import org.apache.xmlbeans.XmlObject;
 
-public abstract class WPSExecuteParameter extends WPSParameter {
+public class ComplexDataReference {
 
-    private Format format;
+    private URL href;
 
-    private List<String> metadata = new ArrayList<>();
+    private URL bodyReference;
 
-    public Format getFormat() {
-        return format;
+    private XmlObject body;
+
+    public URL getHref() {
+        return href;
     }
 
-    public void setFormat(Format format) {
-        this.format = format;
+    public void setHref(URL href) {
+        this.href = href;
     }
 
-    public List<String> getMetadata() {
-        return metadata;
+    public URL getBodyReference() {
+        return bodyReference;
     }
 
-    public void setMetadata(List<String> metadata) {
-        this.metadata = metadata;
+    public void setBodyReference(URL bodyReference) {
+        this.bodyReference = bodyReference;
     }
 
-    public void addMetadata(String metadata) {
-        this.metadata.add(metadata);
+    public XmlObject getBody() {
+        return body;
+    }
 
+    public void setBody(XmlObject body) {
+        this.body = body;
     }
 
 }

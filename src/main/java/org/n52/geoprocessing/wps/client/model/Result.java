@@ -14,18 +14,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.n52.geoprocessing.wps.client.model.execution;
+package org.n52.geoprocessing.wps.client.model;
 
-public class LiteralInput extends ExecuteInput {
+import java.net.URL;
+import java.util.List;
 
-    private String dataType;
+import org.n52.geoprocessing.wps.client.model.execution.Data;
 
-    public String getDataType() {
-        return dataType;
+public class Result {
+
+    private URL url;
+
+    private List<Data> outputs;
+
+    public URL getUrl() {
+        return url;
     }
 
-    public void setDataType(String dataType) {
-        this.dataType = dataType;
+    public void setUrl(URL url) {
+        this.url = url;
+    }
+
+    public List<Data> getOutputs() {
+        return outputs;
+    }
+
+    public void setOutputs(List<Data> data) {
+        this.outputs = data;
     }
 
 }

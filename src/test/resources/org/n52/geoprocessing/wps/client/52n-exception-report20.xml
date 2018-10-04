@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ﻿Copyright (C) 2018 52°North Initiative for Geospatial Open Source
+    Software GmbH
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<ows:ExceptionReport xmlns:ows="http://www.opengis.net/ows/2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/ows/2.0 http://schemas.opengis.net/ows/2.0/owsAll.xsd" version="2.0.0">
+  <ows:Exception exceptionCode="NoApplicableCode">
+    <ows:ExceptionText>Error while executing the embedded process for: org.n52.wps.server.algorithm.SimpleBufferAlgorithm</ows:ExceptionText>
+  </ows:Exception>
+  <ows:Exception exceptionCode="JAVA_StackTrace">
+    <ows:ExceptionText>org.n52.wps.server.ExceptionReport: Error while executing the embedded process for: org.n52.wps.server.algorithm.SimpleBufferAlgorithm
+  at org.n52.wps.server.request.ExecuteRequestV200.call(ExecuteRequestV200.java:248)
+  at org.n52.wps.server.request.ExecuteRequestV200.call(ExecuteRequestV200.java:70)
+  at java.util.concurrent.FutureTask.run(Unknown Source)
+  at java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source)
+  at java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)
+  at java.lang.Thread.run(Unknown Source)
+Caused by: java.lang.RuntimeException: Input cannot be found in description for org.n52.wps.server.algorithm.SimpleBufferAlgorithm,dat2a
+  at org.n52.wps.server.request.InputHandler.handleComplexValueReference(InputHandler.java:977)
+  at org.n52.wps.server.request.InputHandler.&lt;init>(InputHandler.java:226)
+  at org.n52.wps.server.request.InputHandler.&lt;init>(InputHandler.java:100)
+  at org.n52.wps.server.request.InputHandler$Builder.build(InputHandler.java:133)
+  at org.n52.wps.server.request.ExecuteRequestV200.call(ExecuteRequestV200.java:199)
+  ... 5 more</ows:ExceptionText>
+  </ows:Exception>
+</ows:ExceptionReport>

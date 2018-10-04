@@ -38,13 +38,13 @@ public class WPS20ExecuteEncoder {
 
     private static final List<Provider<ElementXmlStreamWriter>> ELEMENT_WRITERS =
             Arrays.asList(ExecuteRequestEncoder::new);
-    
+
     public static String encode(Execute execute) throws XMLStreamException, EncodingException {
 
         ExecuteRequestEncoder executeRequestWriter = new ExecuteRequestEncoder();
 
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        
+
         executeRequestWriter.setContext(
                 new XmlStreamWritingContext(byteArrayOutputStream, new ElementXmlStreamWriterRepository(ELEMENT_WRITERS)::get));
 

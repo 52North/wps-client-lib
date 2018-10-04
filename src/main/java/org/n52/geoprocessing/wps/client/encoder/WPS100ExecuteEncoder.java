@@ -27,13 +27,13 @@ import org.n52.geoprocessing.wps.client.WPSClientSession;
 import org.n52.geoprocessing.wps.client.model.Format;
 import org.n52.geoprocessing.wps.client.model.ResponseMode;
 import org.n52.geoprocessing.wps.client.model.TransmissionMode;
-import org.n52.geoprocessing.wps.client.model.execution.ComplexInput;
-import org.n52.geoprocessing.wps.client.model.execution.ComplexInputReference;
+import org.n52.geoprocessing.wps.client.model.execution.ComplexData;
+import org.n52.geoprocessing.wps.client.model.execution.ComplexDataReference;
 import org.n52.geoprocessing.wps.client.model.execution.Execute;
-import org.n52.geoprocessing.wps.client.model.execution.ExecuteInput;
+import org.n52.geoprocessing.wps.client.model.execution.Data;
 import org.n52.geoprocessing.wps.client.model.execution.ExecuteOutput;
 import org.n52.geoprocessing.wps.client.model.execution.ExecutionMode;
-import org.n52.geoprocessing.wps.client.model.execution.LiteralInput;
+import org.n52.geoprocessing.wps.client.model.execution.LiteralData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,18 +81,18 @@ public class WPS100ExecuteEncoder {
 
     }
 
-    private void addInputs(List<ExecuteInput> inputs,
+    private void addInputs(List<Data> inputs,
             net.opengis.wps.x100.ExecuteDocument.Execute executeRequest) {
 
         DataInputsType dataInputs = executeRequest.addNewDataInputs();
 
-        for (ExecuteInput input : inputs) {
+        for (Data input : inputs) {
             addInput(input, dataInputs.addNewInput());
         }
 
     }
 
-    private void addInput(ExecuteInput input,
+    private void addInput(Data input,
             InputType newInput) {
 
         String id = input.getId();
@@ -103,16 +103,16 @@ public class WPS100ExecuteEncoder {
 
         newInput.addNewIdentifier().setStringValue(id);
 
-        if (input instanceof ComplexInput) {
-            addComplexInput((ComplexInput) input, newInput);
-        }else if(input instanceof LiteralInput){
-            addLiteralInput((LiteralInput) input, newInput);
+        if (input instanceof ComplexData) {
+            addComplexInput((ComplexData) input, newInput);
+        }else if(input instanceof LiteralData){
+            addLiteralInput((LiteralData) input, newInput);
         }//TODO BBox input
 
     }
 
     //TODO UOM etc.
-    private void addLiteralInput(LiteralInput input,
+    private void addLiteralInput(LiteralData input,
             InputType newInput) {
 
         String valueString = "" + input.getValue();
@@ -122,7 +122,7 @@ public class WPS100ExecuteEncoder {
         data.setStringValue(valueString);
     }
 
-    private void addComplexInput(ComplexInput input,
+    private void addComplexInput(ComplexData input,
             InputType newInput) {
 
         Format format = input.getFormat();
@@ -145,7 +145,7 @@ public class WPS100ExecuteEncoder {
                 reference.setSchema(schema);
             }
 
-            ComplexInputReference complexInputReference = input.getReference();
+            ComplexDataReference complexInputReference = input.getReference();
 
             if (complexInputReference.getHref() != null) {
                 reference.setHref(complexInputReference.getHref().toString());

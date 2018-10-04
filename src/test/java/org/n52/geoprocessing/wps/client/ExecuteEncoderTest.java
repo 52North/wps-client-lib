@@ -27,10 +27,10 @@ import org.n52.geoprocessing.wps.client.encoder.WPS20ExecuteEncoder;
 import org.n52.geoprocessing.wps.client.model.Format;
 import org.n52.geoprocessing.wps.client.model.ResponseMode;
 import org.n52.geoprocessing.wps.client.model.TransmissionMode;
-import org.n52.geoprocessing.wps.client.model.execution.ComplexInput;
-import org.n52.geoprocessing.wps.client.model.execution.ComplexInputReference;
+import org.n52.geoprocessing.wps.client.model.execution.ComplexData;
+import org.n52.geoprocessing.wps.client.model.execution.ComplexDataReference;
 import org.n52.geoprocessing.wps.client.model.execution.Execute;
-import org.n52.geoprocessing.wps.client.model.execution.ExecuteInput;
+import org.n52.geoprocessing.wps.client.model.execution.Data;
 import org.n52.geoprocessing.wps.client.model.execution.ExecuteOutput;
 import org.n52.geoprocessing.wps.client.model.execution.ExecutionMode;
 import org.n52.svalbard.encode.exception.EncodingException;
@@ -52,7 +52,7 @@ public class ExecuteEncoderTest {
 
         execute.setId("org.n52.wps-client-lib.testprocess");
 
-        ComplexInput complexInput = new ComplexInput();
+        ComplexData complexInput = new ComplexData();
 
         complexInput.setId("complexInput");
 
@@ -66,7 +66,7 @@ public class ExecuteEncoderTest {
 
         complexInput.setValue(xmlInput);
 
-        execute.setInputs(Arrays.asList(new ExecuteInput[]{complexInput}));
+        execute.setInputs(Arrays.asList(new Data[]{complexInput}));
 
         ExecuteOutput output = new ExecuteOutput();
 
@@ -98,7 +98,7 @@ public class ExecuteEncoderTest {
 
         execute.setId("org.n52.wps-client-lib.testprocess");
 
-        ComplexInput complexInput = new ComplexInput();
+        ComplexData complexInput = new ComplexData();
 
         complexInput.setId("complexInput");
 
@@ -110,13 +110,13 @@ public class ExecuteEncoderTest {
 
         String url = "http://test.org/xyz";
 
-        ComplexInputReference complexInputReference = new ComplexInputReference();
+        ComplexDataReference complexInputReference = new ComplexDataReference();
 
         complexInputReference.setHref(new URL(url));
 
         complexInput.setReference(complexInputReference);
 
-        execute.setInputs(Arrays.asList(new ExecuteInput[]{complexInput}));
+        execute.setInputs(Arrays.asList(new Data[]{complexInput}));
 
         ExecuteOutput output = new ExecuteOutput();
 

@@ -25,9 +25,9 @@ import org.junit.Test;
 import org.n52.geoprocessing.wps.client.model.Format;
 import org.n52.geoprocessing.wps.client.model.ResponseMode;
 import org.n52.geoprocessing.wps.client.model.TransmissionMode;
-import org.n52.geoprocessing.wps.client.model.execution.ComplexInput;
+import org.n52.geoprocessing.wps.client.model.execution.ComplexData;
 import org.n52.geoprocessing.wps.client.model.execution.Execute;
-import org.n52.geoprocessing.wps.client.model.execution.ExecuteInput;
+import org.n52.geoprocessing.wps.client.model.execution.Data;
 import org.n52.geoprocessing.wps.client.model.execution.ExecuteOutput;
 import org.n52.geoprocessing.wps.client.model.execution.ExecutionMode;
 import org.slf4j.Logger;
@@ -136,7 +136,7 @@ public class ExecuteTest {
             execute.setId("org.n52.wps.server.algorithm.test.EchoProcess");
 //        }
 
-        ComplexInput complexInput = new ComplexInput();
+        ComplexData complexInput = new ComplexData();
 
 
         if(testFailure){
@@ -155,7 +155,7 @@ public class ExecuteTest {
 
         complexInput.setValue(xmlInput);
 
-        execute.setInputs(Arrays.asList(new ExecuteInput[] { complexInput }));
+        execute.setInputs(Arrays.asList(new Data[] { complexInput }));
 
         ExecuteOutput output = new ExecuteOutput();
 
@@ -180,7 +180,7 @@ public class ExecuteTest {
 
         execute.setId("org.n52.wps.server.algorithm.test.EchoProcess");
 
-        ComplexInput complexInput = new ComplexInput();
+        ComplexData complexInput = new ComplexData();
 
         complexInput.setId("complexInput");
 
@@ -195,7 +195,7 @@ public class ExecuteTest {
 
         complexInput.setValue(xmlInput);
 
-        execute.setInputs(Arrays.asList(new ExecuteInput[] { complexInput }));
+        execute.setInputs(Arrays.asList(new Data[] { complexInput }));
 
         ExecuteOutput output = new ExecuteOutput();
 
@@ -221,7 +221,7 @@ public class ExecuteTest {
 
         execute.setId("non-existing-process");
 
-        ComplexInput complexInput = new ComplexInput();
+        ComplexData complexInput = new ComplexData();
 
         complexInput.setId("complexInput");
 
@@ -235,7 +235,7 @@ public class ExecuteTest {
 
         complexInput.setValue(xmlInput);
 
-        execute.setInputs(Arrays.asList(new ExecuteInput[] { complexInput }));
+        execute.setInputs(Arrays.asList(new Data[] { complexInput }));
 
         ExecuteOutput output = new ExecuteOutput();
 
@@ -261,7 +261,7 @@ public class ExecuteTest {
 
         execute.setId("org.n52.wps.server.algorithm.test.EchoProcess");
 
-        ComplexInput complexInput = new ComplexInput();
+        ComplexData complexInput = new ComplexData();
 
         complexInput.setId("complexInput");
 
@@ -275,7 +275,7 @@ public class ExecuteTest {
 
         complexInput.setValue(xmlInput);
 
-        execute.setInputs(Arrays.asList(new ExecuteInput[] { complexInput }));
+        execute.setInputs(Arrays.asList(new Data[] { complexInput }));
 
         ExecuteOutput output = new ExecuteOutput();
 

@@ -38,13 +38,11 @@ import net.opengis.wps.x100.ProcessDescriptionType;
 
 public class WPSClientExample {
 
-    public void testExecute() {
+    public void testExecute(String version) {
 
         String wpsURL = "http://geoprocessing.demo.52north.org:8080/wps/WebProcessingService";
 
         String processID = "org.n52.wps.server.algorithm.test.EchoProcess";
-
-        String version = "2.0.0";
 
 //        try {
 //            ProcessDescriptionType describeProcessDocument = requestDescribeProcess(
@@ -132,7 +130,7 @@ public class WPSClientExample {
         //TODO find way to initialize parsers/generators
 
         WPSClientExample client = new WPSClientExample();
-        client.testExecute();
+        client.testExecute("1.0.0");
     }
 
 }

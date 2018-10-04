@@ -28,12 +28,12 @@ import org.n52.geoprocessing.wps.client.model.LiteralInputDescription;
 import org.n52.geoprocessing.wps.client.model.Process;
 import org.n52.geoprocessing.wps.client.model.ResponseMode;
 import org.n52.geoprocessing.wps.client.model.TransmissionMode;
-import org.n52.geoprocessing.wps.client.model.execution.ComplexInput;
-import org.n52.geoprocessing.wps.client.model.execution.ComplexInputReference;
+import org.n52.geoprocessing.wps.client.model.execution.ComplexData;
+import org.n52.geoprocessing.wps.client.model.execution.ComplexDataReference;
 import org.n52.geoprocessing.wps.client.model.execution.Execute;
 import org.n52.geoprocessing.wps.client.model.execution.ExecuteOutput;
 import org.n52.geoprocessing.wps.client.model.execution.ExecutionMode;
-import org.n52.geoprocessing.wps.client.model.execution.LiteralInput;
+import org.n52.geoprocessing.wps.client.model.execution.LiteralData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -95,7 +95,7 @@ public class ExecuteRequestBuilder {
         // ComplexData: " + parameterID);
         // }
 
-        ComplexInput input = new ComplexInput();
+        ComplexData input = new ComplexData();
 
         input.setId(inputDesc.getId());
 
@@ -133,7 +133,7 @@ public class ExecuteRequestBuilder {
         // ComplexData: " + parameterID);
         // }
 
-        ComplexInput input = new ComplexInput();
+        ComplexData input = new ComplexData();
 
         input.setId(inputDesc.getId());
 
@@ -141,7 +141,7 @@ public class ExecuteRequestBuilder {
 
     }
 
-    private void setComplexData(ComplexInput input,
+    private void setComplexData(ComplexData input,
             Object value,
             String schema,
             String mimeType,
@@ -197,7 +197,7 @@ public class ExecuteRequestBuilder {
             throw new IllegalArgumentException("inputDescription is not of type complex data: " + parameterID);
         }
 
-        LiteralInput literalInput = new LiteralInput();
+        LiteralData literalInput = new LiteralData();
         literalInput.setId(parameterID);
         literalInput.setValue(value);
         literalInput.setFormat(createFormat(schema, mimetype, encoding));
@@ -234,9 +234,9 @@ public class ExecuteRequestBuilder {
             throw new IllegalArgumentException("inputDescription is not of type complexData: " + parameterID);
         }
 
-        ComplexInput input = new ComplexInput();
+        ComplexData input = new ComplexData();
         input.setId(parameterID);
-        ComplexInputReference complexInputReference = new ComplexInputReference();
+        ComplexDataReference complexInputReference = new ComplexDataReference();
         complexInputReference.setHref(new URL(value));
         input.setReference(complexInputReference);
         input.setFormat(createFormat(schema, mimetype, encoding));

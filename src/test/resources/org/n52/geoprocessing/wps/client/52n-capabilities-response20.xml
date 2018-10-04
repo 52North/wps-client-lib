@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8"?><wps:Capabilities xmlns:wps="http://www.opengis.net/wps/2.0" xmlns:ows="http://www.opengis.net/ows/2.0" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wps/2.0 http://schemas.opengis.net/wps/2.0/wps.xsd" service="WPS" version="2.0.0">
+<!--
+
+    ﻿Copyright (C) 2018 52°North Initiative for Geospatial Open Source
+    Software GmbH
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+  <ows:ServiceIdentification>
+    <ows:Title xml:lang="eng">javaPS</ows:Title>
+    <ows:Abstract xml:lang="eng">52North WPS 2.0 Service</ows:Abstract>
+    <ows:Keywords>
+      <ows:Keyword>OGC</ows:Keyword>
+      <ows:Keyword>WPS 2.0</ows:Keyword>
+    </ows:Keywords>
+    <ows:ServiceType>OGC:WPS</ows:ServiceType>
+    <ows:ServiceTypeVersion>2.0.0</ows:ServiceTypeVersion>
+    <ows:Fees>NONE</ows:Fees>
+    <ows:AccessConstraints>NONE</ows:AccessConstraints>
+  </ows:ServiceIdentification>
+  <ows:ServiceProvider>
+    <ows:ProviderName>52North</ows:ProviderName>
+    <ows:ProviderSite xlink:href="https://github.com/orgs/52North/teams/geoprocessing/members" xlink:title="team website"/>
+    <ows:ServiceContact>
+      <ows:IndividualName>TBA</ows:IndividualName>
+      <ows:PositionName>TBA</ows:PositionName>
+      <ows:ContactInfo>
+        <ows:Phone>
+          <ows:Voice>+49(0)251/396 371-0</ows:Voice>
+          <ows:Facsimile>+49(0)251/396 371-11</ows:Facsimile>
+        </ows:Phone>
+        <ows:Address>
+          <ows:DeliveryPoint>Martin-Luther-King-Weg 24</ows:DeliveryPoint>
+          <ows:City>Münster</ows:City>
+          <ows:AdministrativeArea>North Rhine-Westphalia</ows:AdministrativeArea>
+          <ows:PostalCode>48155</ows:PostalCode>
+          <ows:Country>Germany</ows:Country>
+          <ows:ElectronicMailAddress>info@52north.org</ows:ElectronicMailAddress>
+        </ows:Address>
+        <ows:OnlineResource xlink:href="http://52north.org"/>
+        <ows:HoursOfService>9 to 5</ows:HoursOfService>
+        <ows:ContactInstructions>Call or email, please!</ows:ContactInstructions>
+      </ows:ContactInfo>
+      <ows:Role codeSpace="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_RoleCode">resourceProvider</ows:Role>
+    </ows:ServiceContact>
+  </ows:ServiceProvider>
+  <ows:OperationsMetadata>
+    <ows:Operation name="DescribeProcess">
+      <ows:DCP>
+        <ows:HTTP>
+          <ows:Get xlink:href="http://localhost:8080/wps/service">
+            <ows:Constraint name="Content-Type">
+              <ows:AllowedValues>
+                <ows:Value>application/x-kvp</ows:Value>
+              </ows:AllowedValues>
+            </ows:Constraint>
+          </ows:Get>
+          <ows:Post xlink:href="http://localhost:8080/wps/service">
+            <ows:Constraint name="Content-Type">
+              <ows:AllowedValues>
+                <ows:Value>application/soap+xml</ows:Value>
+                <ows:Value>application/xml</ows:Value>
+                <ows:Value>text/xml</ows:Value>
+              </ows:AllowedValues>
+            </ows:Constraint>
+          </ows:Post>
+        </ows:HTTP>
+      </ows:DCP>
+      <ows:Parameter name="Identifier">
+        <ows:AllowedValues>
+          <ows:Value>ALL</ows:Value>
+          <ows:Value>org.n52.javaps.service.TestAlgorithm</ows:Value>
+        </ows:AllowedValues>
+      </ows:Parameter>
+    </ows:Operation>
+    <ows:Operation name="Dismiss">
+      <ows:DCP>
+        <ows:HTTP>
+          <ows:Get xlink:href="http://localhost:8080/wps/service">
+            <ows:Constraint name="Content-Type">
+              <ows:AllowedValues>
+                <ows:Value>application/x-kvp</ows:Value>
+              </ows:AllowedValues>
+            </ows:Constraint>
+          </ows:Get>
+          <ows:Post xlink:href="http://localhost:8080/wps/service">
+            <ows:Constraint name="Content-Type">
+              <ows:AllowedValues>
+                <ows:Value>application/soap+xml</ows:Value>
+                <ows:Value>application/xml</ows:Value>
+                <ows:Value>text/xml</ows:Value>
+              </ows:AllowedValues>
+            </ows:Constraint>
+          </ows:Post>
+        </ows:HTTP>
+      </ows:DCP>
+      <ows:Parameter name="JobId">
+        <ows:NoValues/>
+      </ows:Parameter>
+    </ows:Operation>
+    <ows:Operation name="Execute">
+      <ows:DCP>
+        <ows:HTTP>
+          <ows:Post xlink:href="http://localhost:8080/wps/service">
+            <ows:Constraint name="Content-Type">
+              <ows:AllowedValues>
+                <ows:Value>application/soap+xml</ows:Value>
+                <ows:Value>application/xml</ows:Value>
+                <ows:Value>text/xml</ows:Value>
+              </ows:AllowedValues>
+            </ows:Constraint>
+          </ows:Post>
+        </ows:HTTP>
+      </ows:DCP>
+      <ows:Parameter name="Identifier">
+        <ows:AllowedValues>
+          <ows:Value>org.n52.javaps.service.TestAlgorithm</ows:Value>
+        </ows:AllowedValues>
+      </ows:Parameter>
+    </ows:Operation>
+    <ows:Operation name="GetCapabilities">
+      <ows:DCP>
+        <ows:HTTP>
+          <ows:Get xlink:href="http://localhost:8080/wps/service">
+            <ows:Constraint name="Content-Type">
+              <ows:AllowedValues>
+                <ows:Value>application/x-kvp</ows:Value>
+              </ows:AllowedValues>
+            </ows:Constraint>
+          </ows:Get>
+        </ows:HTTP>
+      </ows:DCP>
+      <ows:Parameter name="AcceptFormats">
+        <ows:AllowedValues>
+          <ows:Value>application/xml</ows:Value>
+        </ows:AllowedValues>
+        <ows:DefaultValue>application/xml</ows:DefaultValue>
+      </ows:Parameter>
+      <ows:Parameter name="AcceptLanguages">
+        <ows:AllowedValues>
+          <ows:Value>deu</ows:Value>
+          <ows:Value>eng</ows:Value>
+        </ows:AllowedValues>
+      </ows:Parameter>
+      <ows:Parameter name="AcceptVersions">
+        <ows:AllowedValues>
+          <ows:Value>2.0.0</ows:Value>
+        </ows:AllowedValues>
+        <ows:DefaultValue>2.0.0</ows:DefaultValue>
+      </ows:Parameter>
+      <ows:Parameter name="Sections">
+        <ows:AllowedValues>
+          <ows:Value>All</ows:Value>
+          <ows:Value>Contents</ows:Value>
+          <ows:Value>Languages</ows:Value>
+          <ows:Value>OperationsMetadata</ows:Value>
+          <ows:Value>ServiceIdentification</ows:Value>
+          <ows:Value>ServiceProvider</ows:Value>
+        </ows:AllowedValues>
+        <ows:DefaultValue>All</ows:DefaultValue>
+      </ows:Parameter>
+      <ows:Parameter name="updateSequence">
+        <ows:NoValues/>
+      </ows:Parameter>
+    </ows:Operation>
+    <ows:Operation name="GetResult">
+      <ows:DCP>
+        <ows:HTTP>
+          <ows:Get xlink:href="http://localhost:8080/wps/service">
+            <ows:Constraint name="Content-Type">
+              <ows:AllowedValues>
+                <ows:Value>application/x-kvp</ows:Value>
+              </ows:AllowedValues>
+            </ows:Constraint>
+          </ows:Get>
+          <ows:Post xlink:href="http://localhost:8080/wps/service">
+            <ows:Constraint name="Content-Type">
+              <ows:AllowedValues>
+                <ows:Value>application/soap+xml</ows:Value>
+                <ows:Value>application/xml</ows:Value>
+                <ows:Value>text/xml</ows:Value>
+              </ows:AllowedValues>
+            </ows:Constraint>
+          </ows:Post>
+        </ows:HTTP>
+      </ows:DCP>
+      <ows:Parameter name="JobId">
+        <ows:NoValues/>
+      </ows:Parameter>
+    </ows:Operation>
+    <ows:Operation name="GetStatus">
+      <ows:DCP>
+        <ows:HTTP>
+          <ows:Get xlink:href="http://localhost:8080/wps/service">
+            <ows:Constraint name="Content-Type">
+              <ows:AllowedValues>
+                <ows:Value>application/x-kvp</ows:Value>
+              </ows:AllowedValues>
+            </ows:Constraint>
+          </ows:Get>
+          <ows:Post xlink:href="http://localhost:8080/wps/service">
+            <ows:Constraint name="Content-Type">
+              <ows:AllowedValues>
+                <ows:Value>application/soap+xml</ows:Value>
+                <ows:Value>application/xml</ows:Value>
+                <ows:Value>text/xml</ows:Value>
+              </ows:AllowedValues>
+            </ows:Constraint>
+          </ows:Post>
+        </ows:HTTP>
+      </ows:DCP>
+      <ows:Parameter name="JobId">
+        <ows:NoValues/>
+      </ows:Parameter>
+    </ows:Operation>
+    <ows:Parameter name="service">
+      <ows:AllowedValues>
+        <ows:Value>WPS</ows:Value>
+      </ows:AllowedValues>
+    </ows:Parameter>
+    <ows:Parameter name="version">
+      <ows:AllowedValues>
+        <ows:Value>2.0.0</ows:Value>
+      </ows:AllowedValues>
+    </ows:Parameter>
+  </ows:OperationsMetadata>
+  <ows:Languages>
+    <ows:Language>deu</ows:Language>
+    <ows:Language>eng</ows:Language>
+  </ows:Languages>
+  <wps:Contents>
+    <wps:ProcessSummary jobControlOptions="async-execute dismiss sync-execute" outputTransmission="value reference" processVersion="1.0.0" processModel="native">
+      <ows:Title>org.n52.javaps.service.TestAlgorithm</ows:Title>
+      <ows:Identifier>org.n52.javaps.service.TestAlgorithm</ows:Identifier>
+    </wps:ProcessSummary>
+  </wps:Contents>
+</wps:Capabilities>

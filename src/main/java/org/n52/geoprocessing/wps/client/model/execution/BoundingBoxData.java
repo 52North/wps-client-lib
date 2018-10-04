@@ -16,37 +16,16 @@
  */
 package org.n52.geoprocessing.wps.client.model.execution;
 
-import java.util.ArrayList;
-import java.util.List;
+public class BoundingBoxData extends Data{
 
-import org.n52.geoprocessing.wps.client.model.Format;
-import org.n52.geoprocessing.wps.client.model.WPSParameter;
+    private BoundingBox value;
 
-public abstract class WPSExecuteParameter extends WPSParameter {
-
-    private Format format;
-
-    private List<String> metadata = new ArrayList<>();
-
-    public Format getFormat() {
-        return format;
+    public BoundingBox getValue() {
+        return value;
     }
 
-    public void setFormat(Format format) {
-        this.format = format;
-    }
-
-    public List<String> getMetadata() {
-        return metadata;
-    }
-
-    public void setMetadata(List<String> metadata) {
-        this.metadata = metadata;
-    }
-
-    public void addMetadata(String metadata) {
-        this.metadata.add(metadata);
-
+    public void setValue(BoundingBox value) {
+        this.value = value;
     }
 
 }

@@ -23,7 +23,7 @@ import org.n52.geoprocessing.wps.client.model.ResponseMode;
 
 public class Execute {
 
-    private List<ExecuteInput> inputs;
+    private List<Data> inputs;
 
     private List<ExecuteOutput> outputs;
 
@@ -41,11 +41,11 @@ public class Execute {
         this.id = id;
     }
 
-    public List<ExecuteInput> getInputs() {
+    public List<Data> getInputs() {
         return inputs;
     }
 
-    public void setInputs(List<ExecuteInput> inputs) {
+    public void setInputs(List<Data> inputs) {
         this.inputs = inputs;
     }
 
@@ -81,9 +81,9 @@ public class Execute {
         return getOutputs().add(output);
     }
 
-    public boolean addInput(ExecuteInput input) {
+    public boolean addInput(Data input) {
         if(getInputs() == null){
-            setInputs(new ArrayList<ExecuteInput>());
+            setInputs(new ArrayList<Data>());
         }
         return getInputs().add(input);
 
