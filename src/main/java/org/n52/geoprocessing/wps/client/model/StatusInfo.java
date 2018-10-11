@@ -30,6 +30,8 @@ public class StatusInfo extends WPSResponse {
 
     private String jobId;
 
+    private String version;
+
     private short percentCompleted;
 
     private OffsetDateTime expirationDate;
@@ -106,6 +108,14 @@ public class StatusInfo extends WPSResponse {
 
     public Result getResult() {
         return result;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
     }
 
     public void setResult(Result result) {

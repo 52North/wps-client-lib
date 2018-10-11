@@ -16,31 +16,40 @@
  */
 package org.n52.geoprocessing.wps.client.encoder;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.List;
+
+import javax.inject.Provider;
+import javax.xml.stream.XMLStreamException;
 
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.XmlString;
-import org.n52.geoprocessing.wps.client.WPSClientSession;
+import org.n52.geoprocessing.wps.client.encoder.stream.ExecuteRequest100Encoder;
+import org.n52.geoprocessing.wps.client.encoder.stream.ExecuteRequest20Encoder;
 import org.n52.geoprocessing.wps.client.model.Format;
 import org.n52.geoprocessing.wps.client.model.ResponseMode;
 import org.n52.geoprocessing.wps.client.model.TransmissionMode;
 import org.n52.geoprocessing.wps.client.model.execution.ComplexData;
 import org.n52.geoprocessing.wps.client.model.execution.ComplexDataReference;
-import org.n52.geoprocessing.wps.client.model.execution.Execute;
 import org.n52.geoprocessing.wps.client.model.execution.Data;
+import org.n52.geoprocessing.wps.client.model.execution.Execute;
 import org.n52.geoprocessing.wps.client.model.execution.ExecuteOutput;
 import org.n52.geoprocessing.wps.client.model.execution.ExecutionMode;
 import org.n52.geoprocessing.wps.client.model.execution.LiteralData;
+import org.n52.svalbard.encode.exception.EncodingException;
+import org.n52.svalbard.encode.stream.xml.ElementXmlStreamWriter;
+import org.n52.svalbard.encode.stream.xml.ElementXmlStreamWriterRepository;
+import org.n52.svalbard.encode.stream.xml.XmlStreamWritingContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import net.opengis.wps.x100.ComplexDataType;
 import net.opengis.wps.x100.DataInputsType;
 import net.opengis.wps.x100.DocumentOutputDefinitionType;
-import net.opengis.wps.x100.ExecuteDocument;
 import net.opengis.wps.x100.InputReferenceType;
 import net.opengis.wps.x100.InputType;
 import net.opengis.wps.x100.LiteralDataType;
@@ -51,34 +60,31 @@ public class WPS100ExecuteEncoder {
 
     private static Logger LOGGER = LoggerFactory.getLogger(WPS100ExecuteEncoder.class);
 
+    private static final List<Provider<ElementXmlStreamWriter>> ELEMENT_WRITERS =
+            Arrays.asList(ExecuteRequest100Encoder::new);
+
     private Execute execute;
+
+    public WPS100ExecuteEncoder() {
+        //TODO remove
+    }
 
     public WPS100ExecuteEncoder(Execute execute) {
         this.execute = execute;
     }
 
-    public ExecuteDocument encode() {
+    public static String encode(Execute execute) throws XMLStreamException, EncodingException {
 
-        ExecuteDocument executeDocument = ExecuteDocument.Factory.newInstance();
+        ExecuteRequest100Encoder executeRequestWriter = new ExecuteRequest100Encoder();
 
-        net.opengis.wps.x100.ExecuteDocument.Execute wps100Execute = executeDocument.addNewExecute();
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
-        wps100Execute.setVersion(WPSClientSession.VERSION_100);
+        executeRequestWriter.setContext(
+                new XmlStreamWritingContext(byteArrayOutputStream, new ElementXmlStreamWriterRepository(ELEMENT_WRITERS)::get));
 
-        wps100Execute.setService(WPSClientSession.SERVICE);
+        executeRequestWriter.writeElement(execute);
 
-        wps100Execute.addNewIdentifier().setStringValue(execute.getId());
-
-        addInputs(execute.getInputs(), wps100Execute);
-
-        if (execute.getOutputs() != null) {
-            addOutputs(execute.getOutputs(), wps100Execute);
-        }
-
-        LOGGER.trace("Encoded WPS 1.0.0 ExecuteDocument: " + executeDocument);
-
-        return executeDocument;
-
+        return new String(byteArrayOutputStream.toByteArray());
     }
 
     private void addInputs(List<Data> inputs,

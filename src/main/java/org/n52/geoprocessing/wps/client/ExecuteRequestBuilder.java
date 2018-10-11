@@ -88,7 +88,7 @@ public class ExecuteRequestBuilder {
             String mimeType) throws WPSClientException {
         InputDescription inputDesc = getParameterDescription(parameterID);
         if (inputDesc == null) {
-            throw new IllegalArgumentException("inputDesription is null for: " + parameterID);
+            throw new IllegalArgumentException("inputDescription is null for: " + parameterID);
         }
         // if (!(inputDesc instanceof ComplexInputDescription)) {
         // throw new IllegalArgumentException("inputDescription is not of type

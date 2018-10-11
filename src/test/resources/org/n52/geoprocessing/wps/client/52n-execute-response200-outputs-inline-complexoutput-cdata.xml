@@ -21,7 +21,7 @@
   <wps:JobID>6f590317-a2ca-4f89-9c05-bb6c98c4f89e</wps:JobID>
   <wps:ExpirationDate>2018-10-19T15:55:19.264+02:00</wps:ExpirationDate>
   <wps:Output id="ComplexOutputData">
-    <wps:Data mimeType="application/dbase"><test>value</test></wps:Data>
+    <wps:Data mimeType="application/dbase"><![CDATA[{"test":"json"}]]></wps:Data>
   </wps:Output>
   <wps:Output id="LiteralOutputData">
     <wps:Data>

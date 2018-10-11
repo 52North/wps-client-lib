@@ -30,7 +30,7 @@
       <ows:Identifier>ComplexOutputData</ows:Identifier>
       <ows:Title>ComplexOutputData</ows:Title>
       <wps:Data>
-        <wps:ComplexData encoding="UTF-8" mimeType="text/xml"><testElement>testValue</testElement></wps:ComplexData>
+        <wps:ComplexData encoding="UTF-8" mimeType="application/json"><![CDATA[{"test":"json"}]]></wps:ComplexData>
       </wps:Data>
     </wps:Output>
     <wps:Output>

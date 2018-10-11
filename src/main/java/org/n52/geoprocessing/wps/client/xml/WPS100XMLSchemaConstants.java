@@ -14,19 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.n52.geoprocessing.wps.client.model.execution;
+package org.n52.geoprocessing.wps.client.xml;
 
-public class BoundingBoxData extends Data{
+public interface WPS100XMLSchemaConstants {
 
-//    private BoundingBox value;
-//
-//    @Override
-//    public BoundingBox getValue() {
-//        return value;
-//    }
-//    
-//    public void setValue(BoundingBox value) {
-//        this.value = value;
-//    }
+    String WPS100_SCHEMALOCTION = "http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd";
+    String OWS11_SCHEMALOCTION = "http://schemas.opengis.net/ows/1.1.0/owsAll.xsd";
 
 }

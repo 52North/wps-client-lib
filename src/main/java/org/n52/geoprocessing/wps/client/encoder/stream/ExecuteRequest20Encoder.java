@@ -37,7 +37,7 @@ import org.n52.svalbard.encode.exception.EncodingException;
 import org.n52.svalbard.encode.stream.xml.AbstractMultiElementXmlStreamWriter;
 import org.n52.svalbard.stream.XLinkConstants;
 
-public class ExecuteRequestEncoder extends AbstractMultiElementXmlStreamWriter {
+public class ExecuteRequest20Encoder extends AbstractMultiElementXmlStreamWriter {
 
     private final String service = "WPS";
 

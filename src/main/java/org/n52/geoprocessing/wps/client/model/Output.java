@@ -16,7 +16,6 @@
  */
 package org.n52.geoprocessing.wps.client.model;
 
-import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;

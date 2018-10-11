@@ -17,6 +17,7 @@
 package org.n52.geoprocessing.wps.client.decoder.stream;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -127,7 +128,9 @@ public class DescribeProcess100ResponseDecoder extends AbstractElementXmlStreamR
                     process.setAbstract(reader.getElementText());
                 } else if (elem.getName().equals(OWS11Constants.Elem.QN_IDENTIFIER)) {
                     process.setId(reader.getElementText());
-                } else if (elem.getName().equals(WPS100Constants.Elem.QN_DATA_INPUTS)) {
+                } else if (elem.getName().equals(OWS11Constants.Elem.QN_METADATA)) {
+                    readMetadata(elem, reader);
+                } else if (elem.getName().equals(WPS100Constants.Elem.QN_DATA_INPUTS_NO_NAMESPACE)) {
                     process.setInputs(readDataInputs(elem, reader));
                 } else if (elem.getName().equals(WPS100Constants.Elem.QN_PROCESS_OUTPUTS_NO_NAMESPACE)) {
                     process.setOutputs(readProcessOutputs(elem, reader));
@@ -138,6 +141,12 @@ public class DescribeProcess100ResponseDecoder extends AbstractElementXmlStreamR
         return process;
     }
 
+    private void readMetadata(StartElement elem,
+            XMLEventReader reader) {
+        // TODO Auto-generated method stub
+
+    }
+
     private List<OutputDescription> readProcessOutputs(StartElement elem,
             XMLEventReader reader) throws XMLStreamException {
 
@@ -146,7 +155,7 @@ public class DescribeProcess100ResponseDecoder extends AbstractElementXmlStreamR
         while (reader.hasNext()) {
             XMLEvent event = reader.nextEvent();
             if (event.isStartElement()) {
-                if (elem.getName().equals(WPS100Constants.Elem.QN_INPUT)) {
+                if (elem.getName().equals(WPS100Constants.Elem.QN_INPUT_NO_NAMESPACE)) {
                     outputs.add(readOutput(elem, reader));
                 }
             }
@@ -154,7 +163,7 @@ public class DescribeProcess100ResponseDecoder extends AbstractElementXmlStreamR
         return outputs;
     }
 
-    private List<InputDescription> readDataInputs(StartElement elem,
+    private List<InputDescription> readDataInputs(StartElement start,
             XMLEventReader reader) throws XMLStreamException {
 
         List<InputDescription> inputs = new ArrayList<>();
@@ -162,7 +171,8 @@ public class DescribeProcess100ResponseDecoder extends AbstractElementXmlStreamR
         while (reader.hasNext()) {
             XMLEvent event = reader.nextEvent();
             if (event.isStartElement()) {
-                if (elem.getName().equals(WPS100Constants.Elem.QN_INPUT)) {
+                StartElement elem = event.asStartElement();
+                if (elem.getName().equals(WPS100Constants.Elem.QN_INPUT_NO_NAMESPACE)) {
                     inputs.add(readInput(elem, reader));
                 }
             }
@@ -189,12 +199,14 @@ public class DescribeProcess100ResponseDecoder extends AbstractElementXmlStreamR
                     abstrakt = reader.getElementText();
                 } else if (start.getName().equals(OWS11Constants.Elem.QN_IDENTIFIER)) {
                     id = reader.getElementText();
-                } else if (start.getName().equals(WPS100Constants.Elem.QN_COMPLEX_DATA)) {
+                } else if (start.getName().equals(OWS11Constants.Elem.QN_METADATA)) {
+                    readMetadata(elem, reader);
+                } else if (start.getName().equals(WPS100Constants.Elem.QN_COMPLEX_OUTPUT_NO_NAMESPACE)) {
                     readComplexData(start, reader, output);
-                } else if (start.getName().equals(WPS100Constants.Elem.QN_LITERAL_DATA)) {
+                } else if (start.getName().equals(WPS100Constants.Elem.QN_LITERAL_OUTPUT_NO_NAMESPACE)) {
                     output = new LiteralOutputDescription();
                     readLiteralData(start, reader, (LiteralOutputDescription) output);
-                } else {
+                } else {//TODO add bbox output
                     throw unexpectedTag(start);
                 }
             } else if (event.isEndElement()) {
@@ -222,16 +234,16 @@ public class DescribeProcess100ResponseDecoder extends AbstractElementXmlStreamR
             XMLEvent event = reader.nextEvent();
             if (event.isStartElement()) {
                 StartElement elem = event.asStartElement();
-                if (elem.getName().equals(WPS100Constants.Elem.QN_FORMAT)) {
-                    formats.add(readFormat(elem, reader));
-                } else if (elem.getName().equals(WPS100Constants.Elem.QN_LITERAL_DATA_DOMAIN)) {
-                    readLiteralDataDomain(elem, reader, output);
+                if (elem.getName().equals(OWS11Constants.Elem.QN_ANY_VALUE)) {
+                    output.setAnyValue(true);
+                } else if (elem.getName().equals(OWS11Constants.Elem.QN_DATA_TYPE)) {
+                    readDataType(elem, reader, output);
                 } else {
                     throw unexpectedTag(elem);
                 }
             } else if (event.isEndElement()) {
                 EndElement elem = event.asEndElement();
-                if (elem.getName().equals(WPS100Constants.Elem.QN_LITERAL_DATA)) {
+                if (elem.getName().equals(WPS100Constants.Elem.QN_LITERAL_OUTPUT_NO_NAMESPACE)) {
                     output.setFormats(formats);
                     return;
                 }
@@ -282,14 +294,16 @@ public class DescribeProcess100ResponseDecoder extends AbstractElementXmlStreamR
             XMLEvent event = reader.nextEvent();
             if (event.isStartElement()) {
                 StartElement elem = event.asStartElement();
-                if (elem.getName().equals(WPS100Constants.Elem.QN_FORMAT)) {
-                    formats.add(readFormat(elem, reader));
+                if (elem.getName().equals(WPS100Constants.Elem.QN_DEFAULT_NO_NAMESPACE)) {
+                    formats.add(readFormat(true, reader));
+                } else if (elem.getName().equals(WPS100Constants.Elem.QN_SUPPORTED_NO_NAMESPACE)) {
+                    formats.addAll(readFormats(reader));
                 } else {
                     throw unexpectedTag(elem);
                 }
             } else if (event.isEndElement()) {
                 EndElement elem = event.asEndElement();
-                if (elem.getName().equals(WPS100Constants.Elem.QN_COMPLEX_DATA)) {
+                if (elem.getName().equals(WPS100Constants.Elem.QN_COMPLEX_OUTPUT_NO_NAMESPACE)) {
                     output.setFormats(formats);
                     return;
                 }
@@ -317,13 +331,15 @@ public class DescribeProcess100ResponseDecoder extends AbstractElementXmlStreamR
                     abstrakt = reader.getElementText();
                 } else if (start.getName().equals(OWS11Constants.Elem.QN_IDENTIFIER)) {
                     id = reader.getElementText();
-                } else if (start.getName().equals(WPS100Constants.Elem.QN_COMPLEX_DATA)) {
+                } else if (start.getName().equals(OWS11Constants.Elem.QN_METADATA)) {
+                    readMetadata(start, reader);
+                } else if (start.getName().equals(WPS100Constants.Elem.QN_COMPLEX_DATA_NO_NAMESPACE)) {
                     input = new ComplexInputDescription();
                     readComplexData(start, reader, input);
-                } else if (start.getName().equals(WPS100Constants.Elem.QN_LITERAL_DATA)) {
+                } else if (start.getName().equals(WPS100Constants.Elem.QN_LITERAL_DATA_NO_NAMESPACE)) {
                     input = new LiteralInputDescription();
                     readLiteralData(start, reader, (LiteralInputDescription) input);
-                } else if (start.getName().equals(WPS100Constants.Elem.QN_BOUNDING_BOX_DATA)) {
+                } else if (start.getName().equals(WPS100Constants.Elem.QN_BOUNDING_BOX_DATA_NO_NAMESPACE)) {
                     input = new BoundingBoxInputDescription();
                     readBoundingBoxData(start, reader, (BoundingBoxInputDescription) input);
                 } else {
@@ -331,7 +347,7 @@ public class DescribeProcess100ResponseDecoder extends AbstractElementXmlStreamR
                 }
             } else if (event.isEndElement()) {
                 EndElement end = event.asEndElement();
-                if (end.getName().equals(WPS100Constants.Elem.QN_INPUT)) {
+                if (end.getName().equals(WPS100Constants.Elem.QN_INPUT_NO_NAMESPACE)) {
                     input.setTitle(title);
                     input.setId(id);
                     input.setAbstract(abstrakt);
@@ -354,16 +370,16 @@ public class DescribeProcess100ResponseDecoder extends AbstractElementXmlStreamR
             XMLEvent event = reader.nextEvent();
             if (event.isStartElement()) {
                 StartElement elem = event.asStartElement();
-                if (elem.getName().equals(WPS100Constants.Elem.QN_FORMAT)) {
-                    formats.add(readFormat(elem, reader));
-                } else if (elem.getName().equals(WPS100Constants.Elem.QN_SUPPORTED_CRS)) {
+                if (elem.getName().equals(WPS100Constants.Elem.QN_DEFAULT_NO_NAMESPACE)) {
+                    readCRS(true, reader, input);
+                } else if (elem.getName().equals(WPS100Constants.Elem.QN_SUPPORTED_NO_NAMESPACE)) {
                     readSupportedCRS(elem, reader, input);
                 } else {
                     throw unexpectedTag(elem);
                 }
             } else if (event.isEndElement()) {
                 EndElement elem = event.asEndElement();
-                if (elem.getName().equals(WPS100Constants.Elem.QN_BOUNDING_BOX_DATA)) {
+                if (elem.getName().equals(WPS100Constants.Elem.QN_BOUNDING_BOX_DATA_NO_NAMESPACE)) {
                     input.setFormats(formats);
                     return;
                 }
@@ -373,10 +389,35 @@ public class DescribeProcess100ResponseDecoder extends AbstractElementXmlStreamR
 
     }
 
-    private void readSupportedCRS(StartElement elem,
+    //TODO implement
+    private void readCRS(boolean b,
             XMLEventReader reader,
-            BoundingBoxInputDescription input) {
-        // TODO Auto-generated method stub
+            BoundingBoxInputDescription input) throws XMLStreamException {
+        while (reader.hasNext()) {
+            XMLEvent event = reader.nextEvent();
+           if (event.isEndElement()) {
+                EndElement elem = event.asEndElement();
+                if (elem.getName().equals(WPS100Constants.Elem.QN_CRS_NO_NAMESPACE)) {
+                    return;
+                }
+            }
+        }
+
+    }
+
+    //TODO implement
+    private void readSupportedCRS(StartElement start,
+            XMLEventReader reader,
+            BoundingBoxInputDescription input) throws XMLStreamException {
+        while (reader.hasNext()) {
+            XMLEvent event = reader.nextEvent();
+           if (event.isEndElement()) {
+                EndElement elem = event.asEndElement();
+                if (elem.getName().equals(WPS100Constants.Elem.QN_SUPPORTED_NO_NAMESPACE)) {
+                    return;
+                }
+            }
+        }
 
     }
 
@@ -390,16 +431,20 @@ public class DescribeProcess100ResponseDecoder extends AbstractElementXmlStreamR
             XMLEvent event = reader.nextEvent();
             if (event.isStartElement()) {
                 StartElement elem = event.asStartElement();
-                if (elem.getName().equals(WPS100Constants.Elem.QN_FORMAT)) {
-                    formats.add(readFormat(elem, reader));
-                } else if (elem.getName().equals(WPS100Constants.Elem.QN_LITERAL_DATA_DOMAIN)) {
-                    readLiteralDataDomain(elem, reader, input);
+                if (elem.getName().equals(OWS11Constants.Elem.QN_ANY_VALUE)) {
+                    input.setAnyValue(true);
+                } else if (elem.getName().equals(OWS11Constants.Elem.QN_ALLOWED_VALUES)) {
+                    readAllowedValues(elem, reader, input);
+                } else if (elem.getName().equals(OWS11Constants.Elem.QN_DATA_TYPE)) {
+                    readDataType(elem, reader, input);
+                } else if (elem.getName().equals(OWS11Constants.Elem.QN_DEFAULT_VALUE)) {
+                    readDefaultValue(elem, reader, input);
                 } else {
                     throw unexpectedTag(elem);
                 }
             } else if (event.isEndElement()) {
                 EndElement elem = event.asEndElement();
-                if (elem.getName().equals(WPS100Constants.Elem.QN_LITERAL_DATA)) {
+                if (elem.getName().equals(WPS100Constants.Elem.QN_LITERAL_DATA_NO_NAMESPACE)) {
                     input.setFormats(formats);
                     return;
                 }
@@ -466,14 +511,16 @@ public class DescribeProcess100ResponseDecoder extends AbstractElementXmlStreamR
             XMLEvent event = reader.nextEvent();
             if (event.isStartElement()) {
                 StartElement elem = event.asStartElement();
-                if (elem.getName().equals(WPS100Constants.Elem.QN_FORMAT)) {
-                    formats.add(readFormat(elem, reader));
+                if (elem.getName().equals(WPS100Constants.Elem.QN_DEFAULT_NO_NAMESPACE)) {
+                    formats.add(readFormat(true, reader));
+                } else if (elem.getName().equals(WPS100Constants.Elem.QN_SUPPORTED_NO_NAMESPACE)) {
+                    formats.addAll(readFormats(reader));
                 } else {
                     throw unexpectedTag(elem);
                 }
             } else if (event.isEndElement()) {
                 EndElement elem = event.asEndElement();
-                if (elem.getName().equals(WPS100Constants.Elem.QN_COMPLEX_DATA)) {
+                if (elem.getName().equals(WPS100Constants.Elem.QN_COMPLEX_DATA_NO_NAMESPACE)) {
                     input.setFormats(formats);
                     return;
                 }
@@ -482,20 +529,57 @@ public class DescribeProcess100ResponseDecoder extends AbstractElementXmlStreamR
         throw eof();
     }
 
-    private Format readFormat(StartElement elem,
+    private Collection<? extends Format> readFormats(XMLEventReader reader) throws XMLStreamException {
+
+        List<Format> formats = new ArrayList<>();
+
+        while (reader.hasNext()) {
+            XMLEvent event = reader.nextEvent();
+            if (event.isStartElement()) {
+                StartElement elem = event.asStartElement();
+                if (elem.getName().equals(WPS100Constants.Elem.QN_FORMAT_NO_NAMESPACE)) {
+                    formats.add(readFormat(false, reader));
+                } else {
+                    throw unexpectedTag(elem);
+                }
+            } else if (event.isEndElement()) {
+                EndElement elem = event.asEndElement();
+                if (elem.getName().equals(WPS100Constants.Elem.QN_SUPPORTED_NO_NAMESPACE)) {
+                    return formats;
+                }
+            }
+        }
+        throw eof();
+    }
+
+    private Format readFormat(boolean isDefaultFormat,
             XMLEventReader reader) throws XMLStreamException {
         Format format = new Format();
+        format.setDefault(isDefaultFormat);
 
-        getAttribute(elem, WPS100Constants.Attr.AN_MIME_TYPE).ifPresent(format::setMimeType);
-        getAttribute(elem, WPS100Constants.Attr.AN_SCHEMA).ifPresent(format::setSchema);
-        getAttribute(elem, WPS100Constants.Attr.AN_ENCODING).ifPresent(format::setEncoding);
-        Optional<String> defaultValueAsStringOptional = getAttribute(elem, WPS100Constants.Attr.AN_DEFAULT);
-
-        if (defaultValueAsStringOptional.isPresent()) {
-            format.setDefault(Boolean.parseBoolean(defaultValueAsStringOptional.get()));
+        while (reader.hasNext()) {
+            XMLEvent event = reader.nextEvent();
+            if (event.isStartElement()) {
+                StartElement elem = event.asStartElement();
+                if (elem.getName().equals(WPS100Constants.Elem.QN_MIME_TYPE_NO_NAMESPACE)) {
+                    format.setMimeType(reader.getElementText());
+                } else if (elem.getName().equals(WPS100Constants.Elem.QN_SCHEMA_NO_NAMESPACE)) {
+                    format.setSchema(reader.getElementText());
+                } else if (elem.getName().equals(WPS100Constants.Elem.QN_ENCODING_NO_NAMESPACE)) {
+                    format.setEncoding(reader.getElementText());
+                } else if (elem.getName().equals(WPS100Constants.Elem.QN_FORMAT_NO_NAMESPACE)) {
+                    //consume
+                } else {
+                    throw unexpectedTag(elem);
+                }
+            } else if (event.isEndElement()) {
+                EndElement elem = event.asEndElement();
+                if (elem.getName().equals(WPS100Constants.Elem.QN_FORMAT_NO_NAMESPACE)) {
+                    return format;
+                }
+            }
         }
-
-        return format;
+        throw eof();
     }
 
     @Override

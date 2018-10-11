@@ -40,6 +40,7 @@ import org.n52.geoprocessing.wps.client.model.execution.BoundingBoxData;
 import org.n52.geoprocessing.wps.client.model.execution.ComplexData;
 import org.n52.geoprocessing.wps.client.model.execution.ComplexDataReference;
 import org.n52.geoprocessing.wps.client.model.execution.Data;
+import org.n52.geoprocessing.wps.client.xml.WPS100Constants;
 import org.n52.javaps.service.xml.OWSConstants;
 import org.n52.javaps.service.xml.WPSConstants;
 import org.n52.svalbard.decode.stream.StreamReaderKey;
@@ -55,7 +56,7 @@ public class GetResultResponseDecoder extends AbstractElementXmlStreamReader {
 
     private static final HashSet<XmlStreamReaderKey> KEYS =
             new HashSet<>(Arrays.asList(new XmlStreamReaderKey(WPSConstants.Elem.QN_STATUS_INFO)));
-    
+
     @Override
     public Set<StreamReaderKey> getKeys() {
         return Collections.unmodifiableSet(KEYS);
@@ -109,7 +110,7 @@ public class GetResultResponseDecoder extends AbstractElementXmlStreamReader {
             XMLEventReader reader) throws XMLStreamException {
 
         Data output = new Data();
-        
+
         getAttribute(start, WPSConstants.Attr.AN_ID).ifPresent(output::setId);
 
         while (reader.hasNext()) {
@@ -176,7 +177,7 @@ public class GetResultResponseDecoder extends AbstractElementXmlStreamReader {
             Data output) throws XMLStreamException {
 
         Format format = new Format();
-        
+
         getAttribute(start, WPSConstants.Attr.AN_MIME_TYPE).ifPresent(format::setMimeType);
         getAttribute(start, WPSConstants.Attr.AN_SCHEMA).ifPresent(format::setSchema);
         getAttribute(start, WPSConstants.Attr.AN_ENCODING).ifPresent(format::setEncoding);
@@ -191,6 +192,11 @@ public class GetResultResponseDecoder extends AbstractElementXmlStreamReader {
                     output.setValue(reader.getElementText());//TODO check if mime type is text/xml
                 } else if (elem.getName().equals(OWSConstants.Elem.QN_BOUNDING_BOX)) {
                     readBoundingBoxData(elem, reader, output.asBoundingBoxData());
+                }else {
+                    //complex data XML
+                    readComplexDataXML(elem, reader, output);
+                    output.setFormat(format);
+                    return output;
                 }
             }else if(event.isCharacters()){
                 String data = event.asCharacters().getData().trim();
@@ -218,9 +224,9 @@ public class GetResultResponseDecoder extends AbstractElementXmlStreamReader {
             XMLEventReader reader, Data output) throws XMLStreamException {
 
         StringBuilder data = new StringBuilder();
-        
+
         data.append(dataString);
-        
+
         while (reader.hasNext()) {
             XMLEvent event = reader.nextEvent();
             if(event.isCharacters()){
@@ -229,8 +235,29 @@ public class GetResultResponseDecoder extends AbstractElementXmlStreamReader {
                 output.setValue(data.toString());
                 return output;
             }
-        }        
-        throw eof();        
+        }
+        throw eof();
+    }
+
+    private Data readComplexDataXML(StartElement startElement,
+            XMLEventReader reader, Data output) throws XMLStreamException {
+
+        StringBuilder data = new StringBuilder();
+
+        data.append(startElement.toString());
+
+        while (reader.hasNext()) {
+            XMLEvent event = reader.nextEvent();
+            if(event.isEndElement()){
+                EndElement endElement = event.asEndElement();
+                if(endElement.getName().equals(WPSConstants.Elem.QN_DATA)){
+                    output.setValue(data.toString());
+                    return output;
+                }
+            }
+            data.append(event.toString());
+        }
+        throw eof();
     }
 
     private void readBoundingBoxData(StartElement start,

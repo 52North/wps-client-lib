@@ -23,7 +23,7 @@ import java.util.List;
 import javax.inject.Provider;
 import javax.xml.stream.XMLStreamException;
 
-import org.n52.geoprocessing.wps.client.encoder.stream.ExecuteRequestEncoder;
+import org.n52.geoprocessing.wps.client.encoder.stream.ExecuteRequest20Encoder;
 import org.n52.geoprocessing.wps.client.model.execution.Execute;
 import org.n52.svalbard.encode.exception.EncodingException;
 import org.n52.svalbard.encode.stream.xml.ElementXmlStreamWriter;
@@ -37,11 +37,11 @@ public class WPS20ExecuteEncoder {
     private static Logger LOGGER = LoggerFactory.getLogger(WPS20ExecuteEncoder.class);
 
     private static final List<Provider<ElementXmlStreamWriter>> ELEMENT_WRITERS =
-            Arrays.asList(ExecuteRequestEncoder::new);
+            Arrays.asList(ExecuteRequest20Encoder::new);
 
     public static String encode(Execute execute) throws XMLStreamException, EncodingException {
 
-        ExecuteRequestEncoder executeRequestWriter = new ExecuteRequestEncoder();
+        ExecuteRequest20Encoder executeRequestWriter = new ExecuteRequest20Encoder();
 
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 

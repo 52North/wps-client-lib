@@ -16,7 +16,11 @@
  */
 package org.n52.geoprocessing.wps.client;
 
+import static org.junit.Assert.fail;
+
 import java.io.IOException;
+
+import javax.xml.stream.XMLStreamException;
 
 import org.apache.xmlbeans.XmlException;
 import org.junit.Test;
@@ -25,6 +29,7 @@ import org.n52.geoprocessing.wps.client.model.Format;
 import org.n52.geoprocessing.wps.client.model.InputDescription;
 import org.n52.geoprocessing.wps.client.model.OutputDescription;
 import org.n52.geoprocessing.wps.client.model.Process;
+import org.n52.svalbard.encode.exception.EncodingException;
 
 import net.opengis.wps.x100.ProcessDescriptionsDocument;
 
@@ -97,7 +102,11 @@ public class ExecuteRequestBuilderTest {
 
         executeRequestBuilder.setAsReference(outputDescription.getId(), true);
 
-        System.out.println(new WPS100ExecuteEncoder(executeRequestBuilder.getExecute()).encode());
+        try {
+            System.out.println(WPS100ExecuteEncoder.encode(executeRequestBuilder.getExecute()));
+        } catch (EncodingException | XMLStreamException e) {
+            fail(e.getMessage());
+        }
 
     }
 

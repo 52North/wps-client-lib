@@ -208,13 +208,14 @@ public class GetStatusResponse100Decoder extends AbstractElementXmlStreamReader 
                     getAttribute(elem, WPS100Constants.Attr.AN_MIME_TYPE).ifPresent(format::setMimeType);
                     getAttribute(elem, WPS100Constants.Attr.AN_SCHEMA).ifPresent(format::setSchema);
                     getAttribute(elem, WPS100Constants.Attr.AN_ENCODING).ifPresent(format::setEncoding);
-
-                    output.setValue(reader.getElementText());
+                    readComplexData(elem, reader, output);
+                    output.setFormat(format);
                 } else if (elem.getName().equals(WPS100Constants.Elem.QN_LITERAL_DATA)) {
                     output = output.asLiteralData();
                     output.setValue(reader.getElementText());
                 } else if (elem.getName().equals(WPS100Constants.Elem.QN_BOUNDING_BOX_DATA)) {
-                    readBoundingBoxData(elem, reader, output.asBoundingBoxData());
+                    output = output.asBoundingBoxData();
+                    readBoundingBoxData(elem, reader, output);
                 }
             }else if (event.isEndElement()) {
                 EndElement elem = event.asEndElement();
@@ -228,9 +229,68 @@ public class GetStatusResponse100Decoder extends AbstractElementXmlStreamReader 
 
     }
 
+    private Data readComplexData(StartElement start,
+            XMLEventReader reader, Data output) throws XMLStreamException {
+
+        while (reader.hasNext()) {
+            XMLEvent event = reader.nextEvent();
+            if(event.isCharacters()){
+                String chars = event.asCharacters().getData();
+                if(chars.trim().isEmpty()){
+                    continue;
+                }else {
+                    return readComplexDataString(chars, reader, output);
+                }
+            } else if(event.isStartElement()){
+                return readComplexDataXML(event.asStartElement(), reader, output);
+            }
+        }
+        throw eof();
+    }
+
+    private Data readComplexDataXML(StartElement startElement,
+            XMLEventReader reader, Data output) throws XMLStreamException {
+
+        StringBuilder data = new StringBuilder();
+
+        data.append(startElement.toString());
+
+        while (reader.hasNext()) {
+            XMLEvent event = reader.nextEvent();
+            if(event.isEndElement()){
+                EndElement endElement = event.asEndElement();
+                if(endElement.getName().equals(WPS100Constants.Elem.QN_COMPLEX_DATA)){
+                    output.setValue(data.toString());
+                    return output;
+                }
+            }
+            data.append(event.toString());
+        }
+        throw eof();
+    }
+    
+    private Data readComplexDataString(String dataString,
+            XMLEventReader reader, Data output) throws XMLStreamException {
+        
+        StringBuilder data = new StringBuilder();
+        
+        data.append(dataString);
+        
+        while (reader.hasNext()) {
+            XMLEvent event = reader.nextEvent();
+            if(event.isCharacters()){
+                data.append(event.asCharacters().getData());
+            } else {
+                output.setValue(data.toString());
+                return output;
+            }
+        }
+        throw eof();
+    }
+
     private void readBoundingBoxData(StartElement start,
             XMLEventReader reader,
-            BoundingBoxData output) throws XMLStreamException {
+            Data output) throws XMLStreamException {
 
         BoundingBox boundingBox = new BoundingBox();
 

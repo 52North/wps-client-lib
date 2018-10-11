@@ -16,8 +16,6 @@
  */
 package org.n52.geoprocessing.wps.client;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,13 +26,14 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import javax.xml.crypto.dsig.XMLObject;
-import javax.xml.stream.FactoryConfigurationError;
+import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 
@@ -52,16 +51,17 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.XmlOptions;
 import org.n52.geoprocessing.wps.client.decoder.stream.DescribeProcessResponseDecoder;
-import org.n52.geoprocessing.wps.client.encoder.WPS100ExecuteEncoder;
-import org.n52.geoprocessing.wps.client.encoder.stream.ExecuteRequestEncoder;
+import org.n52.geoprocessing.wps.client.encoder.stream.ExecuteRequest100Encoder;
+import org.n52.geoprocessing.wps.client.encoder.stream.ExecuteRequest20Encoder;
 import org.n52.geoprocessing.wps.client.model.Process;
 import org.n52.geoprocessing.wps.client.model.ResponseMode;
+import org.n52.geoprocessing.wps.client.model.StatusInfo;
 import org.n52.geoprocessing.wps.client.model.WPSCapabilities;
 import org.n52.geoprocessing.wps.client.model.execution.ExecutionMode;
+import org.n52.geoprocessing.wps.client.xml.WPSResponseReader;
 import org.n52.janmayen.Json;
 import org.n52.svalbard.encode.exception.EncodingException;
 import org.n52.svalbard.encode.stream.xml.ElementXmlStreamWriterRepository;
@@ -71,7 +71,6 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import net.opengis.wps.x100.ExecuteResponseDocument;
 import net.opengis.wps.x100.ProcessDescriptionType;
 import net.opengis.wps.x100.ProcessDescriptionsDocument;
 
@@ -402,21 +401,18 @@ public class WPSClientSession {
         return retrieveExecuteResponseViaPOST(url, executeObject, rawData, requestAsync);
     }
 
-    private Object encode(org.n52.geoprocessing.wps.client.model.execution.Execute execute, String version) {
+    private OutputStream encode(org.n52.geoprocessing.wps.client.model.execution.Execute execute, String version) {
+
+        OutputStream out = new ByteArrayOutputStream();
 
         switch (version) {
         case VERSION_100:
-            return new WPS100ExecuteEncoder(execute).encode();
 
-        case VERSION_200:
-
-            ExecuteRequestEncoder executeRequestWriter = new ExecuteRequestEncoder();
-
-            OutputStream out  = new ByteArrayOutputStream();
+            ExecuteRequest100Encoder executeRequestWriter = new ExecuteRequest100Encoder();
 
             try {
                 executeRequestWriter.setContext(
-                        new XmlStreamWritingContext(out, new ElementXmlStreamWriterRepository(Arrays.asList(ExecuteRequestEncoder::new))::get));
+                        new XmlStreamWritingContext(out, new ElementXmlStreamWriterRepository(Arrays.asList(ExecuteRequest100Encoder::new))::get));
                 executeRequestWriter.writeElement(execute);
             } catch (EncodingException | XMLStreamException e) {
                 // TODO Auto-generated catch block
@@ -425,8 +421,23 @@ public class WPSClientSession {
 
             return out;
 
+        case VERSION_200:
+
+            ExecuteRequest20Encoder executeRequestWriter20 = new ExecuteRequest20Encoder();
+
+            try {
+                executeRequestWriter20.setContext(
+                        new XmlStreamWritingContext(out, new ElementXmlStreamWriterRepository(Arrays.asList(ExecuteRequest20Encoder::new))::get));
+                executeRequestWriter20.writeElement(execute);
+            } catch (EncodingException | XMLStreamException e) {
+                // TODO Auto-generated catch block
+                LOGGER.error("");
+            }
+
+            return out;
+
         default:
-            return XmlObject.Factory.newInstance();//TODO
+            return out;
         }
     }
 
@@ -436,21 +447,20 @@ public class WPSClientSession {
         url = req.getRequest(url);
         try {
             URL urlObj = new URL(url);
-            String responseString = retrieveResponseOrExceptionReportInpustream(urlObj);
-            Object xmlObject = checkInputStream(responseString);
-            return createWPSCapabilities(xmlObject);
+            Object responseObject = retrieveResponseOrExceptionReportInpustream(urlObj);
+            if(responseObject instanceof WPSCapabilities){
+                return (WPSCapabilities)responseObject;
+            }else{
+                throw new WPSClientException("Did not get (valid) capabilities, got: " + responseObject);
+            }
         } catch (MalformedURLException e) {
             throw new WPSClientException("Capabilities URL seems to be unvalid: " + url, e);
         } catch (IOException e) {
             throw new WPSClientException("Error occured while retrieving capabilities from url: " + url, e);
-        } catch (XMLStreamException e) {
-            // TODO Auto-generated catch block
-            LOGGER.error("");
-            throw new WPSClientException("Error occured while retrieving capabilities from url: " + url, e);
         }
     }
 
-    private String retrieveResponseOrExceptionReportInpustream(URL url) throws WPSClientException, IOException {
+    private Object retrieveResponseOrExceptionReportInpustream(URL url) throws WPSClientException, IOException {
 
         HttpGet get = new HttpGet(url.toString());
 
@@ -460,17 +470,17 @@ public class WPSClientSession {
 
         CloseableHttpResponse response = httpClient.execute(get);
 
-        String responseString = parseInputStreamToString(response.getEntity().getContent());
+        Object responseObject = parseInputStreamToString(response.getEntity().getContent());
 
         try {
             checkStatusCode(response);
         } catch (Exception e) {
-            throw new WPSClientException("Got HTTP error code, response: " + responseString);
+            throw new WPSClientException("Got HTTP error code, response: " + responseObject);
         }finally {
             response.close();
         }
 
-        return responseString;
+        return responseObject;
     }
 
     private void checkStatusCode(CloseableHttpResponse response) throws WPSClientException {
@@ -483,7 +493,7 @@ public class WPSClientSession {
 
     }
 
-    private String retrieveResponseOrExceptionReportInpustream(URL url,
+    private Object retrieveResponseOrExceptionReportInpustream(URL url,
             String executeObject) throws WPSClientException, IOException {
 
         HttpPost post = new HttpPost(url.toString());
@@ -499,32 +509,28 @@ public class WPSClientSession {
 
         CloseableHttpResponse response = httpClient.execute(post);
 
-        String responseString = parseInputStreamToString(response.getEntity().getContent());
+        Object responseObject = parseInputStreamToString(response.getEntity().getContent());
 
         try {
             checkStatusCode(response);
         } catch (Exception e) {
-            throw new WPSClientException("Got HTTP error code, response: " + responseString);
+            throw new WPSClientException("Got HTTP error code, response: " + responseObject);
         }finally {
             response.close();
         }
 
-        return responseString;
+        return responseObject;
     }
 
-    private String parseInputStreamToString(InputStream in) throws IOException{
+    private Object parseInputStreamToString(InputStream in) throws IOException, WPSClientException{
 
-        String content = "";
-
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
-
-        String line = "";
-
-        while((line = bufferedReader.readLine()) != null){
-            content = content.concat(line);
+        XMLEventReader xmlReader = null;
+        try {
+            xmlReader = XMLInputFactory.newInstance().createXMLEventReader(new InputStreamReader(in));
+            return new WPSResponseReader().readElement(xmlReader);
+        } catch (XMLStreamException e) {
+            throw new WPSClientException("Could not decode Inputstream.", e);
         }
-        return content;
-
     }
 
     private WPSCapabilities createWPSCapabilities(Object object) throws XMLStreamException {
@@ -546,6 +552,7 @@ public class WPSClientSession {
         return new WPS100CapabilitiesParser().createWPSCapabilitiesOWS100(xmlObject);
     }
 
+    @SuppressWarnings("unchecked")
     private List<Process> retrieveDescriptionViaGET(String[] processIDs,
             String url,
             String version) throws WPSClientException {
@@ -554,23 +561,16 @@ public class WPSClientSession {
         String requestURL = req.getRequest(url);
         try {
             URL urlObj = new URL(requestURL);
-            String responseString = retrieveResponseOrExceptionReportInpustream(urlObj);
-            Object doc = checkInputStream(responseString);
+            Object responseObject = retrieveResponseOrExceptionReportInpustream(urlObj);
 
-            WPSCapabilities capabilities = getWPSCaps(url);
+            if (responseObject instanceof List) {
 
-            if (doc instanceof ProcessDescriptionsDocument) {
-                return createProcessDescriptionArray((ProcessDescriptionsDocument) doc, capabilities);
-            } else if (doc instanceof InputStream) {
-                return createProcessDescriptionArray((InputStream) doc, capabilities);
+                return (List<Process>)responseObject;
             }
         } catch (MalformedURLException e) {
             throw new WPSClientException("URL seems not to be valid: " + url, e);
         } catch (IOException e) {
             throw new WPSClientException("Error occured while receiving data", e);
-        } catch (XMLStreamException e) {
-            // TODO Auto-generated catch block
-            LOGGER.error("");
         }
         LOGGER.info("No valid ProcessDescription found. Returning empty list.");
         return new ArrayList<Process>();
@@ -603,7 +603,7 @@ public class WPSClientSession {
         return processes;
     }
 
-    private String retrieveDataViaPOST(Object executeObject,
+    private Object retrieveDataViaPOST(Object executeObject,
             String urlString) throws WPSClientException {
         try {
             URL url = new URL(urlString);
@@ -624,47 +624,27 @@ public class WPSClientSession {
         }
     }
 
-    private Object checkInputStream(String responseString) throws WPSClientException {
-        try {
-
-            LOGGER.trace("Got response:" + responseString);
-
-            XmlObject parsedXmlObject = XmlObject.Factory.parse(responseString, options);
-
-            String exceptionText = "";
-            boolean isException = false;
-
-            if (parsedXmlObject instanceof net.opengis.ows.x11.ExceptionReportDocument) {
-                net.opengis.ows.x11.ExceptionReportDocument exceptionDoc =
-                        (net.opengis.ows.x11.ExceptionReportDocument) parsedXmlObject;
-                exceptionText = exceptionDoc.xmlText(options);
-                isException = true;
-
-            }
-//            else if (parsedXmlObject instanceof net.opengis.ows.x20.ExceptionReportDocument) {
-//                net.opengis.ows.x20.ExceptionReportDocument exceptionDoc =
-//                        (net.opengis.ows.x20.ExceptionReportDocument) parsedXmlObject;
-//                exceptionText = exceptionDoc.xmlText(options);
-//                isException = true;
-//            }
-
-            if (isException) {
-                LOGGER.error("Received ExceptionReport from WPS.");
-                LOGGER.trace(exceptionText);
-//                throw new WPSClientException("Error occurred while executing query: ", exceptionText);
-            }
-
-            if(parsedXmlObject.getDomNode().getFirstChild().getNamespaceURI().equals("http://www.opengis.net/wps/1.0.0")){
-                return parsedXmlObject;
-            }else {
-                return new ByteArrayInputStream(responseString.getBytes());
-            }
-
-//            return parsedXmlObject;
-        } catch (XmlException e) {
-            throw new WPSClientException("Error while parsing input.", e);
-        }
-    }
+//    private Object checkInputStream(Object responseObject) throws WPSClientException {
+//
+//        LOGGER.trace("Got response:" + responseObject);
+//
+//        String exceptionText = "";
+//        boolean isException = false;
+//
+//        if (responseObject instanceof ExceptionReport) {
+//            ExceptionReport exceptionReport = (ExceptionReport) responseObject;
+//            exceptionText = exceptionReport.getExceptions().get(0).getExceptionText();
+//            isException = true;
+//
+//        }
+//
+//        if (isException) {
+//            LOGGER.error("Received ExceptionReport from WPS.");
+//            LOGGER.trace(exceptionText);
+//            throw new WPSClientException("Error occurred while executing query: ", exceptionText);
+//        }
+//        return responseObject;
+//    }
 
     /**
      * either an ExecuteResponseDocument or an InputStream if asked for RawData
@@ -682,28 +662,29 @@ public class WPSClientSession {
             Object executeObject,
             boolean rawData, boolean requestAsync) throws WPSClientException, IOException {
 
-        String responseString = retrieveDataViaPOST(executeObject, url);
+        Object responseObject = retrieveDataViaPOST(executeObject, url);
 
         if (rawData && !requestAsync) {
-            return responseString;
+            return responseObject;
         }
 
-        Object resultObj = checkInputStream(responseString);
+//        Object resultObj = checkInputStream(responseString);
 
-        if (resultObj instanceof ExecuteResponseDocument) {
+        if (responseObject instanceof StatusInfo) {
 
             if(requestAsync){
-                return getAsyncDoc(url, resultObj);
+                return getAsyncDoc(url, responseObject);
             }
 
-            return (ExecuteResponseDocument) resultObj;
+            return (StatusInfo) responseObject;
         }
 //        else if (resultObj instanceof StatusInfoDocument) {//TODO
 //            return getAsyncDoc(url, resultObj);
 //        } else if (resultObj instanceof ResultDocument) {
 //            return (ResultDocument) resultObj;
 //        }
-        return resultObj;
+        //TODO when does this happen?!
+        return responseObject;
     }
 
     private String createGetStatusURLWPS20(String url, String jobID) throws MalformedURLException{
@@ -726,48 +707,45 @@ public class WPSClientSession {
 
     }
 
-    private XmlObject getAsyncDoc(String url, Object responseObject) throws IOException, WPSClientException {
+    private Object getAsyncDoc(String url, Object responseObject) throws IOException, WPSClientException {
 
         String getStatusURL = "";
         boolean processSuceeded = false;
         boolean processFailed = false;
 
-        if (responseObject instanceof ExecuteResponseDocument) {
-            ExecuteResponseDocument executeResponseDocument = (ExecuteResponseDocument) responseObject;
-
-            processSuceeded = executeResponseDocument.getExecuteResponse().getStatus().isSetProcessSucceeded();
-
-            if(processSuceeded){
-                return executeResponseDocument;
-            }
-
-            processFailed = executeResponseDocument.getExecuteResponse().getStatus().isSetProcessSucceeded();
-
-            if(processFailed){
-                return executeResponseDocument.getExecuteResponse().getStatus().getProcessFailed().getExceptionReport();
-            }
-
-            getStatusURL = executeResponseDocument.getExecuteResponse().getStatusLocation();
-
-        } //TODO
-//        else if (responseObject instanceof StatusInfoDocument) {
+//        if (responseObject instanceof StatusInfo) {
+//            ExecuteResponseDocument executeResponseDocument = (ExecuteResponseDocument) responseObject;
 //
-//            StatusInfoDocument statusInfoDocument = (StatusInfoDocument) responseObject;
-//            String jobID = statusInfoDocument.getStatusInfo().getJobID();
-//            processSuceeded = statusInfoDocument.getStatusInfo().getStatus().equals("Succeeded");
-//            processFailed = statusInfoDocument.getStatusInfo().getStatus().equals("Failed");
+//            processSuceeded = executeResponseDocument.getExecuteResponse().getStatus().isSetProcessSucceeded();
 //
-//            // if succeeded, return result, otherwise GetResult operation will return ExceptionReport
-//            if(processSuceeded || processFailed){
-//
-//                String getResultURL = createGetResultURLWPS20(url, jobID);
-//
-//                return checkInputStream(retrieveResponseOrExceptionReportInpustream(new URL(getResultURL)));
+//            if(processSuceeded){
+//                return executeResponseDocument;
 //            }
 //
-//            getStatusURL = createGetStatusURLWPS20(url, jobID);
+//            processFailed = executeResponseDocument.getExecuteResponse().getStatus().isSetProcessSucceeded();
 //
-//        }
+//            if(processFailed){
+//                return executeResponseDocument.getExecuteResponse().getStatus().getProcessFailed().getExceptionReport();
+//            }
+//
+//            getStatusURL = executeResponseDocument.getExecuteResponse().getStatusLocation();
+//
+//        } //TODO
+        if (responseObject instanceof StatusInfo) {
+
+            StatusInfo statusInfoDocument = (StatusInfo) responseObject;
+            String jobID = statusInfoDocument.getJobId();
+            processSuceeded = statusInfoDocument.getStatus().equals("Succeeded");
+            processFailed = statusInfoDocument.getStatus().equals("Failed");
+
+            // if succeeded, return result, otherwise GetResult operation will return ExceptionReport
+            if(processSuceeded || processFailed){
+
+                String getResultURL = statusInfoDocument.getStatusLocation();
+
+                return retrieveResponseOrExceptionReportInpustream(new URL(getResultURL));
+            }
+        }
 
         if(isCancel()){
             LOGGER.info("Asynchronous Execute operation canceled.");
@@ -782,7 +760,7 @@ public class WPSClientSession {
             LOGGER.error("Could not let Thread sleep millis: " + delayForAsyncRequests, e);
         }
 
-        return getAsyncDoc(url, checkInputStream(retrieveResponseOrExceptionReportInpustream(new URL(getStatusURL))));
+        return getAsyncDoc(url, retrieveResponseOrExceptionReportInpustream(new URL(getStatusURL)));
     }
 
     private void loadProperties() {
