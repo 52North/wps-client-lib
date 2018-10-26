@@ -122,4 +122,14 @@ public class StatusInfo extends WPSResponse {
         this.result = result;
     }
 
+    @Override
+    public String toString() {
+
+        StringBuilder stringBuilder = new StringBuilder();
+
+        stringBuilder.append(getStatus());
+
+        return stringBuilder.toString();
+    }
+
 }

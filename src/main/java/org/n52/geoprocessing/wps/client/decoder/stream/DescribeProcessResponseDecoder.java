@@ -29,6 +29,7 @@ import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
 import org.n52.geoprocessing.wps.client.model.BoundingBoxInputDescription;
+import org.n52.geoprocessing.wps.client.model.BoundingBoxOutputDescription;
 import org.n52.geoprocessing.wps.client.model.ComplexInputDescription;
 import org.n52.geoprocessing.wps.client.model.Format;
 import org.n52.geoprocessing.wps.client.model.InputDescription;
@@ -39,8 +40,14 @@ import org.n52.javaps.service.xml.OWSConstants;
 import org.n52.javaps.service.xml.WPSConstants;
 import org.n52.svalbard.decode.stream.StreamReaderKey;
 import org.n52.svalbard.decode.stream.xml.AbstractElementXmlStreamReader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DescribeProcessResponseDecoder extends AbstractElementXmlStreamReader {
+
+    private static Logger LOGGER = LoggerFactory.getLogger(DescribeProcessResponseDecoder.class);
+    private static final String ASYNC_EXECUTE = "async-execute";
+    private static final String REFERENCE = "reference";
 
     @Override
     public List<org.n52.geoprocessing.wps.client.model.Process> readElement(XMLEventReader reader)
@@ -74,7 +81,7 @@ public class DescribeProcessResponseDecoder extends AbstractElementXmlStreamRead
         throw eof();
     }
 
-    private List<org.n52.geoprocessing.wps.client.model.Process> readProcessOfferings(StartElement elem,
+    public List<org.n52.geoprocessing.wps.client.model.Process> readProcessOfferings(StartElement elem,
             XMLEventReader reader) throws XMLStreamException {
 
         List<org.n52.geoprocessing.wps.client.model.Process> processes = new ArrayList<>();
@@ -105,19 +112,35 @@ public class DescribeProcessResponseDecoder extends AbstractElementXmlStreamRead
             if (event.isStartElement()) {
                 StartElement elem = event.asStartElement();
                 if (elem.getName().equals(WPSConstants.Elem.QN_PROCESS)) {
-                    processes.add(readProcess(elem, reader));
+                    processes.add(readProcess(start, reader));
                 } else {
-                    throw unexpectedTag(start);
+                    throw unexpectedTag(elem);
                 }
             }
         }
         return processes;
     }
 
-    private org.n52.geoprocessing.wps.client.model.Process readProcess(StartElement start,
+    private org.n52.geoprocessing.wps.client.model.Process readProcess(StartElement processOfferingsElement,
             XMLEventReader reader) throws XMLStreamException {
 
         org.n52.geoprocessing.wps.client.model.Process process = new org.n52.geoprocessing.wps.client.model.Process();
+
+        try {
+            String jobControlOptions = getAttribute(processOfferingsElement, WPSConstants.Attr.AN_JOB_CONTROL_OPTIONS).get();
+
+            process.setStatusSupported(jobControlOptions.contains(ASYNC_EXECUTE));
+        } catch (Exception e) {
+            LOGGER.info("Job control options attribute not present.");
+        }
+
+        try {
+            String outputTransmission = getAttribute(processOfferingsElement, WPSConstants.Attr.AN_OUTPUT_TRANSMISSION).get();
+
+            process.setReferenceSupported(outputTransmission.contains(REFERENCE));
+        } catch (Exception e) {
+            LOGGER.info("Output transmission attribute not present.");
+        }
 
         List<InputDescription> inputs = new ArrayList<>();
 
@@ -171,6 +194,9 @@ public class DescribeProcessResponseDecoder extends AbstractElementXmlStreamRead
                 } else if (start.getName().equals(WPSConstants.Elem.QN_LITERAL_DATA)) {
                     output = new LiteralOutputDescription();
                     readLiteralData(start, reader, (LiteralOutputDescription) output);
+                }  else if (start.getName().equals(WPSConstants.Elem.QN_BOUNDING_BOX_DATA)) {
+                    output = new BoundingBoxOutputDescription();
+                    readBoundingBoxData(start, reader, (BoundingBoxOutputDescription) output);
                 } else {
                     throw unexpectedTag(start);
                 }
@@ -187,6 +213,42 @@ public class DescribeProcessResponseDecoder extends AbstractElementXmlStreamRead
         }
 
         throw eof();
+    }
+
+    private void readBoundingBoxData(StartElement start,
+            XMLEventReader reader,
+            BoundingBoxOutputDescription output) throws XMLStreamException {
+
+        List<Format> formats = new ArrayList<>();
+
+        while (reader.hasNext()) {
+            XMLEvent event = reader.nextEvent();
+            if (event.isStartElement()) {
+                StartElement elem = event.asStartElement();
+                if (elem.getName().equals(WPSConstants.Elem.QN_FORMAT)) {
+                    formats.add(readFormat(elem, reader));
+                } else if (elem.getName().equals(WPSConstants.Elem.QN_SUPPORTED_CRS)) {
+                    readSupportedCRS(elem, reader, output);
+                } else {
+                    throw unexpectedTag(elem);
+                }
+            } else if (event.isEndElement()) {
+                EndElement elem = event.asEndElement();
+                if (elem.getName().equals(WPSConstants.Elem.QN_BOUNDING_BOX_DATA)) {
+                    output.setFormats(formats);
+                    return;
+                }
+            }
+        }
+        throw eof();
+
+    }
+
+    private void readSupportedCRS(StartElement elem,
+            XMLEventReader reader,
+            BoundingBoxOutputDescription output) {
+        // TODO Auto-generated method stub
+
     }
 
     private void readLiteralData(StartElement start,
@@ -229,7 +291,7 @@ public class DescribeProcessResponseDecoder extends AbstractElementXmlStreamRead
                 if (start.getName().equals(OWSConstants.Elem.QN_ANY_VALUE)) {
                     output.setAnyValue(true);
                 } else if (start.getName().equals(OWSConstants.Elem.QN_DATA_TYPE)) {
-                    readDataType(elem, reader, output);
+                    readDataType(start, reader, output);
                 } else {
                     throw unexpectedTag(start);
                 }
@@ -246,7 +308,7 @@ public class DescribeProcessResponseDecoder extends AbstractElementXmlStreamRead
     private void readDataType(StartElement elem,
             XMLEventReader reader,
             LiteralOutputDescription output) {
-        getAttribute(elem, OWSConstants.Attr.AN_REFERENCE).ifPresent(output::setDataType);
+        getAttribute(elem, OWSConstants.Attr.QN_REFERENCE).ifPresent(output::setDataType);
     }
 
     private void readComplexData(StartElement start,
@@ -396,11 +458,11 @@ public class DescribeProcessResponseDecoder extends AbstractElementXmlStreamRead
                 if (start.getName().equals(OWSConstants.Elem.QN_ANY_VALUE)) {
                     input.setAnyValue(true);
                 } else if (start.getName().equals(OWSConstants.Elem.QN_ALLOWED_VALUES)) {
-                    readAllowedValues(elem, reader, input);
+                    readAllowedValues(start, reader, input);
                 } else if (start.getName().equals(OWSConstants.Elem.QN_DATA_TYPE)) {
-                    readDataType(elem, reader, input);
+                    readDataType(start, reader, input);
                 } else if (start.getName().equals(OWSConstants.Elem.QN_DEFAULT_VALUE)) {
-                    readDefaultValue(elem, reader, input);
+                    readDefaultValue(start, reader, input);
                 } else {
                     throw unexpectedTag(start);
                 }
@@ -423,7 +485,7 @@ public class DescribeProcessResponseDecoder extends AbstractElementXmlStreamRead
     private void readDataType(StartElement elem,
             XMLEventReader reader,
             LiteralInputDescription input) {
-        getAttribute(elem, OWSConstants.Attr.AN_REFERENCE).ifPresent(input::setDataType);
+        getAttribute(elem, OWSConstants.Attr.QN_REFERENCE).ifPresent(input::setDataType);
     }
 
     private void readAllowedValues(StartElement elem,

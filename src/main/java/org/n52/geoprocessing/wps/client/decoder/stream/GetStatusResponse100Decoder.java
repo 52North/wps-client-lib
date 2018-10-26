@@ -36,7 +36,6 @@ import org.n52.geoprocessing.wps.client.model.Format;
 import org.n52.geoprocessing.wps.client.model.Result;
 import org.n52.geoprocessing.wps.client.model.StatusInfo;
 import org.n52.geoprocessing.wps.client.model.execution.BoundingBox;
-import org.n52.geoprocessing.wps.client.model.execution.BoundingBoxData;
 import org.n52.geoprocessing.wps.client.model.execution.ComplexData;
 import org.n52.geoprocessing.wps.client.model.execution.ComplexDataReference;
 import org.n52.geoprocessing.wps.client.model.execution.Data;
@@ -79,6 +78,14 @@ public class GetStatusResponse100Decoder extends AbstractElementXmlStreamReader 
             XMLEventReader reader) throws XMLStreamException {
 
         StatusInfo statusInfo = new StatusInfo();
+
+        try {
+            String statusLocation = getAttribute(elem, WPS100Constants.Attr.AN_STATUS_LOCATION).get();
+
+            statusInfo.setStatusLocation(statusLocation);
+        } catch (Exception e) {
+            LOGGER.info("Status location attribute not present.");
+        }
 
         while (reader.hasNext()) {
             XMLEvent event = reader.nextEvent();
@@ -268,14 +275,14 @@ public class GetStatusResponse100Decoder extends AbstractElementXmlStreamReader 
         }
         throw eof();
     }
-    
+
     private Data readComplexDataString(String dataString,
             XMLEventReader reader, Data output) throws XMLStreamException {
-        
+
         StringBuilder data = new StringBuilder();
-        
+
         data.append(dataString);
-        
+
         while (reader.hasNext()) {
             XMLEvent event = reader.nextEvent();
             if(event.isCharacters()){

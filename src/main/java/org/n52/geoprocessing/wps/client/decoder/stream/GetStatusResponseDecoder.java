@@ -82,6 +82,7 @@ public class GetStatusResponseDecoder extends AbstractElementXmlStreamReader {
                     throw unexpectedTag(start);
                 }
             } else if (event.isEndElement()) {
+
                 return statusInfo;
             }
         }

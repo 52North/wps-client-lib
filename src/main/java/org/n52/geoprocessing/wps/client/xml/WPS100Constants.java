@@ -56,8 +56,12 @@ public interface WPS100Constants {
         QName QN_AS_REFERENCE = noNamespace(AN_AS_REFERENCE);
         String AN_STORE_EXECUTE_RESPONSE= "storeExecuteResponse";
         QName QN_STORE_EXECUTE_RESPONSE = noNamespace(AN_STORE_EXECUTE_RESPONSE);
+        String AN_STORE_SUPPORTED= "storeSupported";
+        QName QN_AN_STORE_SUPPORTED = noNamespace(AN_STORE_SUPPORTED);
         String AN_STATUS = "status";
         QName QN_STATUS = noNamespace(AN_STATUS);
+        String AN_STATUS_LOCATION = "statusLocation";
+        QName QN_STATUS_LOCATION = noNamespace(AN_STATUS_LOCATION);
         String AN_UOM = "uom";
         QName QN_UOM = wps(AN_UOM);
         String AN_VERSION = "version";
@@ -134,7 +138,7 @@ public interface WPS100Constants {
         String EN_COMPLEX_OUTPUT = "ComplexOutput";
         QName QN_COMPLEX_OUTPUT = wps(EN_COMPLEX_OUTPUT);
         QName QN_COMPLEX_OUTPUT_NO_NAMESPACE = noNamespace(EN_COMPLEX_OUTPUT);
-        String EN_LITERAL_OUTPUT = "LiteralLOutput";
+        String EN_LITERAL_OUTPUT = "LiteralOutput";
         QName QN_LITERAL_OUTPUT = wps(EN_LITERAL_OUTPUT);
         QName QN_LITERAL_OUTPUT_NO_NAMESPACE = noNamespace(EN_LITERAL_OUTPUT);
         String EN_BOUNDING_BOX_OUTPUT = "BoundingBoxOutput";

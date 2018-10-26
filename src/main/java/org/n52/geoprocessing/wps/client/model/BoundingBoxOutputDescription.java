@@ -14,19 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.n52.geoprocessing.wps.client.model.execution;
+package org.n52.geoprocessing.wps.client.model;
 
-public class BoundingBoxData extends Data{
+public class BoundingBoxOutputDescription extends OutputDescription {
 
-//    private BoundingBox value;
-//
-//    @Override
-//    public BoundingBox getValue() {
-//        return value;
-//    }
-//
-//    public void setValue(BoundingBox value) {
-//        this.value = value;
-//    }
+
 
 }

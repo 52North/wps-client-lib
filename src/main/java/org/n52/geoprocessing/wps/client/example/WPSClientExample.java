@@ -65,6 +65,8 @@ public class WPSClientExample {
 
             builder.setResponseDocument("complexOutput", "", "", "text/xml");
 
+            builder.setAsynchronousExecute();
+
             execute(wpsURL, builder.getExecute(), version);
 
         } catch (WPSClientException e) {
@@ -130,7 +132,7 @@ public class WPSClientExample {
         //TODO find way to initialize parsers/generators
 
         WPSClientExample client = new WPSClientExample();
-        client.testExecute("1.0.0");
+        client.testExecute("2.0.0");
     }
 
 }

@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ﻿Copyright (C) 2018 52°North Initiative for Geospatial Open Source
+    Software GmbH
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<wps:ProcessOfferings xmlns:wps="http://www.opengis.net/wps/2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ows="http://www.opengis.net/ows/2.0" xsi:schemaLocation="http://www.opengis.net/wps/2.0 http://schemas.opengis.net/wps/2.0/wps.xsd">
+  <wps:ProcessOffering processVersion="1.0.0" jobControlOptions="sync-execute async-execute" outputTransmission="value reference">
+    <wps:Process>
+      <ows:Title>org.n52.wps.server.algorithm.test.DummyTestClass</ows:Title>
+      <ows:Identifier>org.n52.wps.server.algorithm.test.DummyTestClass</ows:Identifier>
+      <wps:Input minOccurs="0" maxOccurs="1">
+        <ows:Title>ComplexInputData</ows:Title>
+        <ows:Identifier>ComplexInputData</ows:Identifier>
+        <wps:ComplexData xmlns:ns="http://www.opengis.net/wps/2.0">
+          <ns:Format default="true" mimeType="application/dbase"/>
+          <ns:Format mimeType="application/dbase"/>
+          <ns:Format mimeType="application/dbase" encoding="base64"/>
+          <ns:Format mimeType="application/dgn"/>
+          <ns:Format mimeType="application/dgn" encoding="base64"/>
+          <ns:Format mimeType="application/geotiff"/>
+          <ns:Format mimeType="application/geotiff" encoding="base64"/>
+          <ns:Format mimeType="application/hdf4-eos"/>
+          <ns:Format mimeType="application/hdf4-eos" encoding="base64"/>
+          <ns:Format mimeType="application/img"/>
+          <ns:Format mimeType="application/img" encoding="base64"/>
+          <ns:Format mimeType="application/rData"/>
+          <ns:Format mimeType="application/rData" encoding="base64"/>
+          <ns:Format mimeType="application/rData+Spatial"/>
+          <ns:Format mimeType="application/rData+Spatial" encoding="base64"/>
+          <ns:Format mimeType="application/rData+SpatialPoints"/>
+          <ns:Format mimeType="application/rData+SpatialPoints" encoding="base64"/>
+          <ns:Format mimeType="application/rData+SpatialPolygons"/>
+          <ns:Format mimeType="application/rData+SpatialPolygons" encoding="base64"/>
+          <ns:Format mimeType="application/remap"/>
+          <ns:Format mimeType="application/remap" encoding="base64"/>
+          <ns:Format mimeType="application/x-erdas-hfa"/>
+          <ns:Format mimeType="application/x-erdas-hfa" encoding="base64"/>
+          <ns:Format mimeType="application/x-geotiff"/>
+          <ns:Format mimeType="application/x-geotiff" encoding="base64"/>
+          <ns:Format mimeType="application/x-netcdf"/>
+          <ns:Format mimeType="application/x-netcdf" encoding="base64"/>
+          <ns:Format mimeType="application/x-zipped-shp"/>
+          <ns:Format mimeType="application/x-zipped-shp" encoding="base64"/>
+          <ns:Format mimeType="image/jpeg"/>
+          <ns:Format mimeType="image/jpeg" encoding="base64"/>
+          <ns:Format mimeType="image/png"/>
+          <ns:Format mimeType="image/png" encoding="base64"/>
+          <ns:Format mimeType="image/tiff"/>
+          <ns:Format mimeType="image/tiff" encoding="base64"/>
+          <ns:Format mimeType="text/csv"/>
+          <ns:Format mimeType="text/csv" encoding="base64"/>
+          <ns:Format mimeType="text/html"/>
+          <ns:Format mimeType="text/html" encoding="base64"/>
+          <ns:Format mimeType="text/plain"/>
+          <ns:Format mimeType="text/plain" encoding="base64"/>
+          <ns:Format mimeType="text/x-markdown"/>
+          <ns:Format mimeType="text/x-markdown" encoding="base64"/>
+        </wps:ComplexData>
+      </wps:Input>
+      <wps:Input minOccurs="0" maxOccurs="1">
+        <ows:Title>LiteralInputData</ows:Title>
+        <ows:Identifier>LiteralInputData</ows:Identifier>
+        <wps:LiteralData xmlns:ns="http://www.opengis.net/wps/2.0">
+          <ns:Format default="true" mimeType="text/plain"/>
+          <ns:Format mimeType="text/xml"/>
+          <LiteralDataDomain>
+            <ows:AnyValue/>
+            <ows:DataType ows:reference="xs:string"/>
+          </LiteralDataDomain>
+        </wps:LiteralData>
+      </wps:Input>
+      <wps:Input minOccurs="0" maxOccurs="1">
+        <ows:Title>BBOXInputData</ows:Title>
+        <ows:Identifier>BBOXInputData</ows:Identifier>
+        <wps:BoundingBoxData>
+          <wps:Format mimeType="text/xml" default="true"/>
+          <wps:SupportedCRS default="true">EPSG:4328</wps:SupportedCRS>
+          <wps:SupportedCRS>EPSG:5628</wps:SupportedCRS>
+        </wps:BoundingBoxData>
+      </wps:Input>
+      <wps:Output>
+        <ows:Title>ComplexOutputData</ows:Title>
+        <ows:Abstract>ComplexOutputData</ows:Abstract>
+        <ows:Identifier>ComplexOutputData</ows:Identifier>
+        <wps:ComplexData xmlns:ns="http://www.opengis.net/wps/2.0">
+          <ns:Format default="true" mimeType="application/dbase"/>
+          <ns:Format mimeType="application/dbase"/>
+          <ns:Format mimeType="application/dbase" encoding="base64"/>
+          <ns:Format mimeType="application/dgn"/>
+          <ns:Format mimeType="application/dgn" encoding="base64"/>
+          <ns:Format mimeType="application/geotiff"/>
+          <ns:Format mimeType="application/geotiff" encoding="base64"/>
+          <ns:Format mimeType="application/hdf4-eos"/>
+          <ns:Format mimeType="application/hdf4-eos" encoding="base64"/>
+          <ns:Format mimeType="application/img"/>
+          <ns:Format mimeType="application/img" encoding="base64"/>
+          <ns:Format mimeType="application/msword"/>
+          <ns:Format mimeType="application/msword" encoding="base64"/>
+          <ns:Format mimeType="application/rData"/>
+          <ns:Format mimeType="application/rData" encoding="base64"/>
+          <ns:Format mimeType="application/rData+Spatial"/>
+          <ns:Format mimeType="application/rData+Spatial" encoding="base64"/>
+          <ns:Format mimeType="application/rData+SpatialPoints"/>
+          <ns:Format mimeType="application/rData+SpatialPoints" encoding="base64"/>
+          <ns:Format mimeType="application/rData+SpatialPolygons"/>
+          <ns:Format mimeType="application/rData+SpatialPolygons" encoding="base64"/>
+          <ns:Format mimeType="application/remap"/>
+          <ns:Format mimeType="application/remap" encoding="base64"/>
+          <ns:Format mimeType="application/x-erdas-hfa"/>
+          <ns:Format mimeType="application/x-erdas-hfa" encoding="base64"/>
+          <ns:Format mimeType="application/x-geotiff"/>
+          <ns:Format mimeType="application/x-geotiff" encoding="base64"/>
+          <ns:Format mimeType="application/x-netcdf"/>
+          <ns:Format mimeType="application/x-netcdf" encoding="base64"/>
+          <ns:Format mimeType="application/x-zipped-shp"/>
+          <ns:Format mimeType="application/x-zipped-shp" encoding="base64"/>
+          <ns:Format mimeType="application/zip"/>
+          <ns:Format mimeType="application/zip" encoding="base64"/>
+          <ns:Format mimeType="image/jpeg"/>
+          <ns:Format mimeType="image/jpeg" encoding="base64"/>
+          <ns:Format mimeType="image/png"/>
+          <ns:Format mimeType="image/png" encoding="base64"/>
+          <ns:Format mimeType="image/tiff"/>
+          <ns:Format mimeType="image/tiff" encoding="base64"/>
+          <ns:Format mimeType="text/csv"/>
+          <ns:Format mimeType="text/csv" encoding="base64"/>
+          <ns:Format mimeType="text/html"/>
+          <ns:Format mimeType="text/html" encoding="base64"/>
+          <ns:Format mimeType="text/plain"/>
+          <ns:Format mimeType="text/plain" encoding="base64"/>
+          <ns:Format mimeType="text/x-markdown"/>
+          <ns:Format mimeType="text/x-markdown" encoding="base64"/>
+        </wps:ComplexData>
+      </wps:Output>
+      <wps:Output>
+        <ows:Title>LiteralOutputData</ows:Title>
+        <ows:Abstract>LiteralOutputData</ows:Abstract>
+        <ows:Identifier>LiteralOutputData</ows:Identifier>
+        <wps:LiteralData xmlns:ns="http://www.opengis.net/wps/2.0">
+          <ns:Format default="true" mimeType="text/plain"/>
+          <ns:Format mimeType="text/xml"/>
+          <LiteralDataDomain>
+            <ows:AnyValue/>
+            <ows:DataType ows:reference=""/>
+          </LiteralDataDomain>
+        </wps:LiteralData>
+      </wps:Output>
+      <wps:Output>
+        <ows:Title>BBOXOutputData</ows:Title>
+        <ows:Abstract>BBOXOutputData</ows:Abstract>
+        <ows:Identifier>BBOXOutputData</ows:Identifier>
+        <wps:BoundingBoxData>
+          <wps:Format mimeType="text/xml" default="true"/>
+          <wps:SupportedCRS default="true">EPSG:4328</wps:SupportedCRS>
+          <wps:SupportedCRS>EPSG:5628</wps:SupportedCRS>
+        </wps:BoundingBoxData>
+      </wps:Output>
+    </wps:Process>
+  </wps:ProcessOffering>
+</wps:ProcessOfferings>

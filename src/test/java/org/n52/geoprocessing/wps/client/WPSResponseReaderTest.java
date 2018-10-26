@@ -110,6 +110,27 @@ public class WPSResponseReaderTest {
     }
 
     @Test
+    public void testReadDescribeProcess200(){
+
+        XMLEventReader xmlReader = null;
+        try {
+            xmlReader = XMLInputFactory.newInstance().createXMLEventReader(new InputStreamReader(WPSResponseReaderTest.class.getResourceAsStream("52n-describeprocess-response200.xml")));
+        } catch (XMLStreamException | FactoryConfigurationError e) {
+            LOGGER.error(e.getMessage());
+            fail();
+        }
+
+        try {
+            Object o = new WPSResponseReader().readElement(xmlReader);
+            assertTrue(o != null);
+            assertTrue(o instanceof List);
+        } catch (XMLStreamException e) {
+            LOGGER.error(e.getMessage());
+            fail();
+        }
+    }
+
+    @Test
     public void testReadExceptionReport20(){
 
         XMLEventReader xmlReader = null;
@@ -240,10 +261,10 @@ public class WPSResponseReaderTest {
             fail();
         }
     }
-    
+
     @Test
     public void testReadStatusInfoSucceededComplexOutputText100(){
-        
+
         XMLEventReader xmlReader = null;
         try {
             xmlReader = XMLInputFactory.newInstance().createXMLEventReader(new InputStreamReader(WPSResponseReaderTest.class.getResourceAsStream("52n-execute-response100-status-succeeded-outputs-inline-complex-text.xml")));
@@ -251,21 +272,21 @@ public class WPSResponseReaderTest {
             LOGGER.error(e.getMessage());
             fail();
         }
-        
+
         try {
             Object o = new WPSResponseReader().readElement(xmlReader);
             assertTrue(o != null);
             assertTrue(o instanceof StatusInfo);
-            
+
             StatusInfo statusInfo = (StatusInfo)o;
-            
+
             assertTrue(statusInfo.getStatus().equals(JobStatus.succeeded()));
             assertTrue(statusInfo.getResult() != null);
-            
+
             Result result = statusInfo.getResult();
-            
+
             assertTrue(result.getOutputs().size() == 3);
-            
+
             for (Data output : result.getOutputs()) {
                 if(output.getId().equals("ComplexOutputData")){
                     assertTrue(output.getValue().equals("{\"test\":\"json\"}"));
@@ -274,16 +295,16 @@ public class WPSResponseReaderTest {
                 } else if(output.getId().equals("BBOXOutputData")){
                 }
             }
-            
+
         } catch (XMLStreamException e) {
             LOGGER.error(e.getMessage());
             fail();
         }
     }
-    
+
     @Test
     public void testReadStatusInfoSucceededComplexOutputCDATA100(){
-        
+
         XMLEventReader xmlReader = null;
         try {
             xmlReader = XMLInputFactory.newInstance().createXMLEventReader(new InputStreamReader(WPSResponseReaderTest.class.getResourceAsStream("52n-execute-response100-status-succeeded-outputs-inline-complex-cdata.xml")));
@@ -291,21 +312,21 @@ public class WPSResponseReaderTest {
             LOGGER.error(e.getMessage());
             fail();
         }
-        
+
         try {
             Object o = new WPSResponseReader().readElement(xmlReader);
             assertTrue(o != null);
             assertTrue(o instanceof StatusInfo);
-            
+
             StatusInfo statusInfo = (StatusInfo)o;
-            
+
             assertTrue(statusInfo.getStatus().equals(JobStatus.succeeded()));
             assertTrue(statusInfo.getResult() != null);
-            
+
             Result result = statusInfo.getResult();
-            
+
             assertTrue(result.getOutputs().size() == 3);
-            
+
             for (Data output : result.getOutputs()) {
                 if(output.getId().equals("ComplexOutputData")){
                     assertTrue(output.getValue().equals("{\"test\":\"json\"}"));
@@ -316,7 +337,7 @@ public class WPSResponseReaderTest {
                     checkBBoxData((BoundingBoxData)output);
                 }
             }
-            
+
         } catch (XMLStreamException e) {
             LOGGER.error(e.getMessage());
             fail();
@@ -405,10 +426,10 @@ public class WPSResponseReaderTest {
             fail();
         }
     }
-    
+
     @Test
     public void testReadResult200ComplexOutputText(){
-        
+
         XMLEventReader xmlReader = null;
         try {
             xmlReader = XMLInputFactory.newInstance().createXMLEventReader(new InputStreamReader(WPSResponseReaderTest.class.getResourceAsStream("52n-execute-response200-outputs-inline-complexoutput-text.xml")));
@@ -416,16 +437,16 @@ public class WPSResponseReaderTest {
             LOGGER.error(e.getMessage());
             fail();
         }
-        
+
         try {
             Object o = new WPSResponseReader().readElement(xmlReader);
             assertTrue(o != null);
             assertTrue(o instanceof Result);
-            
+
             Result result = (Result)o;
-            
+
             assertTrue(result.getOutputs().size() == 3);
-            
+
             for (Data output : result.getOutputs()) {
                 if(output.getId().equals("ComplexOutputData")){
                     assertTrue(output.getValue().equals("{\"test\":\"json\"}"));
@@ -436,16 +457,16 @@ public class WPSResponseReaderTest {
                     checkBBoxData((BoundingBoxData)output);
                 }
             }
-            
+
         } catch (XMLStreamException e) {
             LOGGER.error(e.getMessage());
             fail();
         }
     }
-    
+
     @Test
     public void testReadResult200ComplexOutputCDATA(){
-        
+
         XMLEventReader xmlReader = null;
         try {
             xmlReader = XMLInputFactory.newInstance().createXMLEventReader(new InputStreamReader(WPSResponseReaderTest.class.getResourceAsStream("52n-execute-response200-outputs-inline-complexoutput-cdata.xml")));
@@ -453,16 +474,16 @@ public class WPSResponseReaderTest {
             LOGGER.error(e.getMessage());
             fail();
         }
-        
+
         try {
             Object o = new WPSResponseReader().readElement(xmlReader);
             assertTrue(o != null);
             assertTrue(o instanceof Result);
-            
+
             Result result = (Result)o;
-            
+
             assertTrue(result.getOutputs().size() == 3);
-            
+
             for (Data output : result.getOutputs()) {
                 if(output.getId().equals("ComplexOutputData")){
                     assertTrue(output.getValue().equals("{\"test\":\"json\"}"));
@@ -473,7 +494,7 @@ public class WPSResponseReaderTest {
                     checkBBoxData((BoundingBoxData)output);
                 }
             }
-            
+
         } catch (XMLStreamException e) {
             LOGGER.error(e.getMessage());
             fail();
@@ -488,6 +509,6 @@ public class WPSResponseReaderTest {
         assertTrue(boundingBox.getMinY() == -90d);
         assertTrue(boundingBox.getMaxX() == 180d);
         assertTrue(boundingBox.getMaxY() == 90d);
-        
+
     }
 }

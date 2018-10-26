@@ -26,7 +26,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,6 +62,7 @@ import org.n52.geoprocessing.wps.client.model.WPSCapabilities;
 import org.n52.geoprocessing.wps.client.model.execution.ExecutionMode;
 import org.n52.geoprocessing.wps.client.xml.WPSResponseReader;
 import org.n52.janmayen.Json;
+import org.n52.shetland.ogc.wps.JobStatus;
 import org.n52.svalbard.encode.exception.EncodingException;
 import org.n52.svalbard.encode.stream.xml.ElementXmlStreamWriterRepository;
 import org.n52.svalbard.encode.stream.xml.XmlStreamWritingContext;
@@ -735,15 +735,29 @@ public class WPSClientSession {
 
             StatusInfo statusInfoDocument = (StatusInfo) responseObject;
             String jobID = statusInfoDocument.getJobId();
-            processSuceeded = statusInfoDocument.getStatus().equals("Succeeded");
-            processFailed = statusInfoDocument.getStatus().equals("Failed");
+            processSuceeded = statusInfoDocument.getStatus().equals(JobStatus.succeeded());
+            processFailed = statusInfoDocument.getStatus().equals(JobStatus.failed());
 
             // if succeeded, return result, otherwise GetResult operation will return ExceptionReport
             if(processSuceeded || processFailed){
 
                 String getResultURL = statusInfoDocument.getStatusLocation();
 
+                String statusLocation = statusInfoDocument.getStatusLocation();
+
+                if(statusLocation == null || statusLocation.isEmpty()) {
+                    getResultURL = createGetResultURLWPS20(url, jobID);
+                }
+
                 return retrieveResponseOrExceptionReportInpustream(new URL(getResultURL));
+            }
+
+            String statusLocation = statusInfoDocument.getStatusLocation();
+
+            if(statusLocation != null && !(statusLocation.isEmpty())) {
+                getStatusURL = statusLocation;
+            }else {
+                getStatusURL = createGetStatusURLWPS20(url, jobID);
             }
         }
 

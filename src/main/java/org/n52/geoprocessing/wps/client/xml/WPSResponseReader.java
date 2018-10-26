@@ -24,6 +24,7 @@ import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
 import org.n52.geoprocessing.wps.client.decoder.stream.DescribeProcess100ResponseDecoder;
+import org.n52.geoprocessing.wps.client.decoder.stream.DescribeProcessResponseDecoder;
 import org.n52.geoprocessing.wps.client.decoder.stream.ExceptionReport100Decoder;
 import org.n52.geoprocessing.wps.client.decoder.stream.ExceptionReport20Decoder;
 import org.n52.geoprocessing.wps.client.decoder.stream.GetCapabilities100ResponseDecoder;
@@ -105,8 +106,8 @@ public class WPSResponseReader extends AbstractElementXmlStreamReader {
     }
 
     private Object readProcessOfferingsResponse(StartElement start,
-            XMLEventReader reader) {
-        return null;
+            XMLEventReader reader) throws XMLStreamException {
+        return new DescribeProcessResponseDecoder().readProcessOfferings(start, reader);
     }
 
     private Object readStatusInfoResponse(StartElement start,

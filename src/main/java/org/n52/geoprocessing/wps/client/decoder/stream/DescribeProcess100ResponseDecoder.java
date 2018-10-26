@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import javax.xml.stream.XMLEventReader;
@@ -30,6 +29,7 @@ import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
 import org.n52.geoprocessing.wps.client.model.BoundingBoxInputDescription;
+import org.n52.geoprocessing.wps.client.model.BoundingBoxOutputDescription;
 import org.n52.geoprocessing.wps.client.model.ComplexInputDescription;
 import org.n52.geoprocessing.wps.client.model.Format;
 import org.n52.geoprocessing.wps.client.model.InputDescription;
@@ -40,8 +40,12 @@ import org.n52.geoprocessing.wps.client.xml.OWS11Constants;
 import org.n52.geoprocessing.wps.client.xml.WPS100Constants;
 import org.n52.svalbard.decode.stream.StreamReaderKey;
 import org.n52.svalbard.decode.stream.xml.AbstractElementXmlStreamReader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DescribeProcess100ResponseDecoder extends AbstractElementXmlStreamReader {
+
+    private static Logger LOGGER = LoggerFactory.getLogger(DescribeProcess100ResponseDecoder.class);
 
     @Override
     public List<org.n52.geoprocessing.wps.client.model.Process> readElement(XMLEventReader reader)
@@ -85,7 +89,7 @@ public class DescribeProcess100ResponseDecoder extends AbstractElementXmlStreamR
             if (event.isStartElement()) {
                 StartElement start = event.asStartElement();
                 if (start.getName().equals(WPS100Constants.Elem.QN_PROCESS_DESCRIPTION)) {
-                    processes.add(readProcess(elem, reader));
+                    processes.add(readProcess(start, reader));
                 } else {
                     throw unexpectedTag(start);
                 }
@@ -118,10 +122,19 @@ public class DescribeProcess100ResponseDecoder extends AbstractElementXmlStreamR
 
         org.n52.geoprocessing.wps.client.model.Process process = new org.n52.geoprocessing.wps.client.model.Process();
 
+        try {
+            String storeSupported = getAttribute(start, WPS100Constants.Attr.AN_STORE_SUPPORTED).get();
+
+            process.setStatusSupported(Boolean.parseBoolean(storeSupported));
+        } catch (Exception e) {
+            LOGGER.info("Status supported attribute not present.");
+        }
+
         while (reader.hasNext()) {
             XMLEvent event = reader.nextEvent();
             if (event.isStartElement()) {
                 StartElement elem = event.asStartElement();
+
                 if (elem.getName().equals(OWS11Constants.Elem.QN_TITLE)) {
                     process.setTitle(reader.getElementText());
                 } else if (elem.getName().equals(OWS11Constants.Elem.QN_ABSTRACT)) {
@@ -155,12 +168,19 @@ public class DescribeProcess100ResponseDecoder extends AbstractElementXmlStreamR
         while (reader.hasNext()) {
             XMLEvent event = reader.nextEvent();
             if (event.isStartElement()) {
-                if (elem.getName().equals(WPS100Constants.Elem.QN_INPUT_NO_NAMESPACE)) {
-                    outputs.add(readOutput(elem, reader));
+                StartElement start = event.asStartElement();
+                if (start.getName().equals(WPS100Constants.Elem.QN_OUTPUT_NO_NAMESPACE)) {
+                    outputs.add(readOutput(start, reader));
                 }
+            } else if (event.isEndElement()) {
+                EndElement end = event.asEndElement();
+                if (end.getName().equals(WPS100Constants.Elem.QN_PROCESS_OUTPUTS_NO_NAMESPACE)) {
+                    return outputs;
+                }
+
             }
         }
-        return outputs;
+        throw eof();
     }
 
     private List<InputDescription> readDataInputs(StartElement start,
@@ -175,9 +195,15 @@ public class DescribeProcess100ResponseDecoder extends AbstractElementXmlStreamR
                 if (elem.getName().equals(WPS100Constants.Elem.QN_INPUT_NO_NAMESPACE)) {
                     inputs.add(readInput(elem, reader));
                 }
+            } else if (event.isEndElement()) {
+                EndElement end = event.asEndElement();
+                if (end.getName().equals(WPS100Constants.Elem.QN_DATA_INPUTS_NO_NAMESPACE)) {
+                    return inputs;
+                }
+
             }
         }
-        return inputs;
+        throw eof();
     }
 
     private OutputDescription readOutput(StartElement elem,
@@ -206,7 +232,10 @@ public class DescribeProcess100ResponseDecoder extends AbstractElementXmlStreamR
                 } else if (start.getName().equals(WPS100Constants.Elem.QN_LITERAL_OUTPUT_NO_NAMESPACE)) {
                     output = new LiteralOutputDescription();
                     readLiteralData(start, reader, (LiteralOutputDescription) output);
-                } else {//TODO add bbox output
+                } else if (start.getName().equals(WPS100Constants.Elem.QN_BOUNDING_BOX_OUTPUT_NO_NAMESPACE)) {
+                    output = new BoundingBoxOutputDescription();
+                    readBoundingBoxData(start, reader, (BoundingBoxOutputDescription) output);//TODO add bbox output
+                } else {
                     throw unexpectedTag(start);
                 }
             } else if (event.isEndElement()) {
@@ -281,7 +310,7 @@ public class DescribeProcess100ResponseDecoder extends AbstractElementXmlStreamR
     private void readDataType(StartElement elem,
             XMLEventReader reader,
             LiteralOutputDescription output) {
-        getAttribute(elem, OWS11Constants.Attr.AN_REFERENCE).ifPresent(output::setDataType);
+        getAttribute(elem, OWS11Constants.Attr.QN_REFERENCE).ifPresent(output::setDataType);
     }
 
     private void readComplexData(StartElement start,
@@ -362,6 +391,25 @@ public class DescribeProcess100ResponseDecoder extends AbstractElementXmlStreamR
 
     private void readBoundingBoxData(StartElement start,
             XMLEventReader reader,
+            BoundingBoxOutputDescription output) throws XMLStreamException {
+
+        List<Format> formats = new ArrayList<>();
+
+        while (reader.hasNext()) {
+            XMLEvent event = reader.nextEvent();
+            if (event.isEndElement()) {
+                EndElement elem = event.asEndElement();
+                if (elem.getName().equals(WPS100Constants.Elem.QN_BOUNDING_BOX_OUTPUT_NO_NAMESPACE)) {
+                    output.setFormats(formats);
+                    return;
+                }
+            }
+        }
+        throw eof();
+    }
+
+    private void readBoundingBoxData(StartElement start,
+            XMLEventReader reader,
             BoundingBoxInputDescription input) throws XMLStreamException {
 
         List<Format> formats = new ArrayList<>();
@@ -386,7 +434,6 @@ public class DescribeProcess100ResponseDecoder extends AbstractElementXmlStreamR
             }
         }
         throw eof();
-
     }
 
     //TODO implement
@@ -491,7 +538,7 @@ public class DescribeProcess100ResponseDecoder extends AbstractElementXmlStreamR
     private void readDataType(StartElement elem,
             XMLEventReader reader,
             LiteralInputDescription input) {
-        getAttribute(elem, OWS11Constants.Attr.AN_REFERENCE).ifPresent(input::setDataType);
+        getAttribute(elem, OWS11Constants.Attr.QN_REFERENCE).ifPresent(input::setDataType);
     }
 
     private void readAllowedValues(StartElement elem,

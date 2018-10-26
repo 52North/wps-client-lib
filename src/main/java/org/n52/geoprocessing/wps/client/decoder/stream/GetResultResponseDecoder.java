@@ -40,7 +40,6 @@ import org.n52.geoprocessing.wps.client.model.execution.BoundingBoxData;
 import org.n52.geoprocessing.wps.client.model.execution.ComplexData;
 import org.n52.geoprocessing.wps.client.model.execution.ComplexDataReference;
 import org.n52.geoprocessing.wps.client.model.execution.Data;
-import org.n52.geoprocessing.wps.client.xml.WPS100Constants;
 import org.n52.javaps.service.xml.OWSConstants;
 import org.n52.javaps.service.xml.WPSConstants;
 import org.n52.svalbard.decode.stream.StreamReaderKey;
