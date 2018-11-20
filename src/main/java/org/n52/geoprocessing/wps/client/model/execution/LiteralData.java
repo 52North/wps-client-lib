@@ -28,4 +28,17 @@ public class LiteralData extends Data {
         this.dataType = dataType;
     }
 
+    @Override
+    public String toString() {
+
+        StringBuilder builder = new StringBuilder();
+
+        builder.append(super.toString());
+
+        builder.append("Datatype: " + getDataType() + "\n");
+        builder.append("Value: " + getValue() + "\n");
+
+        return builder.toString();
+    }
+
 }

@@ -18,15 +18,16 @@ package org.n52.geoprocessing.wps.client.model.execution;
 
 public class BoundingBoxData extends Data{
 
-//    private BoundingBox value;
-//
-//    @Override
-//    public BoundingBox getValue() {
-//        return value;
-//    }
-//
-//    public void setValue(BoundingBox value) {
-//        this.value = value;
-//    }
+    @Override
+    public String toString() {
+
+        StringBuilder builder = new StringBuilder();
+
+        builder.append(super.toString());
+
+        builder.append("Value: " + getValue() + "\n");
+
+        return builder.toString();
+    }
 
 }

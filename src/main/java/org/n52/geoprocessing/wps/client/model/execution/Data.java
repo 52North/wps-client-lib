@@ -65,4 +65,18 @@ public class Data extends WPSExecuteParameter{
         data.setValue(getValue());
     }
 
+    @Override
+    public String toString() {
+
+        StringBuilder builder = new StringBuilder();
+
+        builder.append("Id: " + getId() + "\n");
+        builder.append("Title: " + getTitle() + "\n");
+        builder.append("Abstract: " + getAbstract() + "\n");
+        builder.append("Metadata: " + getMetadata() + "\n");
+        builder.append("Format: " + getFormat() + "\n");
+
+        return builder.toString();
+    }
+
 }

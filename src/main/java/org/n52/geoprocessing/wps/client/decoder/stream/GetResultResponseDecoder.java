@@ -190,7 +190,8 @@ public class GetResultResponseDecoder extends AbstractElementXmlStreamReader {
                     output = output.asLiteralData();
                     output.setValue(reader.getElementText());//TODO check if mime type is text/xml
                 } else if (elem.getName().equals(OWSConstants.Elem.QN_BOUNDING_BOX)) {
-                    readBoundingBoxData(elem, reader, output.asBoundingBoxData());
+                    output = output.asBoundingBoxData();
+                    readBoundingBoxData(elem, reader, (BoundingBoxData) output);
                 }else {
                     //complex data XML
                     readComplexDataXML(elem, reader, output);

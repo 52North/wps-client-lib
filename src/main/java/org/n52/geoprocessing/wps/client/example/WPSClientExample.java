@@ -17,32 +17,28 @@
 package org.n52.geoprocessing.wps.client.example;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
 
 import org.n52.geoprocessing.wps.client.ExecuteRequestBuilder;
-import org.n52.geoprocessing.wps.client.ExecuteResponseAnalyser;
 import org.n52.geoprocessing.wps.client.WPSClientException;
 import org.n52.geoprocessing.wps.client.WPSClientSession;
 import org.n52.geoprocessing.wps.client.model.InputDescription;
 import org.n52.geoprocessing.wps.client.model.Process;
+import org.n52.geoprocessing.wps.client.model.Result;
+import org.n52.geoprocessing.wps.client.model.StatusInfo;
 import org.n52.geoprocessing.wps.client.model.WPSCapabilities;
+import org.n52.geoprocessing.wps.client.model.execution.BoundingBox;
+import org.n52.geoprocessing.wps.client.model.execution.Data;
 import org.n52.geoprocessing.wps.client.model.execution.Execute;
-
-import net.opengis.wps.x100.CapabilitiesDocument;
-import net.opengis.wps.x100.ExecuteDocument;
-import net.opengis.wps.x100.ExecuteResponseDocument;
-import net.opengis.wps.x100.InputDescriptionType;
-import net.opengis.wps.x100.ProcessBriefType;
-import net.opengis.wps.x100.ProcessDescriptionType;
 
 public class WPSClientExample {
 
     public void testExecute(String version) {
 
-        String wpsURL = "http://geoprocessing.demo.52north.org:8080/wps/WebProcessingService";
+        String wpsURL = "http://localhost:8080/wps/WebProcessingService";
+//        String wpsURL = "http://geoprocessing.demo.52north.org:8080/wps/WebProcessingService";
 
-        String processID = "org.n52.wps.server.algorithm.test.EchoProcess";
+        String processID = "org.n52.wps.server.algorithm.test.DummyTestClass";
 
 //        try {
 //            ProcessDescriptionType describeProcessDocument = requestDescribeProcess(
@@ -61,9 +57,28 @@ public class WPSClientExample {
 
             ExecuteRequestBuilder builder = new ExecuteRequestBuilder(describeProcessDocument);
 
-            builder.addComplexData("complexInput", "<test>input</test>", "", "", "text/xml");
+            builder.addComplexData("ComplexInputData", "a,b,c", "", "", "text/csv");
 
-            builder.setResponseDocument("complexOutput", "", "", "text/xml");
+            builder.addLiteralData("LiteralInputData", "0.05", "", "", "text/xml");
+
+
+            BoundingBox boundingBox = new BoundingBox();
+
+            boundingBox.setMinY(50.0);
+            boundingBox.setMinX(7.0);
+            boundingBox.setMaxY(51.0);
+            boundingBox.setMaxX(7.1);
+
+            boundingBox.setCrs("EPSG:4326");
+
+            boundingBox.setDimensions(2);
+
+            builder.addBoundingBoxData("BBOXInputData", boundingBox, "", "", "text/xml");
+
+            builder.addOutput("LiteralOutputData", "", "", "text/xml");
+            builder.addOutput("BBOXOutputData", "", "", "text/xml");
+
+            builder.setResponseDocument("ComplexOutputData", "", "", "text/csv");
 
             builder.setAsynchronousExecute();
 
@@ -87,8 +102,29 @@ public class WPSClientExample {
 
             System.out.println(o);
 
+            if(o instanceof Result) {
+                printOutputs((Result)o);
+            }else if(o instanceof StatusInfo) {
+                printOutputs(((StatusInfo)o).getResult());
+            }
+
         } catch (WPSClientException | IOException e) {
             System.out.println(e.getMessage());
+        }
+
+    }
+
+    private void printOutputs(Result result) {
+
+        List<Data> outputs = result.getOutputs();
+
+        for (Data data : outputs) {
+//            if(data instanceof ComplexData){
+//              ComplexData complexData = (ComplexData)data;
+//              System.out.println(complexData);
+//
+//            }
+            System.out.println(data);
         }
 
     }

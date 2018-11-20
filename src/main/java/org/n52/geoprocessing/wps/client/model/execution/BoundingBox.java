@@ -72,5 +72,18 @@ public class BoundingBox {
     public void setMaxY(double maxY) {
         this.maxY = maxY;
     }
+    @Override
+    public String toString() {
 
+        StringBuilder builder = new StringBuilder();
+
+        builder.append("Min x: " + getMinX() + "\n");
+        builder.append("Min y: " + getMinY() + "\n");
+        builder.append("Max x : " + getMaxX() + "\n");
+        builder.append("May y: " + getMaxY() + "\n");
+        builder.append("Crs: " + getCrs() + "\n");
+        builder.append("Dimensions: " + getDimensions() + "\n");
+
+        return builder.toString();
+    }
 }

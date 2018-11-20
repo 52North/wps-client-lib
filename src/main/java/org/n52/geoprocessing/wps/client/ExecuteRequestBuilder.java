@@ -28,6 +28,8 @@ import org.n52.geoprocessing.wps.client.model.LiteralInputDescription;
 import org.n52.geoprocessing.wps.client.model.Process;
 import org.n52.geoprocessing.wps.client.model.ResponseMode;
 import org.n52.geoprocessing.wps.client.model.TransmissionMode;
+import org.n52.geoprocessing.wps.client.model.execution.BoundingBox;
+import org.n52.geoprocessing.wps.client.model.execution.BoundingBoxData;
 import org.n52.geoprocessing.wps.client.model.execution.ComplexData;
 import org.n52.geoprocessing.wps.client.model.execution.ComplexDataReference;
 import org.n52.geoprocessing.wps.client.model.execution.Execute;
@@ -205,6 +207,27 @@ public class ExecuteRequestBuilder {
         execute.addInput(literalInput);
     }
 
+
+    public void addBoundingBoxData(String parameterID,
+            BoundingBox value,
+            String schema,
+            String encoding,
+            String mimetype) {
+        InputDescription inputDesc = this.getParameterDescription(parameterID);
+        if (inputDesc == null) {
+            throw new IllegalArgumentException("inputDescription is null for: " + parameterID);
+        }
+        if (inputDesc instanceof ComplexInputDescription) {
+            throw new IllegalArgumentException("inputDescription is not of type complex data: " + parameterID);
+        }
+
+        BoundingBoxData boundingBoxInput = new BoundingBoxData();
+        boundingBoxInput.setId(parameterID);
+        boundingBoxInput.setValue(value);
+        boundingBoxInput.setFormat(createFormat(schema, mimetype, encoding));
+        execute.addInput(boundingBoxInput);
+    }
+
     /**
      * Sets a reference to input data
      *
@@ -325,6 +348,21 @@ public class ExecuteRequestBuilder {
     }
 
     private void setOutput(String outputIdentifier,
+            String schema,
+            String encoding,
+            String mimeType) {
+
+        ExecuteOutput output = new ExecuteOutput();
+
+        output.setId(outputIdentifier);
+
+        output.setFormat(createFormat(schema, mimeType, encoding));
+
+        execute.addOutput(output);
+
+    }
+
+    public void addOutput(String outputIdentifier,
             String schema,
             String encoding,
             String mimeType) {

@@ -22,6 +22,8 @@ import java.util.List;
 import javax.xml.stream.XMLStreamException;
 
 import org.n52.geoprocessing.wps.client.model.Format;
+import org.n52.geoprocessing.wps.client.model.execution.BoundingBox;
+import org.n52.geoprocessing.wps.client.model.execution.BoundingBoxData;
 import org.n52.geoprocessing.wps.client.model.execution.ComplexData;
 import org.n52.geoprocessing.wps.client.model.execution.ComplexDataReference;
 import org.n52.geoprocessing.wps.client.model.execution.Execute;
@@ -29,6 +31,8 @@ import org.n52.geoprocessing.wps.client.model.execution.Data;
 import org.n52.geoprocessing.wps.client.model.execution.ExecuteOutput;
 import org.n52.geoprocessing.wps.client.model.execution.LiteralData;
 import org.n52.geoprocessing.wps.client.model.execution.WPSExecuteParameter;
+import org.n52.geoprocessing.wps.client.xml.OWS11Constants;
+import org.n52.geoprocessing.wps.client.xml.WPS100Constants;
 import org.n52.javaps.service.xml.OWSConstants;
 import org.n52.javaps.service.xml.WPSConstants;
 import org.n52.javaps.service.xml.XMLSchemaConstants;
@@ -109,6 +113,8 @@ public class ExecuteRequest20Encoder extends AbstractMultiElementXmlStreamWriter
                     writeComplexInput((ComplexData) executeInput);
                 } else if (executeInput instanceof LiteralData) {
                     writeLiteralInput((LiteralData) executeInput);
+                } else if (executeInput instanceof BoundingBoxData) {
+                    writeBoundingBoxInput((BoundingBoxData) executeInput);
                 }
             });
         }
@@ -140,6 +146,26 @@ public class ExecuteRequest20Encoder extends AbstractMultiElementXmlStreamWriter
                     // if()
                 });
             }
+    }
+
+    private void writeBoundingBoxInput(BoundingBoxData executeInput) throws XMLStreamException {
+
+        element(WPSConstants.Elem.QN_DATA, executeInput, x -> {
+            element(OWSConstants.Elem.QN_BOUNDING_BOX, executeInput, x1 -> {
+
+                BoundingBox boundingBox = (BoundingBox) executeInput.getValue();
+
+                attr(WPS100Constants.Attr.QN_CRS_NO_NAMESPACE, boundingBox.getCrs());
+//              attr(WPS100Constants.Attr.QN_DIMENSIONS_NO_NAMESPACE, "" + boundingBox.getDimensions());//TODO check optional stuff for this
+
+                String lowerCorner = boundingBox.getMinX() + " " + boundingBox.getMinY();
+                String upperCorner = boundingBox.getMaxX() + " " + boundingBox.getMaxY();
+
+                element(OWSConstants.Elem.QN_LOWER_CORNER, lowerCorner);
+                element(OWSConstants.Elem.QN_UPPER_CORNER, upperCorner);
+
+            });
+        });
     }
 
     private void writeComplexInput(ComplexData executeInput) throws XMLStreamException {

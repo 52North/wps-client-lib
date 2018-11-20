@@ -52,4 +52,14 @@ public class ComplexDataReference {
         this.body = body;
     }
 
+    @Override
+    public String toString() {
+
+        StringBuilder builder = new StringBuilder();
+
+        builder.append("Href: " + getHref()+ "\n");
+
+        return builder.toString();
+    }
+
 }

@@ -38,4 +38,21 @@ public class ComplexData extends Data {
         setIsReference(true);
     }
 
+    @Override
+    public String toString() {
+
+        StringBuilder builder = new StringBuilder();
+
+        builder.append(super.toString());
+
+        builder.append("Format: " + getFormat() + "\n");
+        if(isReference) {
+            builder.append("Reference: " + getReference() + "\n");
+        }else {
+            builder.append("Value: " + getValue() + "\n");
+        }
+
+        return builder.toString();
+    }
+
 }
