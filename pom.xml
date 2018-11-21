@@ -41,6 +41,7 @@
 		<version.java>1.8</version.java>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<slf4j.version>1.7.25</slf4j.version>
+		<arctic-sea.version>5.0.1</arctic-sea.version>
 		<common-xml.version>2.3.0</common-xml.version>
 		<logback.version>1.0.13</logback.version>
 		<org.springframework.version>4.1.6.RELEASE</org.springframework.version>
@@ -111,63 +112,6 @@
 			<version>4.11</version>
 			<scope>test</scope>
 		</dependency>
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.n52.wps</groupId> -->
-<!-- 			<artifactId>52n-wps-io</artifactId> -->
-<!-- 			<version>3.6.1</version> -->
-<!-- 			<exclusions> -->
-<!-- 				<exclusion> -->
-<!-- 					<groupId>commons-codec</groupId> -->
-<!-- 					<artifactId>commons-codec</artifactId> -->
-<!-- 				</exclusion> -->
-<!-- 			</exclusions> -->
-<!-- 		</dependency> -->
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.n52.wps</groupId> -->
-<!-- 			<artifactId>52n-wps-commons</artifactId> -->
-<!-- 			<version>3.6.1</version> -->
-<!-- 			<exclusions> -->
-<!-- 				<exclusion> -->
-<!-- 					<groupId>org.n52.sensorweb</groupId> -->
-<!-- 					<artifactId>52n-xml-wps-v100</artifactId> -->
-<!-- 				</exclusion> -->
-<!-- 				<exclusion> -->
-<!-- 					<groupId>org.apache.xmlbeans</groupId> -->
-<!-- 					<artifactId>xmlbeans</artifactId> -->
-<!-- 				</exclusion> -->
-<!-- 				<exclusion> -->
-<!-- 					<groupId>com.google.guava</groupId> -->
-<!-- 					<artifactId>guava</artifactId> -->
-<!-- 				</exclusion> -->
-<!-- 				<exclusion> -->
-<!-- 					<groupId>joda-time</groupId> -->
-<!-- 					<artifactId>joda-time</artifactId> -->
-<!-- 				</exclusion> -->
-<!-- 				<exclusion> -->
-<!-- 					<groupId>org.slf4j</groupId> -->
-<!-- 					<artifactId>slf4j-api</artifactId> -->
-<!-- 				</exclusion> -->
-<!-- 				<exclusion> -->
-<!-- 					<artifactId>woodstox-core-asl</artifactId> -->
-<!-- 					<groupId>org.codehaus.woodstox</groupId> -->
-<!-- 				</exclusion> -->
-<!-- 				<exclusion> -->
-<!-- 					<groupId>org.n52.wps</groupId> -->
-<!-- 					<artifactId>52n-wps-config</artifactId> -->
-<!-- 				</exclusion> -->
-<!-- 			</exclusions> -->
-<!-- 		</dependency> -->
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.n52.wps</groupId> -->
-<!-- 			<artifactId>52n-wps-config</artifactId> -->
-<!-- 			<version>1.2.1</version> -->
-<!-- 			<exclusions> -->
-<!-- 				<exclusion> -->
-<!-- 					<groupId>org.n52.wps</groupId> -->
-<!-- 					<artifactId>52n-xml-wps-v100</artifactId> -->
-<!-- 				</exclusion> -->
-<!-- 			</exclusions> -->
-<!-- 		</dependency> -->
 		<dependency>
 			<groupId>org.apache.xmlbeans</groupId>
 			<artifactId>xmlbeans</artifactId>
@@ -181,12 +125,7 @@
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
-			<version>2.9.2</version>
-		</dependency>
-		<dependency>
-			<groupId>org.n52.arctic-sea</groupId>
-			<artifactId>janmayen</artifactId>
-			<version>5.0.0</version>
+			<version>2.9.5</version>
 		</dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
@@ -263,10 +202,11 @@
 			<artifactId>javax.inject</artifactId>
 			<version>1</version>
 		</dependency>
+		<!-- arctic sea -->
 		<dependency>
 			<groupId>org.n52.arctic-sea</groupId>
 			<artifactId>shetland</artifactId>
-			<version>5.0.0</version>
+			<version>${arctic-sea.version}</version>
 			<exclusions>
 				<exclusion>
                     <groupId>org.apache.httpcomponents</groupId>
@@ -277,11 +217,26 @@
                     <artifactId>httpcore</artifactId>
 				</exclusion>
 			</exclusions>
-		</dependency>
+		</dependency>		
 		<dependency>
 			<groupId>org.n52.arctic-sea</groupId>
 			<artifactId>svalbard</artifactId>
-			<version>5.0.0</version>
+			<version>${arctic-sea.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.n52.arctic-sea</groupId>
+			<artifactId>janmayen</artifactId>
+			<version>${arctic-sea.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>com.fasterxml.jackson.core</groupId>
+					<artifactId>jackson-core</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.fasterxml.jackson.core</groupId>
+					<artifactId>jackson-databind</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>xml-apis</groupId>
@@ -293,11 +248,12 @@
 			<artifactId>stax-api</artifactId>
 			<version>1.0.1</version>
 			<scope>runtime</scope>
-		</dependency>
+		</dependency>		
+		<!-- test dependencies -->
 		<dependency>
 			<groupId>org.n52.sensorweb</groupId>
 			<artifactId>52n-xml-ows-v20</artifactId>
-			<version>2.3.0</version>
+			<version>${common-xml.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -309,7 +265,7 @@
 		<dependency>
 			<groupId>org.n52.sensorweb</groupId>
 			<artifactId>52n-xml-ows-v110</artifactId>
-			<version>2.3.0</version>
+			<version>${common-xml.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
