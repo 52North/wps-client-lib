@@ -31,7 +31,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.xml.crypto.dsig.XMLObject;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -51,8 +50,6 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.xmlbeans.XmlObject;
-import org.apache.xmlbeans.XmlOptions;
-import org.n52.geoprocessing.wps.client.decoder.stream.DescribeProcessResponseDecoder;
 import org.n52.geoprocessing.wps.client.encoder.stream.ExecuteRequest100Encoder;
 import org.n52.geoprocessing.wps.client.encoder.stream.ExecuteRequest20Encoder;
 import org.n52.geoprocessing.wps.client.model.Process;
@@ -71,9 +68,6 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import net.opengis.wps.x100.ProcessDescriptionType;
-import net.opengis.wps.x100.ProcessDescriptionsDocument;
-
 /**
  * Contains some convenient methods to access and manage Web Processing Services
  * in a very generic way.
@@ -90,8 +84,6 @@ public class WPSClientSession {
     private static WPSClientSession session;
 
     private Map<String, WPSCapabilities> loggedServices;
-
-    private XmlOptions options = null;
 
     private boolean cancel;
 
@@ -121,9 +113,6 @@ public class WPSClientSession {
      *
      */
     private WPSClientSession() {
-        options = new XmlOptions();
-        options.setLoadStripWhitespace();
-        options.setLoadTrimTextBuffer();
         loggedServices = new HashMap<String, WPSCapabilities>();
         processDescriptions = new HashMap<String, List<Process>>();
         httpClientBuilder = HttpClientBuilder.create();
@@ -533,25 +522,6 @@ public class WPSClientSession {
         }
     }
 
-    private WPSCapabilities createWPSCapabilities(Object object) throws XMLStreamException {
-
-        if (object instanceof net.opengis.wps.x100.CapabilitiesDocument) {
-            return createWPSCapabilitiesOWS11((net.opengis.wps.x100.CapabilitiesDocument) object);
-        } else if (object instanceof InputStream) {
-            return createWPSCapabilitiesOWS20((InputStream) object);
-        }
-
-        return new WPSCapabilities();
-    }
-
-    private WPSCapabilities createWPSCapabilitiesOWS20(InputStream in) throws XMLStreamException {
-        return new WPS20CapabilitiesParser().createWPSCapabilitiesOWS20(in);
-    }
-
-    private WPSCapabilities createWPSCapabilitiesOWS11(net.opengis.wps.x100.CapabilitiesDocument xmlObject) {
-        return new WPS100CapabilitiesParser().createWPSCapabilitiesOWS100(xmlObject);
-    }
-
     @SuppressWarnings("unchecked")
     private List<Process> retrieveDescriptionViaGET(String[] processIDs,
             String url,
@@ -576,33 +546,6 @@ public class WPSClientSession {
         return new ArrayList<Process>();
     }
 
-    private List<Process> createProcessDescriptionArray(
-            InputStream in,
-            WPSCapabilities capabilities) throws XMLStreamException {
-
-        return new DescribeProcessResponseDecoder().readElement(XMLInputFactory.newInstance().createXMLEventReader(new InputStreamReader(in)));
-    }
-
-    private List<Process> createProcessDescriptionArray(
-            ProcessDescriptionsDocument doc,
-            WPSCapabilities capabilities) {
-
-        List<Process> processes = new ArrayList<>();
-
-        ProcessDescriptionType[] processDescriptions = doc.getProcessDescriptions().getProcessDescriptionArray();
-
-        for (ProcessDescriptionType processOffering : processDescriptions) {
-
-            String id = processOffering.getIdentifier().getStringValue();
-
-            Process process = capabilities.getProcess(id);
-
-            processes.add(WPS100ProcessParser.completeProcess(processOffering, process));
-        }
-
-        return processes;
-    }
-
     private Object retrieveDataViaPOST(Object executeObject,
             String urlString) throws WPSClientException {
         try {
@@ -610,9 +553,7 @@ public class WPSClientSession {
 
             String content = "";
 
-            if(executeObject instanceof XMLObject){
-                content = ((XmlObject)executeObject).xmlText();
-            }else if(executeObject instanceof ByteArrayOutputStream){
+            if(executeObject instanceof ByteArrayOutputStream){
                 content = ((ByteArrayOutputStream)executeObject).toString();
             }
 

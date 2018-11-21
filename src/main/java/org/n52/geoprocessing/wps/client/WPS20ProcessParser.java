@@ -18,7 +18,6 @@ package org.n52.geoprocessing.wps.client;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.stream.XMLEventReader;
@@ -42,39 +41,4 @@ public class WPS20ProcessParser {
 
         return processes.get(0);
     }
-
-    private static Process createProcess(String id,
-            String abstrakt,
-            String title,
-            List<?> jobControlOptions,
-            List<?> transmissionModes) {
-
-        Process process = new Process();
-        process.setId(id);
-
-        process.setAbstract(abstrakt);
-
-        process.setTitle(title);
-
-        for (Iterator<?> iterator = jobControlOptions.iterator(); iterator.hasNext();) {
-            String jobControlOption = (String) iterator.next();
-            if (jobControlOption.equals("async-execute")) {
-                process.setStatusSupported(true);
-                break;
-            }
-        }
-
-        for (Iterator<?> iterator = transmissionModes.iterator(); iterator.hasNext();) {
-            String transmissionMode = (String) iterator.next();
-            if (transmissionMode.equals("reference")) {
-                process.setReferenceSupported(true);
-                break;
-            }
-        }
-
-        return process;
-
-    }
-
-
 }

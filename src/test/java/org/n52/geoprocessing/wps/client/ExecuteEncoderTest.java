@@ -46,7 +46,6 @@ import org.n52.geoprocessing.wps.client.model.execution.Execute;
 import org.n52.geoprocessing.wps.client.model.execution.ExecuteOutput;
 import org.n52.geoprocessing.wps.client.model.execution.ExecutionMode;
 import org.n52.geoprocessing.wps.client.model.execution.LiteralData;
-import org.n52.javaps.algorithm.annotation.BoundingBoxInput;
 import org.n52.svalbard.encode.exception.EncodingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -242,6 +241,76 @@ public class ExecuteEncoderTest {
         output.setFormat(format);
 
         output.setTransmissionMode(TransmissionMode.VALUE);
+
+        execute.setOutputs(Arrays.asList(new ExecuteOutput[]{output}));
+
+        try {
+            String executeRequestString = WPS100ExecuteEncoder.encode(execute);
+
+            List<XmlValidationError> validationErrors = new ArrayList<XmlValidationError>();
+            XmlOptions validationOptions = new XmlOptions();
+            validationOptions.setErrorListener(validationErrors);
+
+            boolean validXML = net.opengis.wps.x100.ExecuteDocument.Factory.parse(executeRequestString).validate(validationOptions);
+
+            if(!validXML){
+
+                Iterator<XmlValidationError> iter = validationErrors.iterator();
+                while (iter.hasNext())
+                {
+                    LOGGER.error(iter.next() + "\n");
+                }
+
+                fail();
+            }
+
+            //TODO add assertions
+
+        } catch (EncodingException | XMLStreamException | XmlException e) {
+            LOGGER.error(e.getMessage());
+            fail();
+        }
+
+    }
+
+    @Test
+    public void encodeWPS100ExecuteAsyncDocumentComplexReferenceInComplexValueOutReference() throws MalformedURLException{
+
+        Execute execute = new Execute();
+
+        execute.setExecutionMode(ExecutionMode.ASYNC);
+
+        execute.setResponseMode(ResponseMode.DOCUMENT);
+
+        execute.setId("org.n52.wps-client-lib.testprocess");
+
+        ComplexData complexInput = new ComplexData();
+
+        complexInput.setId("complexInput");
+
+        Format format = new Format();
+
+        format.setMimeType("text/xml");
+
+        complexInput.setFormat(format);
+
+        String url = "http://test.org/xyz";
+
+        ComplexDataReference complexInputReference = new ComplexDataReference();
+
+        complexInputReference.setHref(new URL(url));
+
+        complexInput.setReference(complexInputReference);
+
+        execute.setInputs(Arrays.asList(new Data[]{complexInput}));
+
+        ExecuteOutput output = new ExecuteOutput();
+
+        output.setId("complexOutput");
+
+        output.setFormat(format);
+
+        output.setTransmissionMode(TransmissionMode.REFERENCE);
 
         execute.setOutputs(Arrays.asList(new ExecuteOutput[]{output}));
 

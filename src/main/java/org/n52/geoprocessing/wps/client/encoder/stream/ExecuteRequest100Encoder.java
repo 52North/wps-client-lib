@@ -109,11 +109,11 @@ public class ExecuteRequest100Encoder extends AbstractMultiElementXmlStreamWrite
 
         for (ExecuteOutput executeOutput : outputs) {
             element(WPS100Constants.Elem.QN_OUTPUT, executeOutput, x1 -> {
-                setFormat(executeOutput);
-                element(OWS11Constants.Elem.QN_IDENTIFIER, executeOutput.getId());
                 if(executeOutput.getTransmissionMode().equals(TransmissionMode.REFERENCE)){
                     attr(WPS100Constants.Attr.AN_AS_REFERENCE, "true");
                 }
+                setFormat(executeOutput);
+                element(OWS11Constants.Elem.QN_IDENTIFIER, executeOutput.getId());
             });
         }
     }

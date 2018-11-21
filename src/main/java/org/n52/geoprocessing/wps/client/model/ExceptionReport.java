@@ -41,4 +41,13 @@ public class ExceptionReport extends WPSResponse{
         return exceptions.add(exception);
     }
 
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+
+        builder.append("Exceptions: " + getExceptions());
+
+        return builder.toString();
+    }
+
 }

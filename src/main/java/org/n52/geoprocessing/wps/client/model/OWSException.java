@@ -59,4 +59,17 @@ public class OWSException {
     public void setExceptionText(String exceptionText) {
         this.exceptionText = exceptionText;
     }
+
+
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+
+        builder.append("\tCode: " + getExceptionCode());
+        builder.append("\tText: " + getExceptionText());
+        builder.append("\tLocator: " + getLocator());
+
+        return builder.toString();
+    }
 }
