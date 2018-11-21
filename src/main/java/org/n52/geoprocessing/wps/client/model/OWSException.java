@@ -34,7 +34,8 @@ public class OWSException {
         this.exceptionText = exceptionText;
     }
 
-    public OWSException() {}
+    public OWSException() {
+    }
 
     public String getExceptionCode() {
         return exceptionCode;
@@ -59,8 +60,6 @@ public class OWSException {
     public void setExceptionText(String exceptionText) {
         this.exceptionText = exceptionText;
     }
-
-
 
     @Override
     public String toString() {

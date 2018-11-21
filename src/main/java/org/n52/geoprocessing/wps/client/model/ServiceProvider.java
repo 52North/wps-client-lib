@@ -19,7 +19,9 @@ package org.n52.geoprocessing.wps.client.model;
 public class ServiceProvider {
 
     private String providerName;
+
     private String providerSite;
+
     private ServiceContact serviceContact;
 
     public String getProviderName() {

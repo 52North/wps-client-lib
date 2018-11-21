@@ -234,7 +234,10 @@ public class DescribeProcess100ResponseDecoder extends AbstractElementXmlStreamR
                     readLiteralData(start, reader, (LiteralOutputDescription) output);
                 } else if (start.getName().equals(WPS100Constants.Elem.QN_BOUNDING_BOX_OUTPUT_NO_NAMESPACE)) {
                     output = new BoundingBoxOutputDescription();
-                    readBoundingBoxData(start, reader, (BoundingBoxOutputDescription) output);//TODO add bbox output
+                    readBoundingBoxData(start, reader, (BoundingBoxOutputDescription) output);// TODO
+                                                                                              // add
+                                                                                              // bbox
+                                                                                              // output
                 } else {
                     throw unexpectedTag(start);
                 }
@@ -436,13 +439,13 @@ public class DescribeProcess100ResponseDecoder extends AbstractElementXmlStreamR
         throw eof();
     }
 
-    //TODO implement
+    // TODO implement
     private void readCRS(boolean b,
             XMLEventReader reader,
             BoundingBoxInputDescription input) throws XMLStreamException {
         while (reader.hasNext()) {
             XMLEvent event = reader.nextEvent();
-           if (event.isEndElement()) {
+            if (event.isEndElement()) {
                 EndElement elem = event.asEndElement();
                 if (elem.getName().equals(WPS100Constants.Elem.QN_CRS_NO_NAMESPACE)) {
                     return;
@@ -452,13 +455,13 @@ public class DescribeProcess100ResponseDecoder extends AbstractElementXmlStreamR
 
     }
 
-    //TODO implement
+    // TODO implement
     private void readSupportedCRS(StartElement start,
             XMLEventReader reader,
             BoundingBoxInputDescription input) throws XMLStreamException {
         while (reader.hasNext()) {
             XMLEvent event = reader.nextEvent();
-           if (event.isEndElement()) {
+            if (event.isEndElement()) {
                 EndElement elem = event.asEndElement();
                 if (elem.getName().equals(WPS100Constants.Elem.QN_SUPPORTED_NO_NAMESPACE)) {
                     return;
@@ -615,7 +618,7 @@ public class DescribeProcess100ResponseDecoder extends AbstractElementXmlStreamR
                 } else if (elem.getName().equals(WPS100Constants.Elem.QN_ENCODING_NO_NAMESPACE)) {
                     format.setEncoding(reader.getElementText());
                 } else if (elem.getName().equals(WPS100Constants.Elem.QN_FORMAT_NO_NAMESPACE)) {
-                    //consume
+                    // consume
                 } else {
                     throw unexpectedTag(elem);
                 }

@@ -16,8 +16,8 @@
  */
 package org.n52.geoprocessing.wps.client.model;
 
-public class ComplexInputDescription extends InputDescription{
+public class ComplexInputDescription extends InputDescription {
 
-    //TODO not used
+    // TODO not used
 
 }

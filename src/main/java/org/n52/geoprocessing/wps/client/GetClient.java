@@ -34,29 +34,30 @@ public class GetClient {
         return sendRequest(targetURL, null);
     }
 
-    public static String sendRequest(String targetURL, String payload) throws IOException {
+    public static String sendRequest(String targetURL,
+            String payload) throws IOException {
         // Send data
         InputStream in = sendRequestForInputStream(targetURL, payload);
 
         // Get the response
         BufferedReader rd = new BufferedReader(new InputStreamReader(in));
-        List<String> lines= new LinkedList<String>();
+        List<String> lines = new LinkedList<String>();
         String line;
-        while ( (line = rd.readLine()) != null) {
+        while ((line = rd.readLine()) != null) {
             lines.add(line);
         }
         rd.close();
         return Joiner.on('\n').join(lines);
     }
 
-    public static InputStream sendRequestForInputStream(String targetURL, String payload) throws IOException {
+    public static InputStream sendRequestForInputStream(String targetURL,
+            String payload) throws IOException {
 
         // Send data
         URL url = null;
         if (payload == null || payload.equalsIgnoreCase("")) {
             url = new URL(targetURL);
-        }
-        else {
+        } else {
             String payloadClean = payload.replace("?", "");
             url = new URL(targetURL + "?" + payloadClean);
         }
@@ -64,7 +65,8 @@ public class GetClient {
         return url.openStream();
     }
 
-    public static String checkForExceptionReport(String targetURL, String payload) throws IOException{
+    public static String checkForExceptionReport(String targetURL,
+            String payload) throws IOException {
         // Send data
         String payloadClean = payload.replace("?", "");
         URL url = new URL(targetURL + "?" + payloadClean);
@@ -85,7 +87,7 @@ public class GetClient {
 
         int data = error.read();
         while (data != -1) {
-            exceptionReport = exceptionReport + (char)data;
+            exceptionReport = exceptionReport + (char) data;
             data = error.read();
         }
         error.close();

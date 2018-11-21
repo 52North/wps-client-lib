@@ -16,7 +16,7 @@
  */
 package org.n52.geoprocessing.wps.client.model.execution;
 
-public class Data extends WPSExecuteParameter{
+public class Data extends WPSExecuteParameter {
 
     private Object value;
 
@@ -28,7 +28,7 @@ public class Data extends WPSExecuteParameter{
         this.value = value;
     }
 
-    public ComplexData asComplexData(){
+    public ComplexData asComplexData() {
 
         ComplexData complexData = new ComplexData();
 
@@ -37,7 +37,7 @@ public class Data extends WPSExecuteParameter{
         return complexData;
     }
 
-    public LiteralData asLiteralData(){
+    public LiteralData asLiteralData() {
 
         LiteralData literalData = new LiteralData();
 
@@ -46,7 +46,7 @@ public class Data extends WPSExecuteParameter{
         return literalData;
     }
 
-    public BoundingBoxData asBoundingBoxData(){
+    public BoundingBoxData asBoundingBoxData() {
 
         BoundingBoxData boundingBoxData = new BoundingBoxData();
 

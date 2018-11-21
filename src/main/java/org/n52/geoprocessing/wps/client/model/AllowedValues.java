@@ -22,6 +22,7 @@ import java.util.List;
 public class AllowedValues {
 
     private List<String> allowedValues;
+
     private Range range;
 
     public AllowedValues(int size) {

@@ -36,31 +36,31 @@ public class WPSClientExample {
     public void testExecute(String version) {
 
         String wpsURL = "http://localhost:8080/wps/WebProcessingService";
-//        String wpsURL = "http://geoprocessing.demo.52north.org:8080/wps/WebProcessingService";
+        // String wpsURL =
+        // "http://geoprocessing.demo.52north.org:8080/wps/WebProcessingService";
 
         String processID = "org.n52.wps.server.algorithm.test.DummyTestClass";
 
-//        try {
-//            ProcessDescriptionType describeProcessDocument = requestDescribeProcess(
-//                    wpsURL, processID);
-//            System.out.println(describeProcessDocument);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+        // try {
+        // ProcessDescriptionType describeProcessDocument =
+        // requestDescribeProcess(
+        // wpsURL, processID);
+        // System.out.println(describeProcessDocument);
+        // } catch (IOException e) {
+        // e.printStackTrace();
+        // }
         try {
             WPSCapabilities cpbDoc = requestGetCapabilities(wpsURL, version);
 
             System.out.println(cpbDoc);
 
-            Process describeProcessDocument = requestDescribeProcess(
-                    wpsURL, processID, version);
+            Process describeProcessDocument = requestDescribeProcess(wpsURL, processID, version);
 
             ExecuteRequestBuilder builder = new ExecuteRequestBuilder(describeProcessDocument);
 
             builder.addComplexData("ComplexInputData", "a,b,c", "", "", "text/csv");
 
             builder.addLiteralData("LiteralInputData", "0.05", "", "", "text/xml");
-
 
             BoundingBox boundingBox = new BoundingBox();
 
@@ -93,7 +93,9 @@ public class WPSClientExample {
         }
     }
 
-    public void execute(String url, Execute execute, String version){
+    public void execute(String url,
+            Execute execute,
+            String version) {
 
         WPSClientSession wpsClient = WPSClientSession.getInstance();
 
@@ -102,10 +104,10 @@ public class WPSClientExample {
 
             System.out.println(o);
 
-            if(o instanceof Result) {
-                printOutputs((Result)o);
-            }else if(o instanceof StatusInfo) {
-                printOutputs(((StatusInfo)o).getResult());
+            if (o instanceof Result) {
+                printOutputs((Result) o);
+            } else if (o instanceof StatusInfo) {
+                printOutputs(((StatusInfo) o).getResult());
             }
 
         } catch (WPSClientException | IOException e) {
@@ -119,18 +121,18 @@ public class WPSClientExample {
         List<Data> outputs = result.getOutputs();
 
         for (Data data : outputs) {
-//            if(data instanceof ComplexData){
-//              ComplexData complexData = (ComplexData)data;
-//              System.out.println(complexData);
-//
-//            }
+            // if(data instanceof ComplexData){
+            // ComplexData complexData = (ComplexData)data;
+            // System.out.println(complexData);
+            //
+            // }
             System.out.println(data);
         }
 
     }
 
-    public WPSCapabilities requestGetCapabilities(String url, String version)
-            throws WPSClientException {
+    public WPSCapabilities requestGetCapabilities(String url,
+            String version) throws WPSClientException {
 
         WPSClientSession wpsClient = WPSClientSession.getInstance();
 
@@ -148,12 +150,12 @@ public class WPSClientExample {
     }
 
     public Process requestDescribeProcess(String url,
-            String processID, String version) throws IOException {
+            String processID,
+            String version) throws IOException {
 
         WPSClientSession wpsClient = WPSClientSession.getInstance();
 
-        Process processDescription = wpsClient
-                .getProcessDescription(url, processID, version);
+        Process processDescription = wpsClient.getProcessDescription(url, processID, version);
 
         List<InputDescription> inputList = processDescription.getInputs();
 
@@ -165,7 +167,7 @@ public class WPSClientExample {
 
     public static void main(String[] args) {
 
-        //TODO find way to initialize parsers/generators
+        // TODO find way to initialize parsers/generators
 
         WPSClientExample client = new WPSClientExample();
         client.testExecute("2.0.0");

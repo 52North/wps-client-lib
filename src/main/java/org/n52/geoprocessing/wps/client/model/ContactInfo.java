@@ -19,6 +19,7 @@ package org.n52.geoprocessing.wps.client.model;
 public class ContactInfo {
 
     private Phone phone;
+
     private Address address;
 
     public Phone getPhone() {

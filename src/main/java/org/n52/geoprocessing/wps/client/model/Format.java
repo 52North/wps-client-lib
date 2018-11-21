@@ -19,8 +19,11 @@ package org.n52.geoprocessing.wps.client.model;
 public class Format {
 
     private String mimeType;
+
     private String schema;
+
     private String encoding;
+
     private boolean isDefault;
 
     public String getMimeType() {

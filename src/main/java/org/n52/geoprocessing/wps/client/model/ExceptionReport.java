@@ -19,25 +19,27 @@ package org.n52.geoprocessing.wps.client.model;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ExceptionReport extends WPSResponse{
+public class ExceptionReport extends WPSResponse {
 
     private List<OWSException> exceptions;
 
     public ExceptionReport() {
         this.exceptions = new ArrayList<>();
     }
+
     public ExceptionReport(List<OWSException> exceptions) {
         this.exceptions = exceptions;
     }
 
-    public void setExceptions(List<OWSException> exceptions){
+    public void setExceptions(List<OWSException> exceptions) {
         this.exceptions = exceptions;
     }
 
     public List<OWSException> getExceptions() {
         return exceptions;
     }
-    public boolean addException(OWSException exception){
+
+    public boolean addException(OWSException exception) {
         return exceptions.add(exception);
     }
 

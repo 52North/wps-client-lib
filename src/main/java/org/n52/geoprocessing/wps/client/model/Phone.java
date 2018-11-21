@@ -19,6 +19,7 @@ package org.n52.geoprocessing.wps.client.model;
 public class Phone {
 
     private String voice;
+
     private String facsimile;
 
     public String getVoice() {

@@ -77,7 +77,7 @@ public class GetCapabilities100ResponseDecoder extends AbstractElementXmlStreamR
                 } else if (elem.getName().equals(WPS100Constants.Elem.QN_PROCESS_OFFERINGS)) {
                     wpsCapabilities.setProcesses(readContents(elem, reader));
                 } else if (elem.getName().equals(WPS100Constants.Elem.QN_WSDL)) {
-                    //TODO
+                    // TODO
                 } else {
                     throw unexpectedTag(elem);
                 }
@@ -150,15 +150,17 @@ public class GetCapabilities100ResponseDecoder extends AbstractElementXmlStreamR
             XMLEventReader reader) throws XMLStreamException {
         Process process = new Process();
 
-//        String jobControlOptions = getAttribute(elem, WPS100Constants.Attr.AN_JOB_CONTROL_OPTIONS).get();
-//        if(jobControlOptions.contains("async-execute")){
-//            process.setStatusSupported(true);
-//        }
-//
-//        String outputTransmission = getAttribute(elem, WPS100Constants.Attr.AN_OUTPUT_TRANSMISSION).get();
-//        if(outputTransmission.contains("reference")){
-//            process.setReferenceSupported(true);
-//        }
+        // String jobControlOptions = getAttribute(elem,
+        // WPS100Constants.Attr.AN_JOB_CONTROL_OPTIONS).get();
+        // if(jobControlOptions.contains("async-execute")){
+        // process.setStatusSupported(true);
+        // }
+        //
+        // String outputTransmission = getAttribute(elem,
+        // WPS100Constants.Attr.AN_OUTPUT_TRANSMISSION).get();
+        // if(outputTransmission.contains("reference")){
+        // process.setReferenceSupported(true);
+        // }
 
         while (reader.hasNext()) {
             XMLEvent event = reader.nextEvent();
@@ -171,11 +173,11 @@ public class GetCapabilities100ResponseDecoder extends AbstractElementXmlStreamR
                 } else if (start.getName().equals(OWS11Constants.Elem.QN_IDENTIFIER)) {
                     process.setId(reader.getElementText());
                 } else if (start.getName().equals(OWS11Constants.Elem.QN_KEYWORDS)) {
-//                    process.setKeyWords(readKeywords(start, reader));//TODO
-                    readKeywords(start, reader);//just consume keywords for now
+                    // process.setKeyWords(readKeywords(start, reader));//TODO
+                    readKeywords(start, reader);// just consume keywords for now
                 } else if (start.getName().equals(OWS11Constants.Elem.QN_METADATA)) {
-                  //do nothing
-              }else {
+                    // do nothing
+                } else {
                     throw unexpectedTag(start);
                 }
             } else if (event.isEndElement()) {
@@ -223,7 +225,7 @@ public class GetCapabilities100ResponseDecoder extends AbstractElementXmlStreamR
 
     private ServiceContact readServiceContact(StartElement elem,
             XMLEventReader reader) throws XMLStreamException {
-      ServiceContact serviceContact = new ServiceContact();
+        ServiceContact serviceContact = new ServiceContact();
 
         while (reader.hasNext()) {
             XMLEvent event = reader.nextEvent();
@@ -265,12 +267,12 @@ public class GetCapabilities100ResponseDecoder extends AbstractElementXmlStreamR
                 } else if (start.getName().equals(OWS11Constants.Elem.QN_PHONE)) {
                     contactInfo.setPhone(readPhone(start, reader));
                 } else if (start.getName().equals(OWS11Constants.Elem.QN_ONLINE_RESOURCE)) {
-                    //TODO
+                    // TODO
                 } else if (start.getName().equals(OWS11Constants.Elem.QN_HOURS_OF_SERVICE)) {
-                    //TODO
+                    // TODO
                 } else if (start.getName().equals(OWS11Constants.Elem.QN_CONTACT_INSTRUCTIONS)) {
-                    //TODO
-                }  else {
+                    // TODO
+                } else {
                     throw unexpectedTag(start);
                 }
             } else if (event.isEndElement()) {
@@ -298,7 +300,7 @@ public class GetCapabilities100ResponseDecoder extends AbstractElementXmlStreamR
                     phone.setVoice(reader.getElementText());
                 } else if (start.getName().equals(OWS11Constants.Elem.QN_FACSIMILE)) {
                     phone.setFacsimile(reader.getElementText());
-                }  else {
+                } else {
                     throw unexpectedTag(start);
                 }
             } else if (event.isEndElement()) {
@@ -327,7 +329,7 @@ public class GetCapabilities100ResponseDecoder extends AbstractElementXmlStreamR
                     address.setDeliveryPoint(reader.getElementText());
                 } else if (start.getName().equals(OWS11Constants.Elem.QN_CITY)) {
                     address.setCity(reader.getElementText());
-                }  else if (start.getName().equals(OWS11Constants.Elem.QN_ADMINISTRATIVE_AREA)) {
+                } else if (start.getName().equals(OWS11Constants.Elem.QN_ADMINISTRATIVE_AREA)) {
                     address.setAdministrativeArea(reader.getElementText());
                 } else if (start.getName().equals(OWS11Constants.Elem.QN_POSTAL_CODE)) {
                     address.setPostalCode(reader.getElementText());
@@ -378,7 +380,7 @@ public class GetCapabilities100ResponseDecoder extends AbstractElementXmlStreamR
                 } else if (start.getName().equals(OWS11Constants.Elem.QN_SERVICE_TYPE)) {
                     // do nothing
                 } else if (start.getName().equals(OWS11Constants.Elem.QN_PROFILE)) {
-                    //TODO
+                    // TODO
                 } else {
                     throw unexpectedTag(start);
                 }

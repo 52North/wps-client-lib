@@ -51,8 +51,8 @@ public class WPS100ExecuteEncoder {
 
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
-        executeRequestWriter.setContext(
-                new XmlStreamWritingContext(byteArrayOutputStream, new ElementXmlStreamWriterRepository(ELEMENT_WRITERS)::get));
+        executeRequestWriter.setContext(new XmlStreamWritingContext(byteArrayOutputStream,
+                new ElementXmlStreamWriterRepository(ELEMENT_WRITERS)::get));
 
         executeRequestWriter.writeElement(execute);
 

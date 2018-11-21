@@ -19,6 +19,7 @@ package org.n52.geoprocessing.wps.client.xml;
 public interface WPS100XMLSchemaConstants {
 
     String WPS100_SCHEMALOCTION = "http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd";
+
     String OWS11_SCHEMALOCTION = "http://schemas.opengis.net/ows/1.1.0/owsAll.xsd";
 
 }

@@ -15,17 +15,24 @@
  * limitations under the License.
  */
 package org.n52.geoprocessing.wps.client.model;
+
 import java.util.Iterator;
 import java.util.List;
 
 public class ServiceIdentification {
 
     private String title;
+
     private String abstrakt;
+
     private List<String> keyWords;
+
     private final String serviceType = "WPS";
+
     private List<String> serviceTypeVersions;
+
     private String fees;
+
     private List<String> accessConstraints;
 
     public String getTitle() {
@@ -67,6 +74,7 @@ public class ServiceIdentification {
     public void setFees(String fees) {
         this.fees = fees;
     }
+
     public List<String> getAccessConstraints() {
         return accessConstraints;
     }
@@ -85,15 +93,17 @@ public class ServiceIdentification {
 
         stringBuilder.append("Title: " + getTitle() + "\n");
         stringBuilder.append("\t\t\tAbstract: " + getAbstract() + "\n");
-        stringBuilder.append("\t\t\tServiceType versions: " + createCommaSeparatedStringFromList(getServiceTypeVersions()) + "\n");
+        stringBuilder.append(
+                "\t\t\tServiceType versions: " + createCommaSeparatedStringFromList(getServiceTypeVersions()) + "\n");
         stringBuilder.append("\t\t\tKeywords: " + createCommaSeparatedStringFromList(getKeyWords()) + "\n");
         stringBuilder.append("\t\t\tFees: " + getFees() + "\n");
-        stringBuilder.append("\t\t\tAccess constraints: " + createCommaSeparatedStringFromList(getAccessConstraints()) + "\n");
+        stringBuilder.append(
+                "\t\t\tAccess constraints: " + createCommaSeparatedStringFromList(getAccessConstraints()) + "\n");
 
         return stringBuilder.toString();
     }
 
-    private String createCommaSeparatedStringFromList(List<String> inputList){
+    private String createCommaSeparatedStringFromList(List<String> inputList) {
         String commaSeparatedString = "";
 
         Iterator<String> stringIterator = inputList.iterator();
@@ -101,7 +111,7 @@ public class ServiceIdentification {
         while (stringIterator.hasNext()) {
             String string = stringIterator.next();
             commaSeparatedString = commaSeparatedString.concat(string);
-            if(stringIterator.hasNext()){
+            if (stringIterator.hasNext()) {
                 commaSeparatedString = commaSeparatedString.concat(", ");
             }
         }

@@ -54,7 +54,8 @@ public class ExceptionReport100Decoder extends AbstractElementXmlStreamReader {
         throw eof();
     }
 
-    private ExceptionReport readExceptions(StartElement start, XMLEventReader reader) throws XMLStreamException {
+    private ExceptionReport readExceptions(StartElement start,
+            XMLEventReader reader) throws XMLStreamException {
 
         ExceptionReport exceptionReport = new ExceptionReport();
 
@@ -70,7 +71,8 @@ public class ExceptionReport100Decoder extends AbstractElementXmlStreamReader {
         return exceptionReport;
     }
 
-    private OWSException readException(StartElement elem, XMLEventReader reader) throws XMLStreamException {
+    private OWSException readException(StartElement elem,
+            XMLEventReader reader) throws XMLStreamException {
 
         OWSException exception = new OWSException();
 

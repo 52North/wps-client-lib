@@ -57,7 +57,7 @@ public class ComplexDataReference {
 
         StringBuilder builder = new StringBuilder();
 
-        builder.append("Href: " + getHref()+ "\n");
+        builder.append("Href: " + getHref() + "\n");
 
         return builder.toString();
     }

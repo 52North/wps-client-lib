@@ -16,6 +16,6 @@
  */
 package org.n52.geoprocessing.wps.client.model;
 
-public class OutputDescription extends WPSDescriptionParameter{
+public class OutputDescription extends WPSDescriptionParameter {
 
 }

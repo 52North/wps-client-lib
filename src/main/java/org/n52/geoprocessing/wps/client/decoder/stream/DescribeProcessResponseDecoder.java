@@ -46,7 +46,9 @@ import org.slf4j.LoggerFactory;
 public class DescribeProcessResponseDecoder extends AbstractElementXmlStreamReader {
 
     private static Logger LOGGER = LoggerFactory.getLogger(DescribeProcessResponseDecoder.class);
+
     private static final String ASYNC_EXECUTE = "async-execute";
+
     private static final String REFERENCE = "reference";
 
     @Override
@@ -127,7 +129,8 @@ public class DescribeProcessResponseDecoder extends AbstractElementXmlStreamRead
         org.n52.geoprocessing.wps.client.model.Process process = new org.n52.geoprocessing.wps.client.model.Process();
 
         try {
-            String jobControlOptions = getAttribute(processOfferingsElement, WPSConstants.Attr.AN_JOB_CONTROL_OPTIONS).get();
+            String jobControlOptions =
+                    getAttribute(processOfferingsElement, WPSConstants.Attr.AN_JOB_CONTROL_OPTIONS).get();
 
             process.setStatusSupported(jobControlOptions.contains(ASYNC_EXECUTE));
         } catch (Exception e) {
@@ -135,7 +138,8 @@ public class DescribeProcessResponseDecoder extends AbstractElementXmlStreamRead
         }
 
         try {
-            String outputTransmission = getAttribute(processOfferingsElement, WPSConstants.Attr.AN_OUTPUT_TRANSMISSION).get();
+            String outputTransmission =
+                    getAttribute(processOfferingsElement, WPSConstants.Attr.AN_OUTPUT_TRANSMISSION).get();
 
             process.setReferenceSupported(outputTransmission.contains(REFERENCE));
         } catch (Exception e) {
@@ -194,7 +198,7 @@ public class DescribeProcessResponseDecoder extends AbstractElementXmlStreamRead
                 } else if (start.getName().equals(WPSConstants.Elem.QN_LITERAL_DATA)) {
                     output = new LiteralOutputDescription();
                     readLiteralData(start, reader, (LiteralOutputDescription) output);
-                }  else if (start.getName().equals(WPSConstants.Elem.QN_BOUNDING_BOX_DATA)) {
+                } else if (start.getName().equals(WPSConstants.Elem.QN_BOUNDING_BOX_DATA)) {
                     output = new BoundingBoxOutputDescription();
                     readBoundingBoxData(start, reader, (BoundingBoxOutputDescription) output);
                 } else {

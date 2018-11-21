@@ -19,10 +19,15 @@ package org.n52.geoprocessing.wps.client.model.execution;
 public class BoundingBox {
 
     private double minX;
+
     private double minY;
+
     private double maxX;
+
     private double maxY;
+
     private String crs;
+
     private int dimensions;
 
     public String getCrs() {
@@ -72,6 +77,7 @@ public class BoundingBox {
     public void setMaxY(double maxY) {
         this.maxY = maxY;
     }
+
     @Override
     public String toString() {
 

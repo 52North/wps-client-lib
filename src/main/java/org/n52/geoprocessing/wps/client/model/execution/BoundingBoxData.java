@@ -16,7 +16,7 @@
  */
 package org.n52.geoprocessing.wps.client.model.execution;
 
-public class BoundingBoxData extends Data{
+public class BoundingBoxData extends Data {
 
     @Override
     public String toString() {

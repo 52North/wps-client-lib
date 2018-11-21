@@ -18,7 +18,7 @@ package org.n52.geoprocessing.wps.client.model;
 
 import java.util.List;
 
-public class WPSCapabilities extends WPSResponse{
+public class WPSCapabilities extends WPSResponse {
 
     private ServiceIdentification serviceIdentification;
 

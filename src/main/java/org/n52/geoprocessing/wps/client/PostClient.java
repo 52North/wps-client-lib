@@ -52,7 +52,8 @@ public class PostClient {
         return data;
     }
 
-    public static String sendRequest(String targetURL, String payload) throws IOException {
+    public static String sendRequest(String targetURL,
+            String payload) throws IOException {
         // Construct data
         String payloadP = URLEncoder.encode(payload, "UTF-8");
 
@@ -62,16 +63,17 @@ public class PostClient {
 
         // Get the response
         BufferedReader rd = new BufferedReader(new InputStreamReader(in));
-        List<String> lines= new LinkedList<String>();
+        List<String> lines = new LinkedList<String>();
         String line;
-        while ( (line = rd.readLine()) != null) {
+        while ((line = rd.readLine()) != null) {
             lines.add(line);
         }
         rd.close();
         return Joiner.on('\n').join(lines);
     }
 
-    public static InputStream sendRequestForInputStream(String targetURL, String payload) throws IOException {
+    public static InputStream sendRequestForInputStream(String targetURL,
+            String payload) throws IOException {
         // Send data
         URL url = new URL(targetURL);
 
@@ -90,11 +92,12 @@ public class PostClient {
         if (conn.getResponseCode() >= 400) {
             return conn.getErrorStream();
         } else {
-             return conn.getInputStream();
+            return conn.getInputStream();
         }
     }
 
-    public static String checkForExceptionReport(String targetURL, String payload) throws IOException{
+    public static String checkForExceptionReport(String targetURL,
+            String payload) throws IOException {
         // Send data
         URL url = new URL(targetURL);
 
@@ -121,7 +124,7 @@ public class PostClient {
 
         int data = error.read();
         while (data != -1) {
-            exceptionReport = exceptionReport + (char)data;
+            exceptionReport = exceptionReport + (char) data;
             data = error.read();
         }
         error.close();
@@ -143,17 +146,16 @@ public class PostClient {
         String referencedDocument = GetClient.sendRequest(splittedURL[0] + "RetrieveResultServlet", splittedURL[1]);
 
         for (int i = 0; i < WPSClientSession.maxNumberOfAsyncRequests; i++) {
-            if ( !referencedDocument.contains("ProcessSucceeded") && !referencedDocument.contains("ProcessFailed")) {
+            if (!referencedDocument.contains("ProcessSucceeded") && !referencedDocument.contains("ProcessFailed")) {
                 try {
                     System.out.println("WPS process still processing. Waiting...");
                     Thread.sleep(WPSClientSession.delayForAsyncRequests);
-                    referencedDocument = GetClient.sendRequest(splittedURL[0] + "RetrieveResultServlet", splittedURL[1]);
-                }
-                catch (InterruptedException ignore) {
+                    referencedDocument =
+                            GetClient.sendRequest(splittedURL[0] + "RetrieveResultServlet", splittedURL[1]);
+                } catch (InterruptedException ignore) {
                     // do nothing
                 }
-            }
-            else {
+            } else {
                 return referencedDocument;
             }
         }

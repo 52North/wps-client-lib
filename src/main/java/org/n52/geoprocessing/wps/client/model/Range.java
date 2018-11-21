@@ -19,6 +19,7 @@ package org.n52.geoprocessing.wps.client.model;
 public class Range {
 
     private Object minimumValue;
+
     private Object maximumValue;
 
     public Object getMinimumValue() {
