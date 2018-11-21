@@ -16,37 +16,29 @@
  */
 package org.n52.geoprocessing.wps.client.model.execution;
 
-import java.util.ArrayList;
-import java.util.List;
+public class LiteralData extends Data {
 
-import org.n52.geoprocessing.wps.client.model.Format;
-import org.n52.geoprocessing.wps.client.model.WPSParameter;
+    private String dataType;
 
-public abstract class WPSExecuteParameter extends WPSParameter {
-
-    private Format format;
-
-    private List<String> metadata = new ArrayList<>();
-
-    public Format getFormat() {
-        return format;
+    public String getDataType() {
+        return dataType;
     }
 
-    public void setFormat(Format format) {
-        this.format = format;
+    public void setDataType(String dataType) {
+        this.dataType = dataType;
     }
 
-    public List<String> getMetadata() {
-        return metadata;
-    }
+    @Override
+    public String toString() {
 
-    public void setMetadata(List<String> metadata) {
-        this.metadata = metadata;
-    }
+        StringBuilder builder = new StringBuilder();
 
-    public void addMetadata(String metadata) {
-        this.metadata.add(metadata);
+        builder.append(super.toString());
 
+        builder.append("Datatype: " + getDataType() + "\n");
+        builder.append("Value: " + getValue() + "\n");
+
+        return builder.toString();
     }
 
 }

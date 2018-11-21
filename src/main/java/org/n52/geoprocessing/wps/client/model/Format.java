@@ -55,4 +55,15 @@ public class Format {
         this.isDefault = isDefault;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+
+        builder.append("MimeType: " + getMimeType() + "\n");
+        builder.append("Schema: " + getSchema() + "\n");
+        builder.append("Encoding: " + getEncoding() + "\n");
+
+        return builder.toString();
+    }
+
 }

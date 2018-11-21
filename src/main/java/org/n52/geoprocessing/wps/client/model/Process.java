@@ -18,7 +18,7 @@ package org.n52.geoprocessing.wps.client.model;
 
 import java.util.List;
 
-public class Process {
+public class Process extends WPSResponse {
 
     private String id;
 

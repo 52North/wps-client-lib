@@ -28,12 +28,14 @@ import org.n52.geoprocessing.wps.client.model.LiteralInputDescription;
 import org.n52.geoprocessing.wps.client.model.Process;
 import org.n52.geoprocessing.wps.client.model.ResponseMode;
 import org.n52.geoprocessing.wps.client.model.TransmissionMode;
-import org.n52.geoprocessing.wps.client.model.execution.ComplexInput;
-import org.n52.geoprocessing.wps.client.model.execution.ComplexInputReference;
+import org.n52.geoprocessing.wps.client.model.execution.BoundingBox;
+import org.n52.geoprocessing.wps.client.model.execution.BoundingBoxData;
+import org.n52.geoprocessing.wps.client.model.execution.ComplexData;
+import org.n52.geoprocessing.wps.client.model.execution.ComplexDataReference;
 import org.n52.geoprocessing.wps.client.model.execution.Execute;
 import org.n52.geoprocessing.wps.client.model.execution.ExecuteOutput;
 import org.n52.geoprocessing.wps.client.model.execution.ExecutionMode;
-import org.n52.geoprocessing.wps.client.model.execution.LiteralInput;
+import org.n52.geoprocessing.wps.client.model.execution.LiteralData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,14 +90,14 @@ public class ExecuteRequestBuilder {
             String mimeType) throws WPSClientException {
         InputDescription inputDesc = getParameterDescription(parameterID);
         if (inputDesc == null) {
-            throw new IllegalArgumentException("inputDesription is null for: " + parameterID);
+            throw new IllegalArgumentException("inputDescription is null for: " + parameterID);
         }
         // if (!(inputDesc instanceof ComplexInputDescription)) {
         // throw new IllegalArgumentException("inputDescription is not of type
         // ComplexData: " + parameterID);
         // }
 
-        ComplexInput input = new ComplexInput();
+        ComplexData input = new ComplexData();
 
         input.setId(inputDesc.getId());
 
@@ -133,7 +135,7 @@ public class ExecuteRequestBuilder {
         // ComplexData: " + parameterID);
         // }
 
-        ComplexInput input = new ComplexInput();
+        ComplexData input = new ComplexData();
 
         input.setId(inputDesc.getId());
 
@@ -141,7 +143,7 @@ public class ExecuteRequestBuilder {
 
     }
 
-    private void setComplexData(ComplexInput input,
+    private void setComplexData(ComplexData input,
             Object value,
             String schema,
             String mimeType,
@@ -197,12 +199,33 @@ public class ExecuteRequestBuilder {
             throw new IllegalArgumentException("inputDescription is not of type complex data: " + parameterID);
         }
 
-        LiteralInput literalInput = new LiteralInput();
+        LiteralData literalInput = new LiteralData();
         literalInput.setId(parameterID);
         literalInput.setValue(value);
         literalInput.setFormat(createFormat(schema, mimetype, encoding));
         literalInput.setDataType(((LiteralInputDescription) inputDesc).getDataType());
         execute.addInput(literalInput);
+    }
+
+
+    public void addBoundingBoxData(String parameterID,
+            BoundingBox value,
+            String schema,
+            String encoding,
+            String mimetype) {
+        InputDescription inputDesc = this.getParameterDescription(parameterID);
+        if (inputDesc == null) {
+            throw new IllegalArgumentException("inputDescription is null for: " + parameterID);
+        }
+        if (inputDesc instanceof ComplexInputDescription) {
+            throw new IllegalArgumentException("inputDescription is not of type complex data: " + parameterID);
+        }
+
+        BoundingBoxData boundingBoxInput = new BoundingBoxData();
+        boundingBoxInput.setId(parameterID);
+        boundingBoxInput.setValue(value);
+        boundingBoxInput.setFormat(createFormat(schema, mimetype, encoding));
+        execute.addInput(boundingBoxInput);
     }
 
     /**
@@ -234,9 +257,9 @@ public class ExecuteRequestBuilder {
             throw new IllegalArgumentException("inputDescription is not of type complexData: " + parameterID);
         }
 
-        ComplexInput input = new ComplexInput();
+        ComplexData input = new ComplexData();
         input.setId(parameterID);
-        ComplexInputReference complexInputReference = new ComplexInputReference();
+        ComplexDataReference complexInputReference = new ComplexDataReference();
         complexInputReference.setHref(new URL(value));
         input.setReference(complexInputReference);
         input.setFormat(createFormat(schema, mimetype, encoding));
@@ -325,6 +348,21 @@ public class ExecuteRequestBuilder {
     }
 
     private void setOutput(String outputIdentifier,
+            String schema,
+            String encoding,
+            String mimeType) {
+
+        ExecuteOutput output = new ExecuteOutput();
+
+        output.setId(outputIdentifier);
+
+        output.setFormat(createFormat(schema, mimeType, encoding));
+
+        execute.addOutput(output);
+
+    }
+
+    public void addOutput(String outputIdentifier,
             String schema,
             String encoding,
             String mimeType) {

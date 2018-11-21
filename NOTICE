@@ -27,36 +27,47 @@ Public License for more details.
 
 This project includes:
   52 North WPS Client libary under The Apache Software License, Version 2.0
-  52North WPS Commons under Apache License, Version 2.0
-  52North WPS Input/Output API under Apache License, Version 2.0
+  52°North Faroe under The Apache Software License, Version 2.0
+  52°North Faroe Annotations under The Apache Software License, Version 2.0
+  52°North Faroe JSON Backend under The Apache Software License, Version 2.0
+  52°North Faroe Utilities under The Apache Software License, Version 2.0
+  52°North Iceland under The Apache Software License, Version 2.0
+  52°North Iceland Streaming Interfaces under The Apache Software License, Version 2.0
   52°North Jan Mayen under The Apache Software License, Version 2.0
-  Apache Commons Codec under The Apache Software License, Version 2.0
+  52°North javaPS POX Binding under The Apache Software License, Version 2.0
+  52°North javaPS Processing API Implementation under The Apache Software License, Version 2.0
+  52°North Shetland under The Apache Software License, Version 2.0
+  52°North Svalbard Core under The Apache Software License, Version 2.0
+  Animal Sniffer Annotations under MIT license
+  Apache Commons Codec under Apache License, Version 2.0
   Apache Commons Configuration under Apache License, Version 2.0
   Apache Commons Lang under The Apache Software License, Version 2.0
   Apache HttpClient under Apache License, Version 2.0
   Apache HttpCore under Apache License, Version 2.0
-  Commons IO under The Apache Software License, Version 2.0
+  Commons Lang under The Apache Software License, Version 2.0
+  error-prone annotations under Apache 2.0
+  EXIficient under MIT License
+  EXIficient-Core under MIT License
+  EXIficient-Grammars under MIT License
   FindBugs-jsr305 under The Apache Software License, Version 2.0
   Guava: Google Core Libraries for Java under The Apache Software License, Version 2.0
+  J2ObjC Annotations under The Apache Software License, Version 2.0
   Jackson-annotations under The Apache Software License, Version 2.0
   Jackson-core under The Apache Software License, Version 2.0
   jackson-databind under The Apache Software License, Version 2.0
   javax.inject under The Apache Software License, Version 2.0
+  JCL 1.2 implemented over SLF4J under MIT License
   Joda-Time under Apache 2
   Logback Classic Module under Eclipse Public License - v 1.0 or GNU Lesser General Public License
   Logback Core Module under Eclipse Public License - v 1.0 or GNU Lesser General Public License
-  OGC OWS schema (spec. v1.1.0) under The Apache Software License, Version 2.0
-  OGC OWS schema (spec. v2.0) under The Apache Software License, Version 2.0
-  OGC WPS schema (spec. v1.0.0) under The Apache Software License, Version 2.0
-  OGC WPS schema (spec. v2.0) under The Apache Software License, Version 2.0
+  org.locationtech.jts:jts-core under Eclipse Publish License, Version 1.0 or Eclipse Distribution License - v 1.0
   SLF4J API Module under MIT License
+  Spring AOP under Apache License, Version 2.0
+  Spring Context under Apache License, Version 2.0
+  Spring Core under Apache License, Version 2.0
+  Spring Expression Language (SpEL) under Apache License, Version 2.0
   StAX API under The Apache Software License, Version 2.0
-  stax-utils under BSD
-  Stax2 API under The BSD License
-  W3C xlink schema (spec. v1.1.0) under The Apache Software License, Version 2.0
-  Woodstox under The Apache Software License, Version 2.0
-  WPS-Config under The Apache Software License, Version 2.0
-  Xalan Java under The Apache Software License, Version 2.0
-  Xalan Java Serializer under The Apache Software License, Version 2.0
+  Xerces2-j under The Apache Software License, Version 2.0
+  XML Commons External Components XML APIs under The Apache Software License, Version 2.0 or The SAX License or The W3C License
   XmlBeans under The Apache Software License, Version 2.0
 

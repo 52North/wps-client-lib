@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ﻿Copyright (C) 2018 52°North Initiative for Geospatial Open Source
+    Software GmbH
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<wps:ExecuteResponse xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ows="http://www.opengis.net/ows/1.1" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsExecute_response.xsd" serviceInstance="http://geoprocessing.demo.52north.org:8080/latest-wps/WebProcessingService?REQUEST=GetCapabilities&amp;SERVICE=WPS" xml:lang="en-US" service="WPS" version="1.0.0" statusLocation="http://geoprocessing.demo.52north.org:8080/latest-wps/RetrieveResultServlet?id=61f8ae24-fec0-4f5a-a4f9-e244f77b6d25">
+  <wps:Process wps:processVersion="1.1.0">
+    <ows:Identifier>org.n52.wps.server.algorithm.SimpleBufferAlgorithm</ows:Identifier>
+    <ows:Title>org.n52.wps.server.algorithm.SimpleBufferAlgorithm</ows:Title>
+  </wps:Process>
+  <wps:Status creationTime="2018-09-19T15:55:19.264+02:00">
+    <wps:ProcessAccepted>Process Accepted</wps:ProcessAccepted>
+  </wps:Status>
+</wps:ExecuteResponse>

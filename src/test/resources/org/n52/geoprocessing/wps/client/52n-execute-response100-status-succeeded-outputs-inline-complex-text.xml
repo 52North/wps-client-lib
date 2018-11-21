@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ﻿Copyright (C) 2018 52°North Initiative for Geospatial Open Source
+    Software GmbH
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<wps:ExecuteResponse xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ows="http://www.opengis.net/ows/1.1" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsExecute_response.xsd" serviceInstance="http://geoprocessing.demo.52north.org:8080/latest-wps/WebProcessingService?REQUEST=GetCapabilities&amp;SERVICE=WPS" xml:lang="en-US" service="WPS" version="1.0.0">
+  <wps:Process wps:processVersion="1.0.0">
+    <ows:Identifier>org.n52.wps.server.algorithm.test.DummyTestClass</ows:Identifier>
+    <ows:Title>org.n52.wps.server.algorithm.test.DummyTestClass</ows:Title>
+  </wps:Process>
+  <wps:Status creationTime="2018-09-19T16:05:49.911+02:00">
+    <wps:ProcessSucceeded>Process successful</wps:ProcessSucceeded>
+  </wps:Status>
+  <wps:ProcessOutputs>
+    <wps:Output>
+      <ows:Identifier>ComplexOutputData</ows:Identifier>
+      <ows:Title>ComplexOutputData</ows:Title>
+      <wps:Data>
+        <wps:ComplexData encoding="UTF-8" mimeType="application/json">{"test":"json"}</wps:ComplexData>
+      </wps:Data>
+    </wps:Output>
+    <wps:Output>
+      <ows:Identifier>LiteralOutputData</ows:Identifier>
+      <ows:Title>LiteralOutputData</ows:Title>
+      <wps:Data>
+        <wps:LiteralData dataType="xs:string">Hello!</wps:LiteralData>
+      </wps:Data>
+    </wps:Output>
+    <wps:Output>
+      <ows:Identifier>BBOXOutputData</ows:Identifier>
+      <ows:Title>BBOXOutputData</ows:Title>
+      <wps:Data>
+        <wps:BoundingBoxData crs="EPSG:4328" dimensions="2">
+          <ows:LowerCorner>-180.0 -90.0</ows:LowerCorner>
+          <ows:UpperCorner>180.0 90.0</ows:UpperCorner>
+        </wps:BoundingBoxData>
+      </wps:Data>
+    </wps:Output>
+  </wps:ProcessOutputs>
+</wps:ExecuteResponse>

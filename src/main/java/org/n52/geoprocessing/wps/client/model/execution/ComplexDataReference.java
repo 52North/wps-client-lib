@@ -20,7 +20,7 @@ import java.net.URL;
 
 import org.apache.xmlbeans.XmlObject;
 
-public class ComplexInputReference {
+public class ComplexDataReference {
 
     private URL href;
 
@@ -50,6 +50,16 @@ public class ComplexInputReference {
 
     public void setBody(XmlObject body) {
         this.body = body;
+    }
+
+    @Override
+    public String toString() {
+
+        StringBuilder builder = new StringBuilder();
+
+        builder.append("Href: " + getHref()+ "\n");
+
+        return builder.toString();
     }
 
 }

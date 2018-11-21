@@ -26,6 +26,37 @@
         <includeBaseDirectory>false</includeBaseDirectory>
         <dependencySets>
                 <dependencySet>
+                        <includes>
+<!--                         	<include>org.n52.sensorweb:52n-xml-ows-v110</include> -->
+<!-- 				            <include>org.n52.sensorweb:52n-xml-wps-v100</include> -->
+<!-- 				            <include>org.n52.sensorweb:52n-xml-xlink-v110</include> -->
+				            <include>org.apache.commons:commons-configuration2</include>
+<!-- 				            <include>commons-io:commons-io</include> -->
+				            <include>org.apache.commons:commons-lang3</include>
+				            <include>com.google.guava:guava</include>
+				            <include>org.apache.httpcomponents:httpclient</include>
+				            <include>org.apache.httpcomponents:httpcore</include>
+				            <include>org.n52.arctic-sea:iceland</include>
+				            <include>org.n52.wps:iceland-stream</include>
+				            <include>com.fasterxml.jackson.core:jackson-annotations</include>
+				            <include>com.fasterxml.jackson.core:jackson-core</include>
+				            <include>com.fasterxml.jackson.core:jackson-databind</include>
+				            <include>org.n52.arctic-sea:janmayen</include>
+				            <include>javax.inject:javax.inject</include>
+				            <include>org.slf4j:jcl-over-slf4j</include>
+				            <include>joda-time:joda-time</include>
+				            <include>ch.qos.logback:logback-classic</include>
+				            <include>ch.qos.logback:logback-core</include>
+<!-- 				            <include>xalan:serializer</include> -->
+				            <include>org.n52.arctic-sea:shetland</include>
+				            <include>org.slf4j:slf4j-api</include>
+				            <include>stax:stax-api</include>
+<!-- 				            <include>net.java.dev.stax-utils:stax-utils</include> -->
+				            <include>org.n52.arctic-sea:svalbard</include>
+				            <include>org.n52.wps:xml</include>
+<!-- 				            <include>org.apache.xmlbeans:xmlbeans</include> -->
+				            <include>org.n52.geoprocessing:wps-client-lib</include>
+                        </includes>
                         <outputDirectory>wps-client-lib</outputDirectory>
                 </dependencySet>
         </dependencySets>
