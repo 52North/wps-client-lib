@@ -3,7 +3,7 @@
 ## Description
 
 WPS client library written in Java. Support for WPS 1.0.0 and 2.0.0. 
-Uses [![arctic-sea](https://github.com/52North/arctic-sea). 
+Uses [arctic-sea](https://github.com/52North/arctic-sea). 
 
 ## Build Status
 * TBD
