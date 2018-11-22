@@ -30,9 +30,9 @@ public abstract class WPSDescriptionParameter extends WPSParameter {
         this.formats = formats;
     }
 
-    public Format getDefaultFormat() throws IllegalArgumentException{
+    public Format getDefaultFormat() throws IllegalArgumentException {
         for (Format format : formats) {
-            if(format.isDefault()) {
+            if (format.isDefault()) {
                 return format;
             }
         }

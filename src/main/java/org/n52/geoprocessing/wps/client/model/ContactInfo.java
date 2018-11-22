@@ -19,6 +19,7 @@ package org.n52.geoprocessing.wps.client.model;
 public class ContactInfo {
 
     private Phone phone;
+
     private Address address;
 
     public Phone getPhone() {
@@ -41,8 +42,8 @@ public class ContactInfo {
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
 
-        stringBuilder.append("Phone: " + getPhone() + "\n");
-        stringBuilder.append("\t\t\t\t\t\t\tAddress: " + getAddress() + "\n");
+        stringBuilder.append("Phone: " + getPhone() + StringConstants.LINE_SEPARATOR);
+        stringBuilder.append("\t\t\t\t\t\t\tAddress: " + getAddress() + StringConstants.LINE_SEPARATOR);
 
         return stringBuilder.toString();
     }

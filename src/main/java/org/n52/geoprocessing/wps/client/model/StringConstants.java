@@ -16,6 +16,8 @@
  */
 package org.n52.geoprocessing.wps.client.model;
 
-public class BoundingBoxInputDescription extends InputDescription {
+public class StringConstants {
+
+    public static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
 }

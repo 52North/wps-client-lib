@@ -18,7 +18,7 @@ package org.n52.geoprocessing.wps.client.model;
 
 import java.util.List;
 
-public class WPSCapabilities extends WPSResponse{
+public class WPSCapabilities extends WPSResponse {
 
     private ServiceIdentification serviceIdentification;
 
@@ -63,9 +63,9 @@ public class WPSCapabilities extends WPSResponse{
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
 
-        stringBuilder.append("ServiceIdentification:\t" + getServiceIdentification() + "\n");
-        stringBuilder.append("ServiceProvider:\t" + getServiceProvider() + "\n");
-        stringBuilder.append("Processes:\t" + getProcesses() + "\n");
+        stringBuilder.append("ServiceIdentification:\t" + getServiceIdentification() + StringConstants.LINE_SEPARATOR);
+        stringBuilder.append("ServiceProvider:\t" + getServiceProvider() + StringConstants.LINE_SEPARATOR);
+        stringBuilder.append("Processes:\t" + getProcesses() + StringConstants.LINE_SEPARATOR);
 
         return stringBuilder.toString();
     }

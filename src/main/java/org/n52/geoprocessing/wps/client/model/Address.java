@@ -82,12 +82,14 @@ public class Address {
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
 
-        stringBuilder.append("DeliveryPoint: " + getDeliveryPoint() + "\n");
-        stringBuilder.append("\t\t\t\t\t\t\t\t PostalCode: " + getPostalCode() + "\n");
-        stringBuilder.append("\t\t\t\t\t\t\t\t City: " + getCity() + "\n");
-        stringBuilder.append("\t\t\t\t\t\t\t\t Administrative area: " + getAdministrativeArea() + "\n");
-        stringBuilder.append("\t\t\t\t\t\t\t\t Country: " + getCountry() + "\n");
-        stringBuilder.append("\t\t\t\t\t\t\t\t Electronic mail address: " + getElectronicMailAddress() + "\n");
+        stringBuilder.append("DeliveryPoint: " + getDeliveryPoint() + StringConstants.LINE_SEPARATOR);
+        stringBuilder.append("\t\t\t\t\t\t\t\t PostalCode: " + getPostalCode() + StringConstants.LINE_SEPARATOR);
+        stringBuilder.append("\t\t\t\t\t\t\t\t City: " + getCity() + StringConstants.LINE_SEPARATOR);
+        stringBuilder.append(
+                "\t\t\t\t\t\t\t\t Administrative area: " + getAdministrativeArea() + StringConstants.LINE_SEPARATOR);
+        stringBuilder.append("\t\t\t\t\t\t\t\t Country: " + getCountry() + StringConstants.LINE_SEPARATOR);
+        stringBuilder.append("\t\t\t\t\t\t\t\t Electronic mail address: " + getElectronicMailAddress()
+                + StringConstants.LINE_SEPARATOR);
 
         return stringBuilder.toString();
     }

@@ -17,6 +17,7 @@
 package org.n52.geoprocessing.wps.client.encoder;
 
 import java.io.ByteArrayOutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 
@@ -45,12 +46,12 @@ public class WPS20ExecuteEncoder {
 
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
-        executeRequestWriter.setContext(
-                new XmlStreamWritingContext(byteArrayOutputStream, new ElementXmlStreamWriterRepository(ELEMENT_WRITERS)::get));
+        executeRequestWriter.setContext(new XmlStreamWritingContext(byteArrayOutputStream,
+                new ElementXmlStreamWriterRepository(ELEMENT_WRITERS)::get));
 
         executeRequestWriter.writeElement(execute);
 
-        return new String(byteArrayOutputStream.toByteArray());
+        return new String(byteArrayOutputStream.toByteArray(), StandardCharsets.UTF_8);
 
     }
 

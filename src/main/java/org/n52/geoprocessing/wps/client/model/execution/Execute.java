@@ -73,16 +73,16 @@ public class Execute {
         this.executionMode = executionMode;
     }
 
-    public boolean addOutput(ExecuteOutput output){
+    public boolean addOutput(ExecuteOutput output) {
 
-        if(getOutputs() == null){
+        if (getOutputs() == null) {
             setOutputs(new ArrayList<ExecuteOutput>());
         }
         return getOutputs().add(output);
     }
 
     public boolean addInput(Data input) {
-        if(getInputs() == null){
+        if (getInputs() == null) {
             setInputs(new ArrayList<Data>());
         }
         return getInputs().add(input);

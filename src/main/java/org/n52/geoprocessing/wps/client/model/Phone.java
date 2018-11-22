@@ -19,6 +19,7 @@ package org.n52.geoprocessing.wps.client.model;
 public class Phone {
 
     private String voice;
+
     private String facsimile;
 
     public String getVoice() {
@@ -41,8 +42,8 @@ public class Phone {
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
 
-        stringBuilder.append("\tVoice: " + getVoice() + "\n");
-        stringBuilder.append("\t\t\t\t\t\t\t\tFacsimile: " + getFacsimile() + "\n");
+        stringBuilder.append("\tVoice: " + getVoice() + StringConstants.LINE_SEPARATOR);
+        stringBuilder.append("\t\t\t\t\t\t\t\tFacsimile: " + getFacsimile() + StringConstants.LINE_SEPARATOR);
 
         return stringBuilder.toString();
     }

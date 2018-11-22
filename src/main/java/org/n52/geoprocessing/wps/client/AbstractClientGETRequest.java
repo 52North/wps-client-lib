@@ -16,22 +16,28 @@
  */
 package org.n52.geoprocessing.wps.client;
 
-
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
 public abstract class AbstractClientGETRequest {
-    protected Map<String, String> requestParams;
 
-    public static String SERVICE_REQ_PARAM_NAME = "service";
-    public static String REQUEST_REQ_PARAM_NAME = "request";
-    public static String SERVICE_REQ_PARAM_VALUE = "WPS";
-    public static String VERSION_REQ_PARAM_NAME = "version";
-    public static String ACCEPT_VERSIONS_REQ_PARAM_NAME = "acceptVersions";
-    public static String VERSION_REQ_100_PARAM_VALUE = "1.0.0";
-    public static String VERSION_REQ_20_PARAM_VALUE = "2.0.0";
+    protected static final String SERVICE_REQ_PARAM_NAME = "service";
+
+    protected static final String REQUEST_REQ_PARAM_NAME = "request";
+
+    protected static final String SERVICE_REQ_PARAM_VALUE = "WPS";
+
+    protected static final String VERSION_REQ_PARAM_NAME = "version";
+
+    protected static final String ACCEPT_VERSIONS_REQ_PARAM_NAME = "acceptVersions";
+
+    protected static String VERSION_REQ_100_PARAM_VALUE = "1.0.0";
+
+    protected static String VERSION_REQ_20_PARAM_VALUE = "2.0.0";
+
+    protected Map<String, String> requestParams;
 
     public AbstractClientGETRequest() {
         requestParams = new HashMap<String, String>();
@@ -43,27 +49,32 @@ public abstract class AbstractClientGETRequest {
     }
 
     /**
-     * adds to the url the designated parameter names and values, as configured before.
+     * adds to the url the designated parameter names and values, as configured
+     * before.
+     *
      * @param url
+     *            base URL
      * @return GetCapabilities URL
      */
     public String getRequest(String url) {
 
-        if(! url.contains("?")) {
-            url = url + "?";
+        StringBuffer urlCopy = new StringBuffer(url);
+
+        if (!url.contains("?")) {
+            urlCopy = urlCopy.append("?");
         }
 
         Iterator<Entry<String, String>> parameterIterator = requestParams.entrySet().iterator();
 
         while (parameterIterator.hasNext()) {
             Map.Entry<String, String> entry = parameterIterator.next();
-            url = url + entry.getKey() + "=" + entry.getValue();
-            if(parameterIterator.hasNext()){
-                url = url + "&";
+            urlCopy.append(entry.getKey() + "=" + entry.getValue());
+            if (parameterIterator.hasNext()) {
+                urlCopy.append("&");
             }
         }
 
-        return url;
+        return urlCopy.toString();
     }
 
     public abstract boolean valid();

@@ -19,7 +19,9 @@ package org.n52.geoprocessing.wps.client.model;
 public class ServiceProvider {
 
     private String providerName;
+
     private String providerSite;
+
     private ServiceContact serviceContact;
 
     public String getProviderName() {
@@ -50,9 +52,9 @@ public class ServiceProvider {
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
 
-        stringBuilder.append("ProviderName: " + getProviderName() + "\n");
-        stringBuilder.append("\t\t\tProviderSite: " + getProviderSite() + "\n");
-        stringBuilder.append("\t\t\tServiceContact: " + getServiceContact() + "\n");
+        stringBuilder.append("ProviderName: " + getProviderName() + StringConstants.LINE_SEPARATOR);
+        stringBuilder.append("\t\t\tProviderSite: " + getProviderSite() + StringConstants.LINE_SEPARATOR);
+        stringBuilder.append("\t\t\tServiceContact: " + getServiceContact() + StringConstants.LINE_SEPARATOR);
 
         return stringBuilder.toString();
     }

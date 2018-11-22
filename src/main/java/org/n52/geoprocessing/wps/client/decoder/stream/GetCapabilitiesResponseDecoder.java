@@ -148,12 +148,12 @@ public class GetCapabilitiesResponseDecoder extends AbstractElementXmlStreamRead
         Process process = new Process();
 
         String jobControlOptions = getAttribute(elem, WPSConstants.Attr.AN_JOB_CONTROL_OPTIONS).get();
-        if(jobControlOptions.contains("async-execute")){
+        if (jobControlOptions.contains("async-execute")) {
             process.setStatusSupported(true);
         }
 
         String outputTransmission = getAttribute(elem, WPSConstants.Attr.AN_OUTPUT_TRANSMISSION).get();
-        if(outputTransmission.contains("reference")){
+        if (outputTransmission.contains("reference")) {
             process.setReferenceSupported(true);
         }
 
@@ -168,11 +168,13 @@ public class GetCapabilitiesResponseDecoder extends AbstractElementXmlStreamRead
                 } else if (start.getName().equals(OWSConstants.Elem.QN_IDENTIFIER)) {
                     process.setId(reader.getElementText());
                 } else if (start.getName().equals(OWSConstants.Elem.QN_KEYWORDS)) {
-//                    process.setKeyWords(readKeywords(start, reader));//TODO
-                    readKeywords(start, reader);//just consume keywords for now
+                    // process.setKeyWords(readKeywords(start, reader));//TODO
+                    // just consume keywords for now
+                    readKeywords(start, reader);
                 } else if (start.getName().equals(OWSConstants.Elem.QN_METADATA)) {
-                  //do nothing
-              }else {
+                    // do nothing
+                    continue;
+                } else {
                     throw unexpectedTag(start);
                 }
             } else if (event.isEndElement()) {
@@ -220,7 +222,7 @@ public class GetCapabilitiesResponseDecoder extends AbstractElementXmlStreamRead
 
     private ServiceContact readServiceContact(StartElement elem,
             XMLEventReader reader) throws XMLStreamException {
-      ServiceContact serviceContact = new ServiceContact();
+        ServiceContact serviceContact = new ServiceContact();
 
         while (reader.hasNext()) {
             XMLEvent event = reader.nextEvent();
@@ -233,8 +235,9 @@ public class GetCapabilitiesResponseDecoder extends AbstractElementXmlStreamRead
                 } else if (start.getName().equals(OWSConstants.Elem.QN_CONTACT_INFO)) {
                     serviceContact.setContactInfo(readContactInfo(elem, reader));
                 } else if (start.getName().equals(OWSConstants.Elem.QN_ROLE)) {
-                    //TODO
-                }  else {
+                    // TODO
+                    continue;
+                } else {
                     throw unexpectedTag(start);
                 }
             } else if (event.isEndElement()) {
@@ -264,12 +267,15 @@ public class GetCapabilitiesResponseDecoder extends AbstractElementXmlStreamRead
                 } else if (start.getName().equals(OWSConstants.Elem.QN_PHONE)) {
                     contactInfo.setPhone(readPhone(start, reader));
                 } else if (start.getName().equals(OWSConstants.Elem.QN_ONLINE_RESOURCE)) {
-                    //TODO
+                    // TODO
+                    continue;
                 } else if (start.getName().equals(OWSConstants.Elem.QN_HOURS_OF_SERVICE)) {
-                    //TODO
+                    // TODO
+                    continue;
                 } else if (start.getName().equals(OWSConstants.Elem.QN_CONTACT_INSTRUCTIONS)) {
-                    //TODO
-                }  else {
+                    // TODO
+                    continue;
+                } else {
                     throw unexpectedTag(start);
                 }
             } else if (event.isEndElement()) {
@@ -297,7 +303,7 @@ public class GetCapabilitiesResponseDecoder extends AbstractElementXmlStreamRead
                     phone.setVoice(reader.getElementText());
                 } else if (start.getName().equals(OWSConstants.Elem.QN_FACSIMILE)) {
                     phone.setFacsimile(reader.getElementText());
-                }  else {
+                } else {
                     throw unexpectedTag(start);
                 }
             } else if (event.isEndElement()) {
@@ -326,7 +332,7 @@ public class GetCapabilitiesResponseDecoder extends AbstractElementXmlStreamRead
                     address.setDeliveryPoint(reader.getElementText());
                 } else if (start.getName().equals(OWSConstants.Elem.QN_CITY)) {
                     address.setCity(reader.getElementText());
-                }  else if (start.getName().equals(OWSConstants.Elem.QN_ADMINISTRATIVE_AREA)) {
+                } else if (start.getName().equals(OWSConstants.Elem.QN_ADMINISTRATIVE_AREA)) {
                     address.setAdministrativeArea(reader.getElementText());
                 } else if (start.getName().equals(OWSConstants.Elem.QN_POSTAL_CODE)) {
                     address.setPostalCode(reader.getElementText());
@@ -376,6 +382,7 @@ public class GetCapabilitiesResponseDecoder extends AbstractElementXmlStreamRead
                     serviceTypeVersions.add(reader.getElementText());
                 } else if (start.getName().equals(OWSConstants.Elem.QN_SERVICE_TYPE)) {
                     // do nothing
+                    continue;
                 } else {
                     throw unexpectedTag(start);
                 }

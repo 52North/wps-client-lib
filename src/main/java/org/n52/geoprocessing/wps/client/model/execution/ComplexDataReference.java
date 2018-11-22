@@ -19,6 +19,7 @@ package org.n52.geoprocessing.wps.client.model.execution;
 import java.net.URL;
 
 import org.apache.xmlbeans.XmlObject;
+import org.n52.geoprocessing.wps.client.model.StringConstants;
 
 public class ComplexDataReference {
 
@@ -57,7 +58,7 @@ public class ComplexDataReference {
 
         StringBuilder builder = new StringBuilder();
 
-        builder.append("Href: " + getHref()+ "\n");
+        builder.append("Href: " + getHref() + StringConstants.LINE_SEPARATOR);
 
         return builder.toString();
     }

@@ -18,6 +18,7 @@ package org.n52.geoprocessing.wps.client;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import javax.xml.stream.XMLEventReader;
@@ -35,9 +36,11 @@ public class WPS20ProcessParser {
 
     public static Process parseProcess(InputStream in) throws XMLStreamException {
 
-        XMLEventReader xmlReader = XMLInputFactory.newInstance().createXMLEventReader(new InputStreamReader(in));
+        XMLEventReader xmlReader =
+                XMLInputFactory.newInstance().createXMLEventReader(new InputStreamReader(in, StandardCharsets.UTF_8));
 
-        List<org.n52.geoprocessing.wps.client.model.Process> processes = new DescribeProcessResponseDecoder().readElement(xmlReader);
+        List<org.n52.geoprocessing.wps.client.model.Process> processes =
+                new DescribeProcessResponseDecoder().readElement(xmlReader);
 
         return processes.get(0);
     }

@@ -94,9 +94,9 @@ public class Process extends WPSResponse {
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
 
-        stringBuilder.append("Id: " + getId() + "\n");
-        stringBuilder.append("Title: " + getTitle() + "\n");
-        stringBuilder.append("\t\t\tAbstract: " + getAbstract() + "\n");
+        stringBuilder.append("Id: " + getId() + StringConstants.LINE_SEPARATOR);
+        stringBuilder.append("Title: " + getTitle() + StringConstants.LINE_SEPARATOR);
+        stringBuilder.append("\t\t\tAbstract: " + getAbstract() + StringConstants.LINE_SEPARATOR);
 
         return stringBuilder.toString();
     }

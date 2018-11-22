@@ -16,7 +16,7 @@
  */
 package org.n52.geoprocessing.wps.client.model;
 
-public class OWSException {
+public class OWSExceptionElement {
 
     private String exceptionCode;
 
@@ -24,17 +24,18 @@ public class OWSException {
 
     private String exceptionText;
 
-    public OWSException(String exceptionCode) {
+    public OWSExceptionElement(String exceptionCode) {
         this.exceptionCode = exceptionCode;
     }
 
-    public OWSException(String exceptionCode, String locator, String exceptionText) {
+    public OWSExceptionElement(String exceptionCode, String locator, String exceptionText) {
         this.exceptionCode = exceptionCode;
         this.locator = locator;
         this.exceptionText = exceptionText;
     }
 
-    public OWSException() {}
+    public OWSExceptionElement() {
+    }
 
     public String getExceptionCode() {
         return exceptionCode;
@@ -59,8 +60,6 @@ public class OWSException {
     public void setExceptionText(String exceptionText) {
         this.exceptionText = exceptionText;
     }
-
-
 
     @Override
     public String toString() {

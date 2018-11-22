@@ -58,7 +58,7 @@ public class WPSResponseReader extends AbstractElementXmlStreamReader {
                     return readResultResponse(start, reader);
                 } else if (start.getName().equals(OWSConstants.Elem.QN_EXCEPTION_REPORT)) {
                     return readExceptionReport20(start, reader);
-                }  else if (start.getName().equals(OWS11Constants.Elem.QN_EXCEPTION_REPORT)) {
+                } else if (start.getName().equals(OWS11Constants.Elem.QN_EXCEPTION_REPORT)) {
                     return readExceptionReport100(start, reader);
                 } else if (start.getName().equals(WPS100Constants.Elem.QN_EXECUTE_RESPONSE)) {
                     return readExecuteResponse(start, reader);

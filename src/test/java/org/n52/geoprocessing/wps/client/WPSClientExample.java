@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.n52.geoprocessing.wps.client.example;
+package org.n52.geoprocessing.wps.client;
 
 import java.io.IOException;
 import java.util.List;
@@ -33,34 +33,37 @@ import org.n52.geoprocessing.wps.client.model.execution.Execute;
 
 public class WPSClientExample {
 
+    private static final String MIME_TYPE_TEXT_CSV = "text/csv";
+    private static final String MIME_TYPE_TEXT_XML = "text/xml";
+
     public void testExecute(String version) {
 
-        String wpsURL = "http://localhost:8080/wps/WebProcessingService";
-//        String wpsURL = "http://geoprocessing.demo.52north.org:8080/wps/WebProcessingService";
+//        String wpsURL = "http://localhost:8080/wps/WebProcessingService";
+         String wpsURL =
+         "http://geoprocessing.demo.52north.org:8080/wps/WebProcessingService";
 
         String processID = "org.n52.wps.server.algorithm.test.DummyTestClass";
 
-//        try {
-//            ProcessDescriptionType describeProcessDocument = requestDescribeProcess(
-//                    wpsURL, processID);
-//            System.out.println(describeProcessDocument);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+        // try {
+        // ProcessDescriptionType describeProcessDocument =
+        // requestDescribeProcess(
+        // wpsURL, processID);
+        // System.out.println(describeProcessDocument);
+        // } catch (IOException e) {
+        // e.printStackTrace();
+        // }
         try {
             WPSCapabilities cpbDoc = requestGetCapabilities(wpsURL, version);
 
             System.out.println(cpbDoc);
 
-            Process describeProcessDocument = requestDescribeProcess(
-                    wpsURL, processID, version);
+            Process describeProcessDocument = requestDescribeProcess(wpsURL, processID, version);
 
             ExecuteRequestBuilder builder = new ExecuteRequestBuilder(describeProcessDocument);
 
-            builder.addComplexData("ComplexInputData", "a,b,c", "", "", "text/csv");
+            builder.addComplexData("ComplexInputData", "a,b,c", "", "", MIME_TYPE_TEXT_CSV);
 
-            builder.addLiteralData("LiteralInputData", "0.05", "", "", "text/xml");
-
+            builder.addLiteralData("LiteralInputData", "0.05", "", "", MIME_TYPE_TEXT_XML);
 
             BoundingBox boundingBox = new BoundingBox();
 
@@ -73,12 +76,12 @@ public class WPSClientExample {
 
             boundingBox.setDimensions(2);
 
-            builder.addBoundingBoxData("BBOXInputData", boundingBox, "", "", "text/xml");
+            builder.addBoundingBoxData("BBOXInputData", boundingBox, "", "", MIME_TYPE_TEXT_XML);
 
-            builder.addOutput("LiteralOutputData", "", "", "text/xml");
-            builder.addOutput("BBOXOutputData", "", "", "text/xml");
+            builder.addOutput("LiteralOutputData", "", "", MIME_TYPE_TEXT_XML);
+            builder.addOutput("BBOXOutputData", "", "", MIME_TYPE_TEXT_XML);
 
-            builder.setResponseDocument("ComplexOutputData", "", "", "text/csv");
+            builder.setResponseDocument("ComplexOutputData", "", "", MIME_TYPE_TEXT_CSV);
 
             builder.setAsynchronousExecute();
 
@@ -93,7 +96,9 @@ public class WPSClientExample {
         }
     }
 
-    public void execute(String url, Execute execute, String version){
+    public void execute(String url,
+            Execute execute,
+            String version) {
 
         WPSClientSession wpsClient = WPSClientSession.getInstance();
 
@@ -102,10 +107,10 @@ public class WPSClientExample {
 
             System.out.println(o);
 
-            if(o instanceof Result) {
-                printOutputs((Result)o);
-            }else if(o instanceof StatusInfo) {
-                printOutputs(((StatusInfo)o).getResult());
+            if (o instanceof Result) {
+                printOutputs((Result) o);
+            } else if (o instanceof StatusInfo) {
+                printOutputs(((StatusInfo) o).getResult());
             }
 
         } catch (WPSClientException | IOException e) {
@@ -119,18 +124,18 @@ public class WPSClientExample {
         List<Data> outputs = result.getOutputs();
 
         for (Data data : outputs) {
-//            if(data instanceof ComplexData){
-//              ComplexData complexData = (ComplexData)data;
-//              System.out.println(complexData);
-//
-//            }
+            // if(data instanceof ComplexData){
+            // ComplexData complexData = (ComplexData)data;
+            // System.out.println(complexData);
+            //
+            // }
             System.out.println(data);
         }
 
     }
 
-    public WPSCapabilities requestGetCapabilities(String url, String version)
-            throws WPSClientException {
+    public WPSCapabilities requestGetCapabilities(String url,
+            String version) throws WPSClientException {
 
         WPSClientSession wpsClient = WPSClientSession.getInstance();
 
@@ -148,12 +153,12 @@ public class WPSClientExample {
     }
 
     public Process requestDescribeProcess(String url,
-            String processID, String version) throws IOException {
+            String processID,
+            String version) throws IOException {
 
         WPSClientSession wpsClient = WPSClientSession.getInstance();
 
-        Process processDescription = wpsClient
-                .getProcessDescription(url, processID, version);
+        Process processDescription = wpsClient.getProcessDescription(url, processID, version);
 
         List<InputDescription> inputList = processDescription.getInputs();
 
@@ -165,7 +170,7 @@ public class WPSClientExample {
 
     public static void main(String[] args) {
 
-        //TODO find way to initialize parsers/generators
+        // TODO find way to initialize parsers/generators
 
         WPSClientExample client = new WPSClientExample();
         client.testExecute("2.0.0");

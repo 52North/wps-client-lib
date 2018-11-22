@@ -16,7 +16,9 @@
  */
 package org.n52.geoprocessing.wps.client.model.execution;
 
-public class BoundingBoxData extends Data{
+import org.n52.geoprocessing.wps.client.model.StringConstants;
+
+public class BoundingBoxData extends Data {
 
     @Override
     public String toString() {
@@ -25,7 +27,7 @@ public class BoundingBoxData extends Data{
 
         builder.append(super.toString());
 
-        builder.append("Value: " + getValue() + "\n");
+        builder.append("Value: " + getValue() + StringConstants.LINE_SEPARATOR);
 
         return builder.toString();
     }

@@ -26,12 +26,11 @@ import org.n52.geoprocessing.wps.client.model.execution.BoundingBox;
 import org.n52.geoprocessing.wps.client.model.execution.BoundingBoxData;
 import org.n52.geoprocessing.wps.client.model.execution.ComplexData;
 import org.n52.geoprocessing.wps.client.model.execution.ComplexDataReference;
-import org.n52.geoprocessing.wps.client.model.execution.Execute;
 import org.n52.geoprocessing.wps.client.model.execution.Data;
+import org.n52.geoprocessing.wps.client.model.execution.Execute;
 import org.n52.geoprocessing.wps.client.model.execution.ExecuteOutput;
 import org.n52.geoprocessing.wps.client.model.execution.LiteralData;
 import org.n52.geoprocessing.wps.client.model.execution.WPSExecuteParameter;
-import org.n52.geoprocessing.wps.client.xml.OWS11Constants;
 import org.n52.geoprocessing.wps.client.xml.WPS100Constants;
 import org.n52.javaps.service.xml.OWSConstants;
 import org.n52.javaps.service.xml.WPSConstants;
@@ -43,13 +42,13 @@ import org.n52.svalbard.stream.XLinkConstants;
 
 public class ExecuteRequest20Encoder extends AbstractMultiElementXmlStreamWriter {
 
-    private final String service = "WPS";
+    private static final String SERVICE = "WPS";
 
-    private final String version = "2.0.0";
+    private static final String VERSION = "2.0.0";
 
-    private final String mimeTypeTextPlain = "text/plain";
+    private static final String MIME_TYPE_TEXT_PLAIN = "text/plain";
 
-    private final String mimeTypeTextXML = "text/xml";
+    private static final String MIME_TYPE_TEXT_XML = "text/xml";
 
     @Override
     public void writeElement(Object object) throws XMLStreamException, EncodingException {
@@ -76,8 +75,8 @@ public class ExecuteRequest20Encoder extends AbstractMultiElementXmlStreamWriter
             writeNamespacesWithSchemalocation();
             attr(WPSConstants.Attr.AN_RESPONSE, execute.getResponseMode().toString().toLowerCase());
             attr(WPSConstants.Attr.AN_MODE, execute.getExecutionMode().toString().toLowerCase());
-            attr(WPSConstants.Attr.AN_SERVICE, service);
-            attr(WPSConstants.Attr.AN_VERSION, version);
+            attr(WPSConstants.Attr.AN_SERVICE, SERVICE);
+            attr(WPSConstants.Attr.AN_VERSION, VERSION);
             element(OWSConstants.Elem.QN_IDENTIFIER, execute.getId());
             if (execute.getInputs() != null) {
                 writeInputElements(execute.getInputs());
@@ -122,30 +121,30 @@ public class ExecuteRequest20Encoder extends AbstractMultiElementXmlStreamWriter
 
     private void writeLiteralInput(LiteralData executeInput) throws XMLStreamException {
 
-            Format format = executeInput.getFormat();
-            String mimeType = "";
+        Format format = executeInput.getFormat();
+        String mimeType = "";
 
-            if (format != null) {
-                mimeType = format.getMimeType();
-            }
-            if (!mimeType.isEmpty()) {
-                if (mimeType.equals(mimeTypeTextPlain)) {
-                    element(WPSConstants.Elem.QN_DATA, executeInput.getValue().toString());
-                    attr(WPSConstants.Attr.AN_MIME_TYPE, mimeTypeTextPlain);
-                } else if (mimeType.equals(mimeTypeTextXML)) {
-                    element(WPSConstants.Elem.QN_DATA, executeInput, x1 -> {
-                        attr(WPSConstants.Attr.AN_MIME_TYPE, mimeTypeTextXML);
-                        element(WPSConstants.Elem.QN_LITERAL_VALUE, executeInput.getValue().toString());
-                        // if()
-                    });
-                }
-            } else {
+        if (format != null) {
+            mimeType = format.getMimeType();
+        }
+        if (!mimeType.isEmpty()) {
+            if (mimeType.equals(MIME_TYPE_TEXT_PLAIN)) {
+                element(WPSConstants.Elem.QN_DATA, executeInput.getValue().toString());
+                attr(WPSConstants.Attr.AN_MIME_TYPE, MIME_TYPE_TEXT_PLAIN);
+            } else if (mimeType.equals(MIME_TYPE_TEXT_XML)) {
                 element(WPSConstants.Elem.QN_DATA, executeInput, x1 -> {
-                    attr(WPSConstants.Attr.AN_MIME_TYPE, mimeTypeTextXML);
+                    attr(WPSConstants.Attr.AN_MIME_TYPE, MIME_TYPE_TEXT_XML);
                     element(WPSConstants.Elem.QN_LITERAL_VALUE, executeInput.getValue().toString());
                     // if()
                 });
             }
+        } else {
+            element(WPSConstants.Elem.QN_DATA, executeInput, x1 -> {
+                attr(WPSConstants.Attr.AN_MIME_TYPE, MIME_TYPE_TEXT_XML);
+                element(WPSConstants.Elem.QN_LITERAL_VALUE, executeInput.getValue().toString());
+                // if()
+            });
+        }
     }
 
     private void writeBoundingBoxInput(BoundingBoxData executeInput) throws XMLStreamException {
@@ -156,7 +155,9 @@ public class ExecuteRequest20Encoder extends AbstractMultiElementXmlStreamWriter
                 BoundingBox boundingBox = (BoundingBox) executeInput.getValue();
 
                 attr(WPS100Constants.Attr.QN_CRS_NO_NAMESPACE, boundingBox.getCrs());
-//              attr(WPS100Constants.Attr.QN_DIMENSIONS_NO_NAMESPACE, "" + boundingBox.getDimensions());//TODO check optional stuff for this
+                // attr(WPS100Constants.Attr.QN_DIMENSIONS_NO_NAMESPACE, "" +
+                // boundingBox.getDimensions());//TODO check optional stuff for
+                // this
 
                 String lowerCorner = boundingBox.getMinX() + " " + boundingBox.getMinY();
                 String upperCorner = boundingBox.getMaxX() + " " + boundingBox.getMaxY();

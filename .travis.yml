@@ -1,4 +1,9 @@
 language: java
-script: "mvn clean install"
+sudo: false
+install: true
+script: mvn -fae -U -B clean install
 jdk:
-  - openjdk7
+  - oraclejdk8
+cache:
+  directories:
+    - $HOME/.m2

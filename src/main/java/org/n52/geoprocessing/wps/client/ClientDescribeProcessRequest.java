@@ -16,10 +16,10 @@
  */
 package org.n52.geoprocessing.wps.client;
 
-
 public class ClientDescribeProcessRequest extends AbstractClientGETRequest {
 
     private static String IDENTIFIER_REQ_PARAM_NAME = "identifier";
+
     private static String REQUEST_REQ_PARAM_VALUE = "DescribeProcess";
 
     ClientDescribeProcessRequest(String version) {
@@ -29,14 +29,14 @@ public class ClientDescribeProcessRequest extends AbstractClientGETRequest {
     }
 
     public void setIdentifier(String[] ids) {
-        String idsString = "";
-            for(int i = 0; i < ids.length; i++) {
-                idsString = idsString + ids[i];
-                if(i != ids.length -1) {
-                    idsString = idsString + ",";
+        StringBuffer idsString = new StringBuffer();
+        for (int i = 0; i < ids.length; i++) {
+            idsString.append(ids[i]);
+            if (i != ids.length - 1) {
+                idsString.append(",");
             }
         }
-        requestParams.put(IDENTIFIER_REQ_PARAM_NAME, idsString);
+        requestParams.put(IDENTIFIER_REQ_PARAM_NAME, idsString.toString());
     }
 
     public boolean valid() {
