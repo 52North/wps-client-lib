@@ -151,7 +151,7 @@ public class GetResultResponseDecoder extends AbstractElementXmlStreamReader {
 
         ComplexDataReference complexDataReference = new ComplexDataReference();
 
-        getAttribute(elem, XLinkConstants.Attr.AN_HREF).ifPresent(new Consumer<String>() {
+        getAttribute(elem, XLinkConstants.Attr.QN_HREF).ifPresent(new Consumer<String>() {
 
             @Override
             public void accept(String t) {

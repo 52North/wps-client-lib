@@ -500,6 +500,47 @@ public class WPSResponseReaderTest {
             fail();
         }
     }
+    
+    @Test
+    public void testReadResult200ComplexOutputReference(){
+        
+        XMLEventReader xmlReader = null;
+        try {
+            xmlReader = XMLInputFactory.newInstance().createXMLEventReader(new InputStreamReader(WPSResponseReaderTest.class.getResourceAsStream("52n-getresult-response200.xml")));
+        } catch (XMLStreamException | FactoryConfigurationError e) {
+            LOGGER.error(e.getMessage());
+            fail();
+        }
+        
+        try {
+            Object o = new WPSResponseReader().readElement(xmlReader);
+            assertTrue(o != null);
+            assertTrue(o instanceof Result);
+            
+            Result result = (Result)o;
+            
+            assertTrue(result.getOutputs().size() == 1);
+            
+            for (Data output : result.getOutputs()) {
+                if(output.getId().equals("result")){
+                    
+                    assertTrue(output instanceof ComplexData);
+                    
+                    ComplexData complexData = (ComplexData)output;
+                    
+                    assertTrue(complexData.isReference());
+                    
+                    assertTrue(complexData.getReference() != null);
+                    
+                    assertTrue(!complexData.getReference().getHref().toString().isEmpty());
+                }
+            }
+            
+        } catch (XMLStreamException e) {
+            LOGGER.error(e.getMessage());
+            fail();
+        }
+    }
 
     private void checkBBoxData(BoundingBoxData output) {
         BoundingBox boundingBox = (BoundingBox) output.getValue();
