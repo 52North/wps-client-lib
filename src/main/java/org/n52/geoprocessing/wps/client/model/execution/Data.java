@@ -16,6 +16,8 @@
  */
 package org.n52.geoprocessing.wps.client.model.execution;
 
+import org.n52.geoprocessing.wps.client.model.StringConstants;
+
 public class Data extends WPSExecuteParameter {
 
     private Object value;
@@ -70,11 +72,11 @@ public class Data extends WPSExecuteParameter {
 
         StringBuilder builder = new StringBuilder();
 
-        builder.append("Id: " + getId() + "\n");
-        builder.append("Title: " + getTitle() + "\n");
-        builder.append("Abstract: " + getAbstract() + "\n");
-        builder.append("Metadata: " + getMetadata() + "\n");
-        builder.append("Format: " + getFormat() + "\n");
+        builder.append("Id: " + getId() + StringConstants.LINE_SEPARATOR);
+        builder.append("Title: " + getTitle() + StringConstants.LINE_SEPARATOR);
+        builder.append("Abstract: " + getAbstract() + StringConstants.LINE_SEPARATOR);
+        builder.append("Metadata: " + getMetadata() + StringConstants.LINE_SEPARATOR);
+        builder.append("Format: " + getFormat() + StringConstants.LINE_SEPARATOR);
 
         return builder.toString();
     }

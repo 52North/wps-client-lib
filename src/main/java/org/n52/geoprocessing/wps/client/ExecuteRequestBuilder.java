@@ -43,15 +43,20 @@ import org.slf4j.LoggerFactory;
  * @author foerster, bpross-52n
  */
 public class ExecuteRequestBuilder {
-    private Process processDesc;
-
-    private Execute execute;
 
     public static final String VERSION_100 = "1.0.0";
 
     public static final String VERSION_200 = "2.0.0";
 
     private static Logger LOGGER = LoggerFactory.getLogger(ExecuteRequestBuilder.class);
+
+    private static final String INPUT_DESCRIPTION_IS_NULL = "InputDescription is null for: ";
+
+    private static final String INPUT_DESCRIPTION_NOT_COMPLEX_DATA = "InputDescription is not of type complex data: ";
+
+    private Process processDesc;
+
+    private Execute execute;
 
     public ExecuteRequestBuilder(Process processDesc) {
         this.processDesc = processDesc;
@@ -82,6 +87,7 @@ public class ExecuteRequestBuilder {
      * @param mimeType
      *            mimetype of the data, has to be set
      * @throws WPSClientException
+     *             if input description was not found
      */
     public void addComplexData(String parameterID,
             String value,
@@ -90,7 +96,7 @@ public class ExecuteRequestBuilder {
             String mimeType) throws WPSClientException {
         InputDescription inputDesc = getParameterDescription(parameterID);
         if (inputDesc == null) {
-            throw new IllegalArgumentException("inputDescription is null for: " + parameterID);
+            throw new IllegalArgumentException(INPUT_DESCRIPTION_IS_NULL + parameterID);
         }
         // if (!(inputDesc instanceof ComplexInputDescription)) {
         // throw new IllegalArgumentException("inputDescription is not of type
@@ -120,6 +126,7 @@ public class ExecuteRequestBuilder {
      * @param mimeType
      *            mimetype of the data, has to be set
      * @throws WPSClientException
+     *             if input description was not found
      */
     public void addComplexData(String parameterID,
             InputStream value,
@@ -128,7 +135,7 @@ public class ExecuteRequestBuilder {
             String mimeType) throws WPSClientException {
         InputDescription inputDesc = getParameterDescription(parameterID);
         if (inputDesc == null) {
-            throw new IllegalArgumentException("inputDesription is null for: " + parameterID);
+            throw new IllegalArgumentException(INPUT_DESCRIPTION_IS_NULL + parameterID);
         }
         // if (!(inputDesc instanceof ComplexInputDescription)) {
         // throw new IllegalArgumentException("inputDescription is not of type
@@ -182,6 +189,15 @@ public class ExecuteRequestBuilder {
      * @param parameterID
      *            the ID of the input paramter according to the describe process
      * @param value
+     *            the actual value as InputStream
+     * @param schema
+     *            schema if applicable otherwise null
+     * @param encoding
+     *            encoding if not the default encoding (for default encoding set
+     *            it to null) (i.e. binary data, use base64)
+     * @param mimetype
+     *            mimetype of the data, has to be set
+     * @param value
      *            the value. other types than strings have to be converted to
      *            string. The datatype is automatically determined and set
      *            accordingly to the process description
@@ -193,10 +209,10 @@ public class ExecuteRequestBuilder {
             String mimetype) {
         InputDescription inputDesc = this.getParameterDescription(parameterID);
         if (inputDesc == null) {
-            throw new IllegalArgumentException("inputDescription is null for: " + parameterID);
+            throw new IllegalArgumentException(INPUT_DESCRIPTION_IS_NULL + parameterID);
         }
         if (inputDesc instanceof ComplexInputDescription) {
-            throw new IllegalArgumentException("inputDescription is not of type complex data: " + parameterID);
+            throw new IllegalArgumentException(INPUT_DESCRIPTION_NOT_COMPLEX_DATA + parameterID);
         }
 
         LiteralData literalInput = new LiteralData();
@@ -214,10 +230,10 @@ public class ExecuteRequestBuilder {
             String mimetype) {
         InputDescription inputDesc = this.getParameterDescription(parameterID);
         if (inputDesc == null) {
-            throw new IllegalArgumentException("inputDescription is null for: " + parameterID);
+            throw new IllegalArgumentException(INPUT_DESCRIPTION_IS_NULL + parameterID);
         }
         if (inputDesc instanceof ComplexInputDescription) {
-            throw new IllegalArgumentException("inputDescription is not of type complex data: " + parameterID);
+            throw new IllegalArgumentException("InputDescription is not of type bounding box data: " + parameterID);
         }
 
         BoundingBoxData boundingBoxInput = new BoundingBoxData();
@@ -242,6 +258,7 @@ public class ExecuteRequestBuilder {
      *            mimetype of the input according to the process description.
      *            has to be set
      * @throws MalformedURLException
+     *             if the reference URL is malformed
      */
     public void addComplexDataReference(String parameterID,
             String value,
@@ -250,10 +267,10 @@ public class ExecuteRequestBuilder {
             String mimetype) throws MalformedURLException {
         InputDescription inputDesc = getParameterDescription(parameterID);
         if (inputDesc == null) {
-            throw new IllegalArgumentException("inputDescription is null for: " + parameterID);
+            throw new IllegalArgumentException(INPUT_DESCRIPTION_IS_NULL + parameterID);
         }
         if (inputDesc instanceof LiteralInputDescription) {
-            throw new IllegalArgumentException("inputDescription is not of type complexData: " + parameterID);
+            throw new IllegalArgumentException(INPUT_DESCRIPTION_NOT_COMPLEX_DATA + parameterID);
         }
 
         ComplexData input = new ComplexData();
@@ -269,8 +286,11 @@ public class ExecuteRequestBuilder {
      * this sets store for the specific output.
      *
      * @param outputName
+     *            the id of the output
      * @param asReference
-     * @return
+     *            true if output should be requested as reference, false
+     *            otherwise
+     * @return true if reference is supported, false otherwise
      */
     public boolean setAsReference(String outputName,
             boolean asReference) {
@@ -316,6 +336,7 @@ public class ExecuteRequestBuilder {
     /**
      * Asks for data as raw data, i.e. without WPS XML wrapping
      *
+     * @param outputIdentifier identifier of the output
      * @param schema
      *            if applicable otherwise null
      * @param encoding
@@ -323,7 +344,7 @@ public class ExecuteRequestBuilder {
      * @param mimeType
      *            requested mimetype of the output according to the process
      *            description. if not set, default mime type is used.
-     * @return
+     * @return true
      */
     public boolean setRawData(String outputIdentifier,
             String schema,
@@ -379,7 +400,7 @@ public class ExecuteRequestBuilder {
     /**
      * XML representation of the created request.
      *
-     * @return
+     * @return execute object
      */
     public Execute getExecute() {
         return execute;
@@ -388,6 +409,7 @@ public class ExecuteRequestBuilder {
     /**
      *
      * @param id
+     *            id of the input
      * @return the specified parameterdescription. if not available it returns
      *         null.
      */

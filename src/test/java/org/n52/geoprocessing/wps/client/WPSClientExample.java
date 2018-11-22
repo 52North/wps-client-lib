@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.n52.geoprocessing.wps.client.example;
+package org.n52.geoprocessing.wps.client;
 
 import java.io.IOException;
 import java.util.List;
@@ -33,11 +33,14 @@ import org.n52.geoprocessing.wps.client.model.execution.Execute;
 
 public class WPSClientExample {
 
+    private static final String MIME_TYPE_TEXT_CSV = "text/csv";
+    private static final String MIME_TYPE_TEXT_XML = "text/xml";
+
     public void testExecute(String version) {
 
-        String wpsURL = "http://localhost:8080/wps/WebProcessingService";
-        // String wpsURL =
-        // "http://geoprocessing.demo.52north.org:8080/wps/WebProcessingService";
+//        String wpsURL = "http://localhost:8080/wps/WebProcessingService";
+         String wpsURL =
+         "http://geoprocessing.demo.52north.org:8080/wps/WebProcessingService";
 
         String processID = "org.n52.wps.server.algorithm.test.DummyTestClass";
 
@@ -58,9 +61,9 @@ public class WPSClientExample {
 
             ExecuteRequestBuilder builder = new ExecuteRequestBuilder(describeProcessDocument);
 
-            builder.addComplexData("ComplexInputData", "a,b,c", "", "", "text/csv");
+            builder.addComplexData("ComplexInputData", "a,b,c", "", "", MIME_TYPE_TEXT_CSV);
 
-            builder.addLiteralData("LiteralInputData", "0.05", "", "", "text/xml");
+            builder.addLiteralData("LiteralInputData", "0.05", "", "", MIME_TYPE_TEXT_XML);
 
             BoundingBox boundingBox = new BoundingBox();
 
@@ -73,12 +76,12 @@ public class WPSClientExample {
 
             boundingBox.setDimensions(2);
 
-            builder.addBoundingBoxData("BBOXInputData", boundingBox, "", "", "text/xml");
+            builder.addBoundingBoxData("BBOXInputData", boundingBox, "", "", MIME_TYPE_TEXT_XML);
 
-            builder.addOutput("LiteralOutputData", "", "", "text/xml");
-            builder.addOutput("BBOXOutputData", "", "", "text/xml");
+            builder.addOutput("LiteralOutputData", "", "", MIME_TYPE_TEXT_XML);
+            builder.addOutput("BBOXOutputData", "", "", MIME_TYPE_TEXT_XML);
 
-            builder.setResponseDocument("ComplexOutputData", "", "", "text/csv");
+            builder.setResponseDocument("ComplexOutputData", "", "", MIME_TYPE_TEXT_CSV);
 
             builder.setAsynchronousExecute();
 

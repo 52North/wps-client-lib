@@ -24,6 +24,7 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -77,15 +78,7 @@ import com.fasterxml.jackson.databind.JsonNode;
  * @author bpross,foerster
  */
 
-public class WPSClientSession {
-
-    private static Logger LOGGER = LoggerFactory.getLogger(WPSClientSession.class);
-
-    private static WPSClientSession session;
-
-    private Map<String, WPSCapabilities> loggedServices;
-
-    private boolean cancel;
+public final class WPSClientSession {
 
     public static final String VERSION_100 = "1.0.0";
 
@@ -93,9 +86,21 @@ public class WPSClientSession {
 
     public static final String SERVICE = "WPS";
 
-    public static int maxNumberOfAsyncRequests = 100;
+    private static final String AUTHORIZATION = "Authorization";
 
-    public static int delayForAsyncRequests = 1000;
+    private static final String GOT_HTTP_ERROR = "Got HTTP error code, response: ";
+
+    private static Logger LOGGER = LoggerFactory.getLogger(WPSClientSession.class);
+
+    private static WPSClientSession session;
+
+    private static int maxNumberOfAsyncRequests = 100;
+
+    private static int delayForAsyncRequests = 1000;
+
+    private Map<String, WPSCapabilities> loggedServices;
+
+    private boolean cancel;
 
     // a Map of <url, all available process descriptions>
     private Map<String, List<Process>> processDescriptions;
@@ -106,7 +111,7 @@ public class WPSClientSession {
 
     private String bearerToken = "";
 
-    private boolean useBearerToken = false;
+    private boolean useBearerToken;
 
     /**
      * Initializes a WPS client session.
@@ -116,8 +121,6 @@ public class WPSClientSession {
         loggedServices = new HashMap<String, WPSCapabilities>();
         processDescriptions = new HashMap<String, List<Process>>();
         httpClientBuilder = HttpClientBuilder.create();
-        // httpClientBuilder.setConnectionManager(new
-        // BasicHttpClientConnectionManager());//TODO maybe shutdown manager
         httpClient = httpClientBuilder.build();
         loadProperties();
     }
@@ -126,8 +129,10 @@ public class WPSClientSession {
      * @result An instance of a WPS Client session.
      */
     public static WPSClientSession getInstance() {
-        if (session == null) {
-            session = new WPSClientSession();
+        synchronized (WPSClientSession.class) {
+            if (session == null) {
+                session = new WPSClientSession();
+            }
         }
         return session;
     }
@@ -148,8 +153,11 @@ public class WPSClientSession {
      * @param url
      *            the entry point for the service. This is used as id for
      *            further identification of the service.
+     * @param version
+     *            the version of the WPS
      * @return true, if connect succeeded, false else.
      * @throws WPSClientException
+     *             if the capabilities could not be requested
      */
     public boolean connect(String url,
             String version) throws WPSClientException {
@@ -159,18 +167,15 @@ public class WPSClientSession {
             return false;
         }
         WPSCapabilities capsDoc = retrieveCapsViaGET(url, version);
-        if (capsDoc != null) {
-            loggedServices.put(url, capsDoc);
-            return true;
-        }
-        LOGGER.warn("retrieving caps failed, caps are null");
-        return false;
+        loggedServices.put(url, capsDoc);
+        return true;
     }
 
     /**
      * removes a service from the session
      *
      * @param url
+     *            WPS URL
      */
     public void disconnect(String url) {
         if (loggedServices.containsKey(url)) {
@@ -183,7 +188,7 @@ public class WPSClientSession {
     /**
      * returns the serverIDs of all loggedServices
      *
-     * @return
+     * @return List of logged service URLs
      */
     public List<String> getLoggedServices() {
         return new ArrayList<String>(loggedServices.keySet());
@@ -194,7 +199,9 @@ public class WPSClientSession {
      * the session. in normal case it should return true :)
      *
      * @param serverID
-     * @return success
+     *            WPS URL
+     * @return success true if the the process descriptions of the WPS are
+     *         cached
      */
     public boolean descriptionsAvailableInCache(String serverID) {
         return processDescriptions.containsKey(serverID);
@@ -204,19 +211,22 @@ public class WPSClientSession {
      * return the processDescription for a specific process from Cache.
      *
      * @param serverID
+     *            WPS URL
      * @param processID
+     *            id of the process
+     * @param version
+     *            the version of the WPS
      * @return a ProcessDescription for a specific process from Cache.
-     * @throws IOException
      */
     public Process getProcessDescription(String serverID,
             String processID,
-            String version) throws IOException {
+            String version) {
         List<Process> processes = getProcessDescriptionsFromCache(serverID);
         for (Process process : processes) {
             if (process.getId().equals(processID)) {
                 if (process.getInputs() == null || process.getInputs().isEmpty()) {
                     try {
-                        process = describeProcess(new String[] { processID }, serverID, version).get(0);
+                        return describeProcess(new String[] { processID }, serverID, version).get(0);
                     } catch (WPSClientException e) {
                         LOGGER.error("Could not fetch processdescription for process: " + processID, e);
                     }
@@ -233,14 +243,17 @@ public class WPSClientSession {
      * @param wpsUrl
      *            the URL of the WPS
      * @return An Array of ProcessDescriptions
-     * @throws IOException
      */
-    public List<Process> getAllProcessDescriptions(String wpsUrl) throws IOException {
+    public List<Process> getAllProcessDescriptions(String wpsUrl) {
         return getProcessDescriptionsFromCache(wpsUrl);
     }
 
     /**
      * looks up, if the service exists already in session.
+     *
+     * @param serverID
+     *            the URL of the WPS
+     * @return true if the service exists in this session
      */
     public boolean serviceAlreadyRegistered(String serverID) {
         return loggedServices.containsKey(serverID);
@@ -250,7 +263,8 @@ public class WPSClientSession {
      * provides you the cached capabilities for a specified service.
      *
      * @param url
-     * @return
+     *            WPS URL
+     * @return WPSCapabilities object
      */
     public WPSCapabilities getWPSCaps(String url) {
         return loggedServices.get(url);
@@ -261,9 +275,14 @@ public class WPSClientSession {
      * information will not be held in cache!
      *
      * @param processIDs
-     *            one or more processIDs
+     *            one or more process IDs
      * @param serverID
+     *            WPS URL
+     * @param version
+     *            WPS version
      * @throws WPSClientException
+     *             of the process description could not be requested
+     * @return list of process objects
      */
     public List<Process> describeProcess(String[] processIDs,
             String serverID,
@@ -283,22 +302,29 @@ public class WPSClientSession {
      *
      * @return either an ExecuteResponseDocument or an InputStream if asked for
      *         RawData or an Exception Report
+     * @throws WPSClientException
+     *             if the initial execute request failed
      * @throws IOException
+     *             if subsequent requests failed in async mode
      */
     public Object execute(String url,
             org.n52.geoprocessing.wps.client.model.execution.Execute execute,
             String version) throws WPSClientException, IOException {
 
         boolean requestRawData = execute.getResponseMode() == ResponseMode.RAW;
-        boolean requestAsync = execute.getExecutionMode() == ExecutionMode.ASYNC;// TODO:
-                                                                                 // what
-                                                                                 // about
-                                                                                 // AUTO
-                                                                                 // mode?
+        boolean requestAsync = execute.getExecutionMode() == ExecutionMode.ASYNC;
+        // TODO: what about AUTO mode?
 
         Object executeObject = encode(execute, version);
 
         return execute(url, executeObject, requestRawData, requestAsync);
+    }
+
+    private Object execute(String url,
+            Object executeObject,
+            boolean rawData,
+            boolean requestAsync) throws WPSClientException, IOException {
+        return retrieveExecuteResponseViaPOST(url, executeObject, rawData, requestAsync);
     }
 
     public String[] getProcessNames(String url) throws IOException {
@@ -317,7 +343,7 @@ public class WPSClientSession {
     public int checkService(String url,
             String payload) {
 
-        // CloseableHttpClient httpClient = httpClientBuilder.build();
+        String ioException = "IOException while trying to access: ";
 
         CloseableHttpResponse response = null;
 
@@ -329,7 +355,7 @@ public class WPSClientSession {
 
                 response = httpClient.execute(get);
             } catch (IOException e) {
-                LOGGER.error("IOException while trying to access: " + url);
+                LOGGER.error(ioException + url);
             }
         } else {
 
@@ -347,16 +373,20 @@ public class WPSClientSession {
             try {
                 response = httpClient.execute(post);
             } catch (IOException e) {
-                LOGGER.error("IOException while trying to access: " + url);
+                LOGGER.error(ioException + url);
             }
         }
 
-        int result = response.getStatusLine().getStatusCode();
+        int result = -1;
 
-        try {
-            response.close();
-        } catch (IOException e) {
-            LOGGER.error("Could not close HTTPResponse ", e);
+        if (response != null) {
+            result = response.getStatusLine().getStatusCode();
+
+            try {
+                response.close();
+            } catch (IOException e) {
+                LOGGER.error("Could not close HTTPResponse ", e);
+            }
         }
 
         return result;
@@ -386,15 +416,8 @@ public class WPSClientSession {
         this.cancel = cancel;
     }
 
-    private List<Process> getProcessDescriptionsFromCache(String wpsUrl) throws IOException {
+    private List<Process> getProcessDescriptionsFromCache(String wpsUrl) {
         return loggedServices.get(wpsUrl).getProcesses();
-    }
-
-    private Object execute(String url,
-            Object executeObject,
-            boolean rawData,
-            boolean requestAsync) throws WPSClientException, IOException {
-        return retrieveExecuteResponseViaPOST(url, executeObject, rawData, requestAsync);
     }
 
     private OutputStream encode(org.n52.geoprocessing.wps.client.model.execution.Execute execute,
@@ -412,8 +435,7 @@ public class WPSClientSession {
                         new ElementXmlStreamWriterRepository(Arrays.asList(ExecuteRequest100Encoder::new))::get));
                 executeRequestWriter.writeElement(execute);
             } catch (EncodingException | XMLStreamException e) {
-                // TODO Auto-generated catch block
-                LOGGER.error("");
+                LOGGER.error(e.getMessage());
             }
 
             return out;
@@ -427,8 +449,7 @@ public class WPSClientSession {
                         new ElementXmlStreamWriterRepository(Arrays.asList(ExecuteRequest20Encoder::new))::get));
                 executeRequestWriter20.writeElement(execute);
             } catch (EncodingException | XMLStreamException e) {
-                // TODO Auto-generated catch block
-                LOGGER.error("");
+                LOGGER.error(e.getMessage());
             }
 
             return out;
@@ -441,9 +462,9 @@ public class WPSClientSession {
     private WPSCapabilities retrieveCapsViaGET(String url,
             String version) throws WPSClientException {
         ClientCapabiltiesRequest req = new ClientCapabiltiesRequest(version);
-        url = req.getRequest(url);
+        String getRequestURL = req.getRequest(url);
         try {
-            URL urlObj = new URL(url);
+            URL urlObj = new URL(getRequestURL);
             Object responseObject = retrieveResponseOrExceptionReportInpustream(urlObj);
             if (responseObject instanceof WPSCapabilities) {
                 return (WPSCapabilities) responseObject;
@@ -462,7 +483,7 @@ public class WPSClientSession {
         HttpGet get = new HttpGet(url.toString());
 
         if (isUseBearerToken()) {
-            get.addHeader("Authorization", getBearerToken());
+            get.addHeader(AUTHORIZATION, getBearerToken());
         }
 
         CloseableHttpResponse response = httpClient.execute(get);
@@ -472,7 +493,36 @@ public class WPSClientSession {
         try {
             checkStatusCode(response);
         } catch (Exception e) {
-            throw new WPSClientException("Got HTTP error code, response: " + responseObject);
+            throw new WPSClientException(GOT_HTTP_ERROR + responseObject);
+        } finally {
+            response.close();
+        }
+
+        return responseObject;
+    }
+
+    private Object retrieveResponseOrExceptionReportInpustream(URL url,
+            String executeObject) throws WPSClientException, IOException {
+
+        HttpPost post = new HttpPost(url.toString());
+
+        post.addHeader("Accept-Encoding", "gzip");
+        post.addHeader("Content-Type", "text/xml");
+
+        if (isUseBearerToken()) {
+            post.addHeader(AUTHORIZATION, getBearerToken());
+        }
+
+        post.setEntity(new StringEntity(executeObject));
+
+        CloseableHttpResponse response = httpClient.execute(post);
+
+        Object responseObject = parseInputStreamToString(response.getEntity().getContent());
+
+        try {
+            checkStatusCode(response);
+        } catch (Exception e) {
+            throw new WPSClientException(GOT_HTTP_ERROR + responseObject);
         } finally {
             response.close();
         }
@@ -490,40 +540,12 @@ public class WPSClientSession {
 
     }
 
-    private Object retrieveResponseOrExceptionReportInpustream(URL url,
-            String executeObject) throws WPSClientException, IOException {
-
-        HttpPost post = new HttpPost(url.toString());
-
-        post.addHeader("Accept-Encoding", "gzip");
-        post.addHeader("Content-Type", "text/xml");
-
-        if (isUseBearerToken()) {
-            post.addHeader("Authorization", getBearerToken());
-        }
-
-        post.setEntity(new StringEntity(executeObject));
-
-        CloseableHttpResponse response = httpClient.execute(post);
-
-        Object responseObject = parseInputStreamToString(response.getEntity().getContent());
-
-        try {
-            checkStatusCode(response);
-        } catch (Exception e) {
-            throw new WPSClientException("Got HTTP error code, response: " + responseObject);
-        } finally {
-            response.close();
-        }
-
-        return responseObject;
-    }
-
     private Object parseInputStreamToString(InputStream in) throws IOException, WPSClientException {
 
         XMLEventReader xmlReader = null;
         try {
-            xmlReader = XMLInputFactory.newInstance().createXMLEventReader(new InputStreamReader(in));
+            xmlReader = XMLInputFactory.newInstance()
+                    .createXMLEventReader(new InputStreamReader(in, StandardCharsets.UTF_8));
             return new WPSResponseReader().readElement(xmlReader);
         } catch (XMLStreamException e) {
             throw new WPSClientException("Could not decode Inputstream.", e);
@@ -562,7 +584,7 @@ public class WPSClientSession {
             String content = "";
 
             if (executeObject instanceof ByteArrayOutputStream) {
-                content = ((ByteArrayOutputStream) executeObject).toString();
+                content = ((ByteArrayOutputStream) executeObject).toString(StandardCharsets.UTF_8.name());
             }
 
             return retrieveResponseOrExceptionReportInpustream(url, content);
@@ -573,42 +595,23 @@ public class WPSClientSession {
         }
     }
 
-    // private Object checkInputStream(Object responseObject) throws
-    // WPSClientException {
-    //
-    // LOGGER.trace("Got response:" + responseObject);
-    //
-    // String exceptionText = "";
-    // boolean isException = false;
-    //
-    // if (responseObject instanceof ExceptionReport) {
-    // ExceptionReport exceptionReport = (ExceptionReport) responseObject;
-    // exceptionText =
-    // exceptionReport.getExceptions().get(0).getExceptionText();
-    // isException = true;
-    //
-    // }
-    //
-    // if (isException) {
-    // LOGGER.error("Received ExceptionReport from WPS.");
-    // LOGGER.trace(exceptionText);
-    // throw new WPSClientException("Error occurred while executing query: ",
-    // exceptionText);
-    // }
-    // return responseObject;
-    // }
-
     /**
      * either an ExecuteResponseDocument or an InputStream if asked for RawData
      * or an Exception Report
      *
      * @param url
+     *            WPS url
      * @param executeObject
+     *            encoded execute request
      * @param rawData
+     *            indicates if raw data should be requested
      * @param requestAsync
+     *            indicates if request should be async
      * @return The execute response
      * @throws WPSClientException
+     *             if the initial execute request failed
      * @throws IOException
+     *             if subsequent requests failed in async mode
      */
     private Object retrieveExecuteResponseViaPOST(String url,
             Object executeObject,
@@ -621,8 +624,6 @@ public class WPSClientSession {
             return responseObject;
         }
 
-        // Object resultObj = checkInputStream(responseString);
-
         if (responseObject instanceof StatusInfo) {
 
             if (requestAsync) {
@@ -631,11 +632,6 @@ public class WPSClientSession {
 
             return (StatusInfo) responseObject;
         }
-        // else if (resultObj instanceof StatusInfoDocument) {//TODO
-        // return getAsyncDoc(url, resultObj);
-        // } else if (resultObj instanceof ResultDocument) {
-        // return (ResultDocument) resultObj;
-        // }
         // TODO when does this happen?!
         return responseObject;
     }
@@ -669,29 +665,6 @@ public class WPSClientSession {
         boolean processSuceeded = false;
         boolean processFailed = false;
 
-        // if (responseObject instanceof StatusInfo) {
-        // ExecuteResponseDocument executeResponseDocument =
-        // (ExecuteResponseDocument) responseObject;
-        //
-        // processSuceeded =
-        // executeResponseDocument.getExecuteResponse().getStatus().isSetProcessSucceeded();
-        //
-        // if(processSuceeded){
-        // return executeResponseDocument;
-        // }
-        //
-        // processFailed =
-        // executeResponseDocument.getExecuteResponse().getStatus().isSetProcessSucceeded();
-        //
-        // if(processFailed){
-        // return
-        // executeResponseDocument.getExecuteResponse().getStatus().getProcessFailed().getExceptionReport();
-        // }
-        //
-        // getStatusURL =
-        // executeResponseDocument.getExecuteResponse().getStatusLocation();
-        //
-        // } //TODO
         if (responseObject instanceof StatusInfo) {
 
             StatusInfo statusInfoDocument = (StatusInfo) responseObject;
@@ -725,7 +698,8 @@ public class WPSClientSession {
 
         if (isCancel()) {
             LOGGER.info("Asynchronous Execute operation canceled.");
-            return XmlObject.Factory.newInstance();// TODO
+            // TODO
+            return XmlObject.Factory.newInstance();
         }
 
         // assume process is still running, pause configured amount of time
@@ -781,18 +755,20 @@ public class WPSClientSession {
     private void setProperties(JsonNode propertyNode) {
 
         JsonNode settingsNode = propertyNode.get("settings");
+        String jsonMalformed = "Properties JSON malformed.";
+        String value = "value";
 
         if (settingsNode == null) {
-            LOGGER.info("Properties JSON malformed.");
+            LOGGER.info(jsonMalformed);
             return;
         }
 
         JsonNode maxNumberOfAsyncRequestsNode = settingsNode.get("maxNumberOfAsyncRequests");
 
         if (maxNumberOfAsyncRequestsNode != null) {
-            JsonNode valueNode = maxNumberOfAsyncRequestsNode.get("value");
+            JsonNode valueNode = maxNumberOfAsyncRequestsNode.get(value);
             if (valueNode == null) {
-                LOGGER.info("Properties JSON malformed.");
+                LOGGER.info(jsonMalformed);
             } else {
                 maxNumberOfAsyncRequests = valueNode.asInt();
             }
@@ -803,9 +779,9 @@ public class WPSClientSession {
         JsonNode delayForAsyncRequestsNode = settingsNode.get("delayForAsyncRequests");
 
         if (delayForAsyncRequestsNode != null) {
-            JsonNode valueNode = delayForAsyncRequestsNode.get("value");
+            JsonNode valueNode = delayForAsyncRequestsNode.get(value);
             if (valueNode == null) {
-                LOGGER.info("Properties JSON malformed.");
+                LOGGER.info(jsonMalformed);
             } else {
                 delayForAsyncRequests = valueNode.asInt();
             }

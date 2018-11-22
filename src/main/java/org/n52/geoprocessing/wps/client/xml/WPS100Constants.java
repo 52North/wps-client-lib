@@ -20,7 +20,7 @@ import javax.xml.namespace.QName;
 
 /**
  * TODO JavaDoc
- * 
+ *
  * @author Christian Autermann
  */
 public interface WPS100Constants {
@@ -28,7 +28,15 @@ public interface WPS100Constants {
 
     String NS_WPS_PREFIX = "wps";
 
-    public static interface Attr {
+    static QName wps(String element) {
+        return new QName(NS_WPS, element, NS_WPS_PREFIX);
+    }
+
+    static QName noNamespace(String element) {
+        return new QName(element);
+    }
+
+    public interface Attr {
         String AN_DATA_TYPE = "dataType";
 
         QName QN_DATA_TYPE = wps(AN_DATA_TYPE);
@@ -106,7 +114,7 @@ public interface WPS100Constants {
         QName QN_VERSION = wps(AN_VERSION);
     }
 
-    public static interface Elem {
+    public interface Elem {
         String EN_BODY = "Body";
 
         QName QN_BODY = wps(EN_BODY);
@@ -364,14 +372,6 @@ public interface WPS100Constants {
         QName QN_ENCODING = wps(EN_ENCODING);
 
         QName QN_ENCODING_NO_NAMESPACE = noNamespace(EN_ENCODING);
-    }
-
-    static QName wps(String element) {
-        return new QName(NS_WPS, element, NS_WPS_PREFIX);
-    }
-
-    static QName noNamespace(String element) {
-        return new QName(element);
     }
 
 }

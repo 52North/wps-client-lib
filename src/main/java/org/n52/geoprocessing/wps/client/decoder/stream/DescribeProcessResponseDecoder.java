@@ -248,9 +248,45 @@ public class DescribeProcessResponseDecoder extends AbstractElementXmlStreamRead
 
     }
 
+    private void readBoundingBoxData(StartElement start,
+            XMLEventReader reader,
+            BoundingBoxInputDescription input) throws XMLStreamException {
+
+        List<Format> formats = new ArrayList<>();
+
+        while (reader.hasNext()) {
+            XMLEvent event = reader.nextEvent();
+            if (event.isStartElement()) {
+                StartElement elem = event.asStartElement();
+                if (elem.getName().equals(WPSConstants.Elem.QN_FORMAT)) {
+                    formats.add(readFormat(elem, reader));
+                } else if (elem.getName().equals(WPSConstants.Elem.QN_SUPPORTED_CRS)) {
+                    readSupportedCRS(elem, reader, input);
+                } else {
+                    throw unexpectedTag(elem);
+                }
+            } else if (event.isEndElement()) {
+                EndElement elem = event.asEndElement();
+                if (elem.getName().equals(WPSConstants.Elem.QN_BOUNDING_BOX_DATA)) {
+                    input.setFormats(formats);
+                    return;
+                }
+            }
+        }
+        throw eof();
+
+    }
+
     private void readSupportedCRS(StartElement elem,
             XMLEventReader reader,
             BoundingBoxOutputDescription output) {
+        // TODO Auto-generated method stub
+
+    }
+
+    private void readSupportedCRS(StartElement elem,
+            XMLEventReader reader,
+            BoundingBoxInputDescription input) {
         // TODO Auto-generated method stub
 
     }
@@ -284,6 +320,34 @@ public class DescribeProcessResponseDecoder extends AbstractElementXmlStreamRead
 
     }
 
+    private void readLiteralData(StartElement start,
+            XMLEventReader reader,
+            LiteralInputDescription input) throws XMLStreamException {
+
+        List<Format> formats = new ArrayList<>();
+
+        while (reader.hasNext()) {
+            XMLEvent event = reader.nextEvent();
+            if (event.isStartElement()) {
+                StartElement elem = event.asStartElement();
+                if (elem.getName().equals(WPSConstants.Elem.QN_FORMAT)) {
+                    formats.add(readFormat(elem, reader));
+                } else if (elem.getName().equals(WPSConstants.Elem.QN_LITERAL_DATA_DOMAIN)) {
+                    readLiteralDataDomain(elem, reader, input);
+                } else {
+                    throw unexpectedTag(elem);
+                }
+            } else if (event.isEndElement()) {
+                EndElement elem = event.asEndElement();
+                if (elem.getName().equals(WPSConstants.Elem.QN_LITERAL_DATA)) {
+                    input.setFormats(formats);
+                    return;
+                }
+            }
+        }
+        throw eof();
+    }
+
     private void readLiteralDataDomain(StartElement elem,
             XMLEventReader reader,
             LiteralOutputDescription output) throws XMLStreamException {
@@ -309,10 +373,44 @@ public class DescribeProcessResponseDecoder extends AbstractElementXmlStreamRead
 
     }
 
+    private void readLiteralDataDomain(StartElement elem,
+            XMLEventReader reader,
+            LiteralInputDescription input) throws XMLStreamException {
+
+        while (reader.hasNext()) {
+            XMLEvent event = reader.nextEvent();
+            if (event.isStartElement()) {
+                StartElement start = event.asStartElement();
+                if (start.getName().equals(OWSConstants.Elem.QN_ANY_VALUE)) {
+                    input.setAnyValue(true);
+                } else if (start.getName().equals(OWSConstants.Elem.QN_ALLOWED_VALUES)) {
+                    readAllowedValues(start, reader, input);
+                } else if (start.getName().equals(OWSConstants.Elem.QN_DATA_TYPE)) {
+                    readDataType(start, reader, input);
+                } else if (start.getName().equals(OWSConstants.Elem.QN_DEFAULT_VALUE)) {
+                    readDefaultValue(start, reader, input);
+                } else {
+                    throw unexpectedTag(start);
+                }
+            } else if (event.isEndElement()) {
+                EndElement end = event.asEndElement();
+                if (end.getName().equals(WPSConstants.Elem.QN_LITERAL_DATA_DOMAIN)) {
+                    return;
+                }
+            }
+        }
+    }
+
     private void readDataType(StartElement elem,
             XMLEventReader reader,
             LiteralOutputDescription output) {
         getAttribute(elem, OWSConstants.Attr.QN_REFERENCE).ifPresent(output::setDataType);
+    }
+
+    private void readDataType(StartElement elem,
+            XMLEventReader reader,
+            LiteralInputDescription input) {
+        getAttribute(elem, OWSConstants.Attr.QN_REFERENCE).ifPresent(input::setDataType);
     }
 
     private void readComplexData(StartElement start,
@@ -339,6 +437,32 @@ public class DescribeProcessResponseDecoder extends AbstractElementXmlStreamRead
             }
         }
 
+    }
+
+    private void readComplexData(StartElement start,
+            XMLEventReader reader,
+            InputDescription input) throws XMLStreamException {
+
+        List<Format> formats = new ArrayList<>();
+
+        while (reader.hasNext()) {
+            XMLEvent event = reader.nextEvent();
+            if (event.isStartElement()) {
+                StartElement elem = event.asStartElement();
+                if (elem.getName().equals(WPSConstants.Elem.QN_FORMAT)) {
+                    formats.add(readFormat(elem, reader));
+                } else {
+                    throw unexpectedTag(elem);
+                }
+            } else if (event.isEndElement()) {
+                EndElement elem = event.asEndElement();
+                if (elem.getName().equals(WPSConstants.Elem.QN_COMPLEX_DATA)) {
+                    input.setFormats(formats);
+                    return;
+                }
+            }
+        }
+        throw eof();
     }
 
     private InputDescription readInput(StartElement elem,
@@ -387,98 +511,6 @@ public class DescribeProcessResponseDecoder extends AbstractElementXmlStreamRead
         throw eof();
     }
 
-    private void readBoundingBoxData(StartElement start,
-            XMLEventReader reader,
-            BoundingBoxInputDescription input) throws XMLStreamException {
-
-        List<Format> formats = new ArrayList<>();
-
-        while (reader.hasNext()) {
-            XMLEvent event = reader.nextEvent();
-            if (event.isStartElement()) {
-                StartElement elem = event.asStartElement();
-                if (elem.getName().equals(WPSConstants.Elem.QN_FORMAT)) {
-                    formats.add(readFormat(elem, reader));
-                } else if (elem.getName().equals(WPSConstants.Elem.QN_SUPPORTED_CRS)) {
-                    readSupportedCRS(elem, reader, input);
-                } else {
-                    throw unexpectedTag(elem);
-                }
-            } else if (event.isEndElement()) {
-                EndElement elem = event.asEndElement();
-                if (elem.getName().equals(WPSConstants.Elem.QN_BOUNDING_BOX_DATA)) {
-                    input.setFormats(formats);
-                    return;
-                }
-            }
-        }
-        throw eof();
-
-    }
-
-    private void readSupportedCRS(StartElement elem,
-            XMLEventReader reader,
-            BoundingBoxInputDescription input) {
-        // TODO Auto-generated method stub
-
-    }
-
-    private void readLiteralData(StartElement start,
-            XMLEventReader reader,
-            LiteralInputDescription input) throws XMLStreamException {
-
-        List<Format> formats = new ArrayList<>();
-
-        while (reader.hasNext()) {
-            XMLEvent event = reader.nextEvent();
-            if (event.isStartElement()) {
-                StartElement elem = event.asStartElement();
-                if (elem.getName().equals(WPSConstants.Elem.QN_FORMAT)) {
-                    formats.add(readFormat(elem, reader));
-                } else if (elem.getName().equals(WPSConstants.Elem.QN_LITERAL_DATA_DOMAIN)) {
-                    readLiteralDataDomain(elem, reader, input);
-                } else {
-                    throw unexpectedTag(elem);
-                }
-            } else if (event.isEndElement()) {
-                EndElement elem = event.asEndElement();
-                if (elem.getName().equals(WPSConstants.Elem.QN_LITERAL_DATA)) {
-                    input.setFormats(formats);
-                    return;
-                }
-            }
-        }
-        throw eof();
-    }
-
-    private void readLiteralDataDomain(StartElement elem,
-            XMLEventReader reader,
-            LiteralInputDescription input) throws XMLStreamException {
-
-        while (reader.hasNext()) {
-            XMLEvent event = reader.nextEvent();
-            if (event.isStartElement()) {
-                StartElement start = event.asStartElement();
-                if (start.getName().equals(OWSConstants.Elem.QN_ANY_VALUE)) {
-                    input.setAnyValue(true);
-                } else if (start.getName().equals(OWSConstants.Elem.QN_ALLOWED_VALUES)) {
-                    readAllowedValues(start, reader, input);
-                } else if (start.getName().equals(OWSConstants.Elem.QN_DATA_TYPE)) {
-                    readDataType(start, reader, input);
-                } else if (start.getName().equals(OWSConstants.Elem.QN_DEFAULT_VALUE)) {
-                    readDefaultValue(start, reader, input);
-                } else {
-                    throw unexpectedTag(start);
-                }
-            } else if (event.isEndElement()) {
-                EndElement end = event.asEndElement();
-                if (end.getName().equals(WPSConstants.Elem.QN_LITERAL_DATA_DOMAIN)) {
-                    return;
-                }
-            }
-        }
-    }
-
     private void readDefaultValue(StartElement elem,
             XMLEventReader reader,
             LiteralInputDescription input) throws XMLStreamException {
@@ -486,43 +518,11 @@ public class DescribeProcessResponseDecoder extends AbstractElementXmlStreamRead
 
     }
 
-    private void readDataType(StartElement elem,
-            XMLEventReader reader,
-            LiteralInputDescription input) {
-        getAttribute(elem, OWSConstants.Attr.QN_REFERENCE).ifPresent(input::setDataType);
-    }
-
     private void readAllowedValues(StartElement elem,
             XMLEventReader reader,
             LiteralInputDescription input) {
         // TODO Auto-generated method stub
 
-    }
-
-    private void readComplexData(StartElement start,
-            XMLEventReader reader,
-            InputDescription input) throws XMLStreamException {
-
-        List<Format> formats = new ArrayList<>();
-
-        while (reader.hasNext()) {
-            XMLEvent event = reader.nextEvent();
-            if (event.isStartElement()) {
-                StartElement elem = event.asStartElement();
-                if (elem.getName().equals(WPSConstants.Elem.QN_FORMAT)) {
-                    formats.add(readFormat(elem, reader));
-                } else {
-                    throw unexpectedTag(elem);
-                }
-            } else if (event.isEndElement()) {
-                EndElement elem = event.asEndElement();
-                if (elem.getName().equals(WPSConstants.Elem.QN_COMPLEX_DATA)) {
-                    input.setFormats(formats);
-                    return;
-                }
-            }
-        }
-        throw eof();
     }
 
     private Format readFormat(StartElement elem,

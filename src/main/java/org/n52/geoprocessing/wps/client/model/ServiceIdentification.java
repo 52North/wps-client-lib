@@ -21,13 +21,13 @@ import java.util.List;
 
 public class ServiceIdentification {
 
+    private static final String SERVICE_TYPE = "WPS";
+
     private String title;
 
     private String abstrakt;
 
     private List<String> keyWords;
-
-    private final String serviceType = "WPS";
 
     private List<String> serviceTypeVersions;
 
@@ -84,21 +84,22 @@ public class ServiceIdentification {
     }
 
     public String getServiceType() {
-        return serviceType;
+        return SERVICE_TYPE;
     }
 
     @Override
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
 
-        stringBuilder.append("Title: " + getTitle() + "\n");
-        stringBuilder.append("\t\t\tAbstract: " + getAbstract() + "\n");
-        stringBuilder.append(
-                "\t\t\tServiceType versions: " + createCommaSeparatedStringFromList(getServiceTypeVersions()) + "\n");
-        stringBuilder.append("\t\t\tKeywords: " + createCommaSeparatedStringFromList(getKeyWords()) + "\n");
-        stringBuilder.append("\t\t\tFees: " + getFees() + "\n");
-        stringBuilder.append(
-                "\t\t\tAccess constraints: " + createCommaSeparatedStringFromList(getAccessConstraints()) + "\n");
+        stringBuilder.append("Title: " + getTitle() + StringConstants.LINE_SEPARATOR);
+        stringBuilder.append("\t\t\tAbstract: " + getAbstract() + StringConstants.LINE_SEPARATOR);
+        stringBuilder.append("\t\t\tServiceType versions: "
+                + createCommaSeparatedStringFromList(getServiceTypeVersions()) + StringConstants.LINE_SEPARATOR);
+        stringBuilder.append("\t\t\tKeywords: " + createCommaSeparatedStringFromList(getKeyWords())
+                + StringConstants.LINE_SEPARATOR);
+        stringBuilder.append("\t\t\tFees: " + getFees() + StringConstants.LINE_SEPARATOR);
+        stringBuilder.append("\t\t\tAccess constraints: " + createCommaSeparatedStringFromList(getAccessConstraints())
+                + StringConstants.LINE_SEPARATOR);
 
         return stringBuilder.toString();
     }

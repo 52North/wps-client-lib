@@ -62,9 +62,9 @@ public class Format {
     public String toString() {
         StringBuilder builder = new StringBuilder();
 
-        builder.append("MimeType: " + getMimeType() + "\n");
-        builder.append("Schema: " + getSchema() + "\n");
-        builder.append("Encoding: " + getEncoding() + "\n");
+        builder.append("MimeType: " + getMimeType() + StringConstants.LINE_SEPARATOR);
+        builder.append("Schema: " + getSchema() + StringConstants.LINE_SEPARATOR);
+        builder.append("Encoding: " + getEncoding() + StringConstants.LINE_SEPARATOR);
 
         return builder.toString();
     }

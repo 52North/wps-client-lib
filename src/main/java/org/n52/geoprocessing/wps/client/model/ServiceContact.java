@@ -52,9 +52,9 @@ public class ServiceContact {
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
 
-        stringBuilder.append("IndividualName: " + getIndividualName() + "\n");
-        stringBuilder.append("\t\t\t\t\tPositionName: " + getPositionName() + "\n");
-        stringBuilder.append("\t\t\t\t\tContactInfo:\t" + getContactInfo() + "\n");
+        stringBuilder.append("IndividualName: " + getIndividualName() + StringConstants.LINE_SEPARATOR);
+        stringBuilder.append("\t\t\t\t\tPositionName: " + getPositionName() + StringConstants.LINE_SEPARATOR);
+        stringBuilder.append("\t\t\t\t\tContactInfo:\t" + getContactInfo() + StringConstants.LINE_SEPARATOR);
 
         return stringBuilder.toString();
     }

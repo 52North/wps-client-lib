@@ -44,13 +44,15 @@ import org.n52.svalbard.stream.XLinkConstants;
 
 public class ExecuteRequest100Encoder extends AbstractMultiElementXmlStreamWriter {
 
-    private final String service = "WPS";
+    private static final String TRUE = "true";
 
-    private final String version = "1.0.0";
+    private static final String SERVICE = "WPS";
 
-    private final String mimeTypeTextPlain = "text/plain";
+    private static final String VERSION = "1.0.0";
 
-    private final String mimeTypeTextXML = "text/xml";
+    private static final String MIME_TYPE_TEXT_PLAIN = "text/plain";
+
+    private static final String MIME_TYPE_TEXT_XML = "text/xml";
 
     @Override
     public void writeElement(Object object) throws XMLStreamException, EncodingException {
@@ -75,8 +77,8 @@ public class ExecuteRequest100Encoder extends AbstractMultiElementXmlStreamWrite
 
         element(WPS100Constants.Elem.QN_EXECUTE, execute, x -> {
             writeNamespacesWithSchemalocation();
-            attr(WPS100Constants.Attr.AN_SERVICE, service);
-            attr(WPS100Constants.Attr.AN_VERSION, version);
+            attr(WPS100Constants.Attr.AN_SERVICE, SERVICE);
+            attr(WPS100Constants.Attr.AN_VERSION, VERSION);
             element(OWS11Constants.Elem.QN_IDENTIFIER, execute.getId());
             if (execute.getInputs() != null) {
                 writeInputElements(execute.getInputs());
@@ -94,19 +96,21 @@ public class ExecuteRequest100Encoder extends AbstractMultiElementXmlStreamWrite
 
             element(WPS100Constants.Elem.QN_RESPONSE_DOCUMENT, execute.getOutputs(), x1 -> {
                 if (execute.getExecutionMode().equals(ExecutionMode.ASYNC)) {
-                    attr(WPS100Constants.Attr.AN_STORE_EXECUTE_RESPONSE, "true");
-                    attr(WPS100Constants.Attr.AN_STATUS, "true");// TODO check
-                                                                 // (could be
-                                                                 // not
-                                                                 // supported in
-                                                                 // rare cases)
+                    attr(WPS100Constants.Attr.AN_STORE_EXECUTE_RESPONSE, TRUE);
+                    attr(WPS100Constants.Attr.AN_STATUS, TRUE);
+                    // TODO check (could be not supported in rare cases)
                 }
                 writeOutputElements(execute.getOutputs());
             });
 
         } else if (execute.getResponseMode().equals(ResponseMode.RAW)) {
-
+            // TODO
+            writeRawData();
         }
+    }
+
+    private void writeRawData() {
+        // TODO Auto-generated method stub
     }
 
     private void writeOutputElements(List<ExecuteOutput> outputs) throws XMLStreamException {
@@ -114,7 +118,7 @@ public class ExecuteRequest100Encoder extends AbstractMultiElementXmlStreamWrite
         for (ExecuteOutput executeOutput : outputs) {
             element(WPS100Constants.Elem.QN_OUTPUT, executeOutput, x1 -> {
                 if (executeOutput.getTransmissionMode().equals(TransmissionMode.REFERENCE)) {
-                    attr(WPS100Constants.Attr.AN_AS_REFERENCE, "true");
+                    attr(WPS100Constants.Attr.AN_AS_REFERENCE, TRUE);
                 }
                 setFormat(executeOutput);
                 element(OWS11Constants.Elem.QN_IDENTIFIER, executeOutput.getId());
@@ -179,9 +183,9 @@ public class ExecuteRequest100Encoder extends AbstractMultiElementXmlStreamWrite
             mimeType = format.getMimeType();
         }
         if (!mimeType.isEmpty()) {
-            if (mimeType.equals(mimeTypeTextPlain)) {
+            if (mimeType.equals(MIME_TYPE_TEXT_PLAIN)) {
                 element(WPS100Constants.Elem.QN_DATA, executeInput.getValue().toString());
-            } else if (mimeType.equals(mimeTypeTextXML)) {
+            } else if (mimeType.equals(MIME_TYPE_TEXT_XML)) {
                 element(WPS100Constants.Elem.QN_DATA, executeInput, x1 -> {
                     element(WPS100Constants.Elem.QN_LITERAL_DATA, executeInput.getValue().toString());
                     // if()

@@ -16,6 +16,8 @@
  */
 package org.n52.geoprocessing.wps.client.model.execution;
 
+import org.n52.geoprocessing.wps.client.model.StringConstants;
+
 public class LiteralData extends Data {
 
     private String dataType;
@@ -35,8 +37,8 @@ public class LiteralData extends Data {
 
         builder.append(super.toString());
 
-        builder.append("Datatype: " + getDataType() + "\n");
-        builder.append("Value: " + getValue() + "\n");
+        builder.append("Datatype: " + getDataType() + StringConstants.LINE_SEPARATOR);
+        builder.append("Value: " + getValue() + StringConstants.LINE_SEPARATOR);
 
         return builder.toString();
     }

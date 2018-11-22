@@ -29,14 +29,14 @@ public class ClientDescribeProcessRequest extends AbstractClientGETRequest {
     }
 
     public void setIdentifier(String[] ids) {
-        String idsString = "";
+        StringBuffer idsString = new StringBuffer();
         for (int i = 0; i < ids.length; i++) {
-            idsString = idsString + ids[i];
+            idsString.append(ids[i]);
             if (i != ids.length - 1) {
-                idsString = idsString + ",";
+                idsString.append(",");
             }
         }
-        requestParams.put(IDENTIFIER_REQ_PARAM_NAME, idsString);
+        requestParams.put(IDENTIFIER_REQ_PARAM_NAME, idsString.toString());
     }
 
     public boolean valid() {

@@ -42,8 +42,8 @@ public class Phone {
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
 
-        stringBuilder.append("\tVoice: " + getVoice() + "\n");
-        stringBuilder.append("\t\t\t\t\t\t\t\tFacsimile: " + getFacsimile() + "\n");
+        stringBuilder.append("\tVoice: " + getVoice() + StringConstants.LINE_SEPARATOR);
+        stringBuilder.append("\t\t\t\t\t\t\t\tFacsimile: " + getFacsimile() + StringConstants.LINE_SEPARATOR);
 
         return stringBuilder.toString();
     }

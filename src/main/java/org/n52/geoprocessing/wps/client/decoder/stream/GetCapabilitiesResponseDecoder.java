@@ -169,9 +169,11 @@ public class GetCapabilitiesResponseDecoder extends AbstractElementXmlStreamRead
                     process.setId(reader.getElementText());
                 } else if (start.getName().equals(OWSConstants.Elem.QN_KEYWORDS)) {
                     // process.setKeyWords(readKeywords(start, reader));//TODO
-                    readKeywords(start, reader);// just consume keywords for now
+                    // just consume keywords for now
+                    readKeywords(start, reader);
                 } else if (start.getName().equals(OWSConstants.Elem.QN_METADATA)) {
                     // do nothing
+                    continue;
                 } else {
                     throw unexpectedTag(start);
                 }
@@ -234,6 +236,7 @@ public class GetCapabilitiesResponseDecoder extends AbstractElementXmlStreamRead
                     serviceContact.setContactInfo(readContactInfo(elem, reader));
                 } else if (start.getName().equals(OWSConstants.Elem.QN_ROLE)) {
                     // TODO
+                    continue;
                 } else {
                     throw unexpectedTag(start);
                 }
@@ -265,10 +268,13 @@ public class GetCapabilitiesResponseDecoder extends AbstractElementXmlStreamRead
                     contactInfo.setPhone(readPhone(start, reader));
                 } else if (start.getName().equals(OWSConstants.Elem.QN_ONLINE_RESOURCE)) {
                     // TODO
+                    continue;
                 } else if (start.getName().equals(OWSConstants.Elem.QN_HOURS_OF_SERVICE)) {
                     // TODO
+                    continue;
                 } else if (start.getName().equals(OWSConstants.Elem.QN_CONTACT_INSTRUCTIONS)) {
                     // TODO
+                    continue;
                 } else {
                     throw unexpectedTag(start);
                 }
@@ -376,6 +382,7 @@ public class GetCapabilitiesResponseDecoder extends AbstractElementXmlStreamRead
                     serviceTypeVersions.add(reader.getElementText());
                 } else if (start.getName().equals(OWSConstants.Elem.QN_SERVICE_TYPE)) {
                     // do nothing
+                    continue;
                 } else {
                     throw unexpectedTag(start);
                 }

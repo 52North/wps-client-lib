@@ -16,6 +16,8 @@
  */
 package org.n52.geoprocessing.wps.client.model.execution;
 
+import org.n52.geoprocessing.wps.client.model.StringConstants;
+
 public class ComplexData extends Data {
 
     private boolean isReference;
@@ -46,11 +48,11 @@ public class ComplexData extends Data {
 
         builder.append(super.toString());
 
-        builder.append("Format: " + getFormat() + "\n");
+        builder.append("Format: " + getFormat() + StringConstants.LINE_SEPARATOR);
         if (isReference) {
-            builder.append("Reference: " + getReference() + "\n");
+            builder.append("Reference: " + getReference() + StringConstants.LINE_SEPARATOR);
         } else {
-            builder.append("Value: " + getValue() + "\n");
+            builder.append("Value: " + getValue() + StringConstants.LINE_SEPARATOR);
         }
 
         return builder.toString();

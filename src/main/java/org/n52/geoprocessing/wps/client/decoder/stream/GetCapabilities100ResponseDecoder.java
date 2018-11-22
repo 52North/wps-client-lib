@@ -78,6 +78,7 @@ public class GetCapabilities100ResponseDecoder extends AbstractElementXmlStreamR
                     wpsCapabilities.setProcesses(readContents(elem, reader));
                 } else if (elem.getName().equals(WPS100Constants.Elem.QN_WSDL)) {
                     // TODO
+                    continue;
                 } else {
                     throw unexpectedTag(elem);
                 }
@@ -174,9 +175,11 @@ public class GetCapabilities100ResponseDecoder extends AbstractElementXmlStreamR
                     process.setId(reader.getElementText());
                 } else if (start.getName().equals(OWS11Constants.Elem.QN_KEYWORDS)) {
                     // process.setKeyWords(readKeywords(start, reader));//TODO
-                    readKeywords(start, reader);// just consume keywords for now
+                    // just consume keywords for now
+                    readKeywords(start, reader);
                 } else if (start.getName().equals(OWS11Constants.Elem.QN_METADATA)) {
                     // do nothing
+                    continue;
                 } else {
                     throw unexpectedTag(start);
                 }
@@ -268,10 +271,13 @@ public class GetCapabilities100ResponseDecoder extends AbstractElementXmlStreamR
                     contactInfo.setPhone(readPhone(start, reader));
                 } else if (start.getName().equals(OWS11Constants.Elem.QN_ONLINE_RESOURCE)) {
                     // TODO
+                    continue;
                 } else if (start.getName().equals(OWS11Constants.Elem.QN_HOURS_OF_SERVICE)) {
                     // TODO
+                    continue;
                 } else if (start.getName().equals(OWS11Constants.Elem.QN_CONTACT_INSTRUCTIONS)) {
                     // TODO
+                    continue;
                 } else {
                     throw unexpectedTag(start);
                 }
@@ -379,8 +385,10 @@ public class GetCapabilities100ResponseDecoder extends AbstractElementXmlStreamR
                     serviceTypeVersions.add(reader.getElementText());
                 } else if (start.getName().equals(OWS11Constants.Elem.QN_SERVICE_TYPE)) {
                     // do nothing
+                    continue;
                 } else if (start.getName().equals(OWS11Constants.Elem.QN_PROFILE)) {
                     // TODO
+                    continue;
                 } else {
                     throw unexpectedTag(start);
                 }

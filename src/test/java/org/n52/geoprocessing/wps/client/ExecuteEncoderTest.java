@@ -36,6 +36,7 @@ import org.n52.geoprocessing.wps.client.encoder.WPS100ExecuteEncoder;
 import org.n52.geoprocessing.wps.client.encoder.WPS20ExecuteEncoder;
 import org.n52.geoprocessing.wps.client.model.Format;
 import org.n52.geoprocessing.wps.client.model.ResponseMode;
+import org.n52.geoprocessing.wps.client.model.StringConstants;
 import org.n52.geoprocessing.wps.client.model.TransmissionMode;
 import org.n52.geoprocessing.wps.client.model.execution.BoundingBox;
 import org.n52.geoprocessing.wps.client.model.execution.BoundingBoxData;
@@ -258,7 +259,7 @@ public class ExecuteEncoderTest {
                 Iterator<XmlValidationError> iter = validationErrors.iterator();
                 while (iter.hasNext())
                 {
-                    LOGGER.error(iter.next() + "\n");
+                    LOGGER.error(iter.next() + StringConstants.LINE_SEPARATOR);
                 }
 
                 fail();
@@ -328,7 +329,7 @@ public class ExecuteEncoderTest {
                 Iterator<XmlValidationError> iter = validationErrors.iterator();
                 while (iter.hasNext())
                 {
-                    LOGGER.error(iter.next() + "\n");
+                    LOGGER.error(iter.next() + StringConstants.LINE_SEPARATOR);
                 }
 
                 fail();
@@ -422,7 +423,7 @@ public class ExecuteEncoderTest {
                 Iterator<XmlValidationError> iter = validationErrors.iterator();
                 while (iter.hasNext())
                 {
-                    LOGGER.error(iter.next() + "\n");
+                    LOGGER.error(iter.next() + StringConstants.LINE_SEPARATOR);
                 }
 
                 fail();

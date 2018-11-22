@@ -204,6 +204,8 @@ public class GetStatusResponse100Decoder extends AbstractElementXmlStreamReader 
             XMLEventReader reader,
             Data output) throws XMLStreamException {
 
+        Data outputCopy = output;
+
         Format format = new Format();
 
         while (reader.hasNext()) {
@@ -211,24 +213,24 @@ public class GetStatusResponse100Decoder extends AbstractElementXmlStreamReader 
             if (event.isStartElement()) {
                 StartElement elem = event.asStartElement();
                 if (elem.getName().equals(WPS100Constants.Elem.QN_COMPLEX_DATA)) {
-                    output = output.asComplexData();
+                    outputCopy = outputCopy.asComplexData();
                     getAttribute(elem, WPS100Constants.Attr.AN_MIME_TYPE).ifPresent(format::setMimeType);
                     getAttribute(elem, WPS100Constants.Attr.AN_SCHEMA).ifPresent(format::setSchema);
                     getAttribute(elem, WPS100Constants.Attr.AN_ENCODING).ifPresent(format::setEncoding);
-                    readComplexData(elem, reader, output);
-                    output.setFormat(format);
+                    readComplexData(elem, reader, outputCopy);
+                    outputCopy.setFormat(format);
                 } else if (elem.getName().equals(WPS100Constants.Elem.QN_LITERAL_DATA)) {
-                    output = output.asLiteralData();
-                    output.setValue(reader.getElementText());
+                    outputCopy = outputCopy.asLiteralData();
+                    outputCopy.setValue(reader.getElementText());
                 } else if (elem.getName().equals(WPS100Constants.Elem.QN_BOUNDING_BOX_DATA)) {
-                    output = output.asBoundingBoxData();
-                    readBoundingBoxData(elem, reader, output);
+                    outputCopy = outputCopy.asBoundingBoxData();
+                    readBoundingBoxData(elem, reader, outputCopy);
                 }
             } else if (event.isEndElement()) {
                 EndElement elem = event.asEndElement();
                 if (elem.getName().equals(WPS100Constants.Elem.QN_DATA)) {
-                    output.setFormat(format);
-                    return output;
+                    outputCopy.setFormat(format);
+                    return outputCopy;
                 }
             }
         }
@@ -388,7 +390,8 @@ public class GetStatusResponse100Decoder extends AbstractElementXmlStreamReader 
                 } else if (start.getName().equals(WPS100Constants.Elem.QN_PROCESS_FAILED)) {
                     return JobStatus.failed();
                 } else if (start.getName().equals(WPS100Constants.Elem.QN_PROCESS_PAUSED)) {
-                    return JobStatus.running();// TODO
+                    // TODO
+                    return JobStatus.running();
                 } else if (start.getName().equals(WPS100Constants.Elem.QN_PROCESS_SUCCEEDED)) {
                     return JobStatus.succeeded();
                 } else {

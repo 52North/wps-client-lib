@@ -14,22 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.n52.geoprocessing.wps.client.model.execution;
+package org.n52.geoprocessing.wps.client.model;
 
-import org.n52.geoprocessing.wps.client.model.StringConstants;
+public class StringConstants {
 
-public class BoundingBoxData extends Data {
-
-    @Override
-    public String toString() {
-
-        StringBuilder builder = new StringBuilder();
-
-        builder.append(super.toString());
-
-        builder.append("Value: " + getValue() + StringConstants.LINE_SEPARATOR);
-
-        return builder.toString();
-    }
+    public static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
 }

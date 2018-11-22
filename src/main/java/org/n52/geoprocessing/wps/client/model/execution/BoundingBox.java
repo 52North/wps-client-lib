@@ -16,6 +16,8 @@
  */
 package org.n52.geoprocessing.wps.client.model.execution;
 
+import org.n52.geoprocessing.wps.client.model.StringConstants;
+
 public class BoundingBox {
 
     private double minX;
@@ -83,12 +85,12 @@ public class BoundingBox {
 
         StringBuilder builder = new StringBuilder();
 
-        builder.append("Min x: " + getMinX() + "\n");
-        builder.append("Min y: " + getMinY() + "\n");
-        builder.append("Max x : " + getMaxX() + "\n");
-        builder.append("May y: " + getMaxY() + "\n");
-        builder.append("Crs: " + getCrs() + "\n");
-        builder.append("Dimensions: " + getDimensions() + "\n");
+        builder.append("Min x: " + getMinX() + StringConstants.LINE_SEPARATOR);
+        builder.append("Min y: " + getMinY() + StringConstants.LINE_SEPARATOR);
+        builder.append("Max x : " + getMaxX() + StringConstants.LINE_SEPARATOR);
+        builder.append("May y: " + getMaxY() + StringConstants.LINE_SEPARATOR);
+        builder.append("Crs: " + getCrs() + StringConstants.LINE_SEPARATOR);
+        builder.append("Dimensions: " + getDimensions() + StringConstants.LINE_SEPARATOR);
 
         return builder.toString();
     }

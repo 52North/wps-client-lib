@@ -234,10 +234,7 @@ public class DescribeProcess100ResponseDecoder extends AbstractElementXmlStreamR
                     readLiteralData(start, reader, (LiteralOutputDescription) output);
                 } else if (start.getName().equals(WPS100Constants.Elem.QN_BOUNDING_BOX_OUTPUT_NO_NAMESPACE)) {
                     output = new BoundingBoxOutputDescription();
-                    readBoundingBoxData(start, reader, (BoundingBoxOutputDescription) output);// TODO
-                                                                                              // add
-                                                                                              // bbox
-                                                                                              // output
+                    readBoundingBoxData(start, reader, (BoundingBoxOutputDescription) output);
                 } else {
                     throw unexpectedTag(start);
                 }
@@ -285,6 +282,38 @@ public class DescribeProcess100ResponseDecoder extends AbstractElementXmlStreamR
 
     }
 
+    private void readLiteralData(StartElement start,
+            XMLEventReader reader,
+            LiteralInputDescription input) throws XMLStreamException {
+
+        List<Format> formats = new ArrayList<>();
+
+        while (reader.hasNext()) {
+            XMLEvent event = reader.nextEvent();
+            if (event.isStartElement()) {
+                StartElement elem = event.asStartElement();
+                if (elem.getName().equals(OWS11Constants.Elem.QN_ANY_VALUE)) {
+                    input.setAnyValue(true);
+                } else if (elem.getName().equals(OWS11Constants.Elem.QN_ALLOWED_VALUES)) {
+                    readAllowedValues(elem, reader, input);
+                } else if (elem.getName().equals(OWS11Constants.Elem.QN_DATA_TYPE)) {
+                    readDataType(elem, reader, input);
+                } else if (elem.getName().equals(OWS11Constants.Elem.QN_DEFAULT_VALUE)) {
+                    readDefaultValue(elem, reader, input);
+                } else {
+                    throw unexpectedTag(elem);
+                }
+            } else if (event.isEndElement()) {
+                EndElement elem = event.asEndElement();
+                if (elem.getName().equals(WPS100Constants.Elem.QN_LITERAL_DATA_NO_NAMESPACE)) {
+                    input.setFormats(formats);
+                    return;
+                }
+            }
+        }
+        throw eof();
+    }
+
     private void readLiteralDataDomain(StartElement elem,
             XMLEventReader reader,
             LiteralOutputDescription output) throws XMLStreamException {
@@ -310,10 +339,44 @@ public class DescribeProcess100ResponseDecoder extends AbstractElementXmlStreamR
 
     }
 
+    private void readLiteralDataDomain(StartElement elem,
+            XMLEventReader reader,
+            LiteralInputDescription input) throws XMLStreamException {
+
+        while (reader.hasNext()) {
+            XMLEvent event = reader.nextEvent();
+            if (event.isStartElement()) {
+                StartElement start = event.asStartElement();
+                if (start.getName().equals(OWS11Constants.Elem.QN_ANY_VALUE)) {
+                    input.setAnyValue(true);
+                } else if (start.getName().equals(OWS11Constants.Elem.QN_ALLOWED_VALUES)) {
+                    readAllowedValues(elem, reader, input);
+                } else if (start.getName().equals(OWS11Constants.Elem.QN_DATA_TYPE)) {
+                    readDataType(elem, reader, input);
+                } else if (start.getName().equals(OWS11Constants.Elem.QN_DEFAULT_VALUE)) {
+                    readDefaultValue(elem, reader, input);
+                } else {
+                    throw unexpectedTag(start);
+                }
+            } else if (event.isEndElement()) {
+                EndElement end = event.asEndElement();
+                if (end.getName().equals(WPS100Constants.Elem.QN_LITERAL_DATA_DOMAIN)) {
+                    return;
+                }
+            }
+        }
+    }
+
     private void readDataType(StartElement elem,
             XMLEventReader reader,
             LiteralOutputDescription output) {
         getAttribute(elem, OWS11Constants.Attr.QN_REFERENCE).ifPresent(output::setDataType);
+    }
+
+    private void readDataType(StartElement elem,
+            XMLEventReader reader,
+            LiteralInputDescription input) {
+        getAttribute(elem, OWS11Constants.Attr.QN_REFERENCE).ifPresent(input::setDataType);
     }
 
     private void readComplexData(StartElement start,
@@ -342,6 +405,34 @@ public class DescribeProcess100ResponseDecoder extends AbstractElementXmlStreamR
             }
         }
 
+    }
+
+    private void readComplexData(StartElement start,
+            XMLEventReader reader,
+            InputDescription input) throws XMLStreamException {
+
+        List<Format> formats = new ArrayList<>();
+
+        while (reader.hasNext()) {
+            XMLEvent event = reader.nextEvent();
+            if (event.isStartElement()) {
+                StartElement elem = event.asStartElement();
+                if (elem.getName().equals(WPS100Constants.Elem.QN_DEFAULT_NO_NAMESPACE)) {
+                    formats.add(readFormat(true, reader));
+                } else if (elem.getName().equals(WPS100Constants.Elem.QN_SUPPORTED_NO_NAMESPACE)) {
+                    formats.addAll(readFormats(reader));
+                } else {
+                    throw unexpectedTag(elem);
+                }
+            } else if (event.isEndElement()) {
+                EndElement elem = event.asEndElement();
+                if (elem.getName().equals(WPS100Constants.Elem.QN_COMPLEX_DATA_NO_NAMESPACE)) {
+                    input.setFormats(formats);
+                    return;
+                }
+            }
+        }
+        throw eof();
     }
 
     private InputDescription readInput(StartElement elem,
@@ -471,66 +562,6 @@ public class DescribeProcess100ResponseDecoder extends AbstractElementXmlStreamR
 
     }
 
-    private void readLiteralData(StartElement start,
-            XMLEventReader reader,
-            LiteralInputDescription input) throws XMLStreamException {
-
-        List<Format> formats = new ArrayList<>();
-
-        while (reader.hasNext()) {
-            XMLEvent event = reader.nextEvent();
-            if (event.isStartElement()) {
-                StartElement elem = event.asStartElement();
-                if (elem.getName().equals(OWS11Constants.Elem.QN_ANY_VALUE)) {
-                    input.setAnyValue(true);
-                } else if (elem.getName().equals(OWS11Constants.Elem.QN_ALLOWED_VALUES)) {
-                    readAllowedValues(elem, reader, input);
-                } else if (elem.getName().equals(OWS11Constants.Elem.QN_DATA_TYPE)) {
-                    readDataType(elem, reader, input);
-                } else if (elem.getName().equals(OWS11Constants.Elem.QN_DEFAULT_VALUE)) {
-                    readDefaultValue(elem, reader, input);
-                } else {
-                    throw unexpectedTag(elem);
-                }
-            } else if (event.isEndElement()) {
-                EndElement elem = event.asEndElement();
-                if (elem.getName().equals(WPS100Constants.Elem.QN_LITERAL_DATA_NO_NAMESPACE)) {
-                    input.setFormats(formats);
-                    return;
-                }
-            }
-        }
-        throw eof();
-    }
-
-    private void readLiteralDataDomain(StartElement elem,
-            XMLEventReader reader,
-            LiteralInputDescription input) throws XMLStreamException {
-
-        while (reader.hasNext()) {
-            XMLEvent event = reader.nextEvent();
-            if (event.isStartElement()) {
-                StartElement start = event.asStartElement();
-                if (start.getName().equals(OWS11Constants.Elem.QN_ANY_VALUE)) {
-                    input.setAnyValue(true);
-                } else if (start.getName().equals(OWS11Constants.Elem.QN_ALLOWED_VALUES)) {
-                    readAllowedValues(elem, reader, input);
-                } else if (start.getName().equals(OWS11Constants.Elem.QN_DATA_TYPE)) {
-                    readDataType(elem, reader, input);
-                } else if (start.getName().equals(OWS11Constants.Elem.QN_DEFAULT_VALUE)) {
-                    readDefaultValue(elem, reader, input);
-                } else {
-                    throw unexpectedTag(start);
-                }
-            } else if (event.isEndElement()) {
-                EndElement end = event.asEndElement();
-                if (end.getName().equals(WPS100Constants.Elem.QN_LITERAL_DATA_DOMAIN)) {
-                    return;
-                }
-            }
-        }
-    }
-
     private void readDefaultValue(StartElement elem,
             XMLEventReader reader,
             LiteralInputDescription input) throws XMLStreamException {
@@ -538,45 +569,11 @@ public class DescribeProcess100ResponseDecoder extends AbstractElementXmlStreamR
 
     }
 
-    private void readDataType(StartElement elem,
-            XMLEventReader reader,
-            LiteralInputDescription input) {
-        getAttribute(elem, OWS11Constants.Attr.QN_REFERENCE).ifPresent(input::setDataType);
-    }
-
     private void readAllowedValues(StartElement elem,
             XMLEventReader reader,
             LiteralInputDescription input) {
         // TODO Auto-generated method stub
 
-    }
-
-    private void readComplexData(StartElement start,
-            XMLEventReader reader,
-            InputDescription input) throws XMLStreamException {
-
-        List<Format> formats = new ArrayList<>();
-
-        while (reader.hasNext()) {
-            XMLEvent event = reader.nextEvent();
-            if (event.isStartElement()) {
-                StartElement elem = event.asStartElement();
-                if (elem.getName().equals(WPS100Constants.Elem.QN_DEFAULT_NO_NAMESPACE)) {
-                    formats.add(readFormat(true, reader));
-                } else if (elem.getName().equals(WPS100Constants.Elem.QN_SUPPORTED_NO_NAMESPACE)) {
-                    formats.addAll(readFormats(reader));
-                } else {
-                    throw unexpectedTag(elem);
-                }
-            } else if (event.isEndElement()) {
-                EndElement elem = event.asEndElement();
-                if (elem.getName().equals(WPS100Constants.Elem.QN_COMPLEX_DATA_NO_NAMESPACE)) {
-                    input.setFormats(formats);
-                    return;
-                }
-            }
-        }
-        throw eof();
     }
 
     private Collection<? extends Format> readFormats(XMLEventReader reader) throws XMLStreamException {
@@ -618,7 +615,7 @@ public class DescribeProcess100ResponseDecoder extends AbstractElementXmlStreamR
                 } else if (elem.getName().equals(WPS100Constants.Elem.QN_ENCODING_NO_NAMESPACE)) {
                     format.setEncoding(reader.getElementText());
                 } else if (elem.getName().equals(WPS100Constants.Elem.QN_FORMAT_NO_NAMESPACE)) {
-                    // consume
+                    continue;
                 } else {
                     throw unexpectedTag(elem);
                 }
