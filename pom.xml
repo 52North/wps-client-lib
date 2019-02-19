@@ -1,6 +1,6 @@
 <!--
 
-    ﻿Copyright (C) 2018 52°North Initiative for Geospatial Open Source
+    ﻿Copyright (C) 2019 52°North Initiative for Geospatial Open Source
     Software GmbH
 
     Licensed under the Apache License, Version 2.0 (the "License");
@@ -340,7 +340,7 @@
 					</includes>
 					<strictCheck>true</strictCheck>
 					<properties>
-						<year>2018</year>
+						<year>2019</year>
 					</properties>
 					<mapping>
 						<java>SLASHSTAR_STYLE</java>
