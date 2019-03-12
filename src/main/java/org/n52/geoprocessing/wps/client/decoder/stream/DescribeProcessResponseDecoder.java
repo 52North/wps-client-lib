@@ -27,6 +27,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.EndElement;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
+import org.n52.geoprocessing.wps.client.model.AllowedValues;
 
 import org.n52.geoprocessing.wps.client.model.BoundingBoxInputDescription;
 import org.n52.geoprocessing.wps.client.model.BoundingBoxOutputDescription;
@@ -520,9 +521,29 @@ public class DescribeProcessResponseDecoder extends AbstractElementXmlStreamRead
 
     private void readAllowedValues(StartElement elem,
             XMLEventReader reader,
-            LiteralInputDescription input) {
-        // TODO Auto-generated method stub
+            LiteralInputDescription input) throws XMLStreamException {
 
+        List<String> values = new ArrayList<>();
+
+        while (reader.hasNext()) {
+            XMLEvent event = reader.nextEvent();
+            if (event.isStartElement()) {
+                StartElement start = event.asStartElement();
+                if (start.getName().equals(OWSConstants.Elem.QN_VALUE)) {
+                    values.add(reader.getElementText());
+                } else {
+                    throw unexpectedTag(start);
+                }
+            } else if (event.isEndElement()) {
+                EndElement end = event.asEndElement();
+                if (end.getName().equals(OWSConstants.Elem.QN_ALLOWED_VALUES)) {
+                    AllowedValues allowedValues = new AllowedValues(values.size());
+                    values.forEach(v -> allowedValues.addAllowedValue(v));
+                    input.setAllowedValues(allowedValues);
+                    return;
+                }
+            }
+        }
     }
 
     private Format readFormat(StartElement elem,
