@@ -23,7 +23,12 @@ public class AllowedValues {
 
     private List<String> allowedValues;
 
-    private Range range;
+    private List<Range> ranges;
+
+    public AllowedValues() {
+        this.allowedValues = new ArrayList();
+        this.ranges = new ArrayList();
+    }
 
     public AllowedValues(int size) {
         allowedValues = new ArrayList<>(size);
@@ -33,16 +38,24 @@ public class AllowedValues {
         return allowedValues;
     }
 
+    public void setAllowedValues(List<String> allowedValues) {
+        this.setAllowedValues(allowedValues);
+    }
+
     public void addAllowedValue(String allowedValue) {
         this.allowedValues.add(allowedValue);
     }
 
-    public Range getRange() {
-        return range;
+    public List<Range> getRanges() {
+        return ranges;
     }
 
-    public void setRange(Range range) {
-        this.range = range;
+    public void setRanges(List<Range> ranges) {
+        this.ranges = ranges;
+    }
+
+    public void addRange(Range range) {
+        this.ranges.add(range);
     }
 
 }

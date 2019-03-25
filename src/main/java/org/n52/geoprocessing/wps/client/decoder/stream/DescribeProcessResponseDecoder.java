@@ -37,6 +37,7 @@ import org.n52.geoprocessing.wps.client.model.InputDescription;
 import org.n52.geoprocessing.wps.client.model.LiteralInputDescription;
 import org.n52.geoprocessing.wps.client.model.LiteralOutputDescription;
 import org.n52.geoprocessing.wps.client.model.OutputDescription;
+import org.n52.geoprocessing.wps.client.model.Range;
 import org.n52.javaps.service.xml.OWSConstants;
 import org.n52.javaps.service.xml.WPSConstants;
 import org.n52.svalbard.decode.stream.StreamReaderKey;
@@ -130,8 +131,8 @@ public class DescribeProcessResponseDecoder extends AbstractElementXmlStreamRead
         org.n52.geoprocessing.wps.client.model.Process process = new org.n52.geoprocessing.wps.client.model.Process();
 
         try {
-            String jobControlOptions =
-                    getAttribute(processOfferingsElement, WPSConstants.Attr.AN_JOB_CONTROL_OPTIONS).get();
+            String jobControlOptions
+                    = getAttribute(processOfferingsElement, WPSConstants.Attr.AN_JOB_CONTROL_OPTIONS).get();
 
             process.setStatusSupported(jobControlOptions.contains(ASYNC_EXECUTE));
         } catch (Exception e) {
@@ -139,8 +140,8 @@ public class DescribeProcessResponseDecoder extends AbstractElementXmlStreamRead
         }
 
         try {
-            String outputTransmission =
-                    getAttribute(processOfferingsElement, WPSConstants.Attr.AN_OUTPUT_TRANSMISSION).get();
+            String outputTransmission
+                    = getAttribute(processOfferingsElement, WPSConstants.Attr.AN_OUTPUT_TRANSMISSION).get();
 
             process.setReferenceSupported(outputTransmission.contains(REFERENCE));
         } catch (Exception e) {
@@ -523,22 +524,22 @@ public class DescribeProcessResponseDecoder extends AbstractElementXmlStreamRead
             XMLEventReader reader,
             LiteralInputDescription input) throws XMLStreamException {
 
-        List<String> values = new ArrayList<>();
+        AllowedValues allowedValues = new AllowedValues();
 
         while (reader.hasNext()) {
             XMLEvent event = reader.nextEvent();
             if (event.isStartElement()) {
                 StartElement start = event.asStartElement();
                 if (start.getName().equals(OWSConstants.Elem.QN_VALUE)) {
-                    values.add(reader.getElementText());
+                    allowedValues.addAllowedValue(reader.getElementText());
+                } else if (start.getName().equals(OWSConstants.Elem.QN_RANGE)) {
+                    readRangeValue(start, reader, allowedValues);
                 } else {
                     throw unexpectedTag(start);
                 }
             } else if (event.isEndElement()) {
                 EndElement end = event.asEndElement();
                 if (end.getName().equals(OWSConstants.Elem.QN_ALLOWED_VALUES)) {
-                    AllowedValues allowedValues = new AllowedValues(values.size());
-                    values.forEach(v -> allowedValues.addAllowedValue(v));
                     input.setAllowedValues(allowedValues);
                     return;
                 }
@@ -565,6 +566,33 @@ public class DescribeProcessResponseDecoder extends AbstractElementXmlStreamRead
     @Override
     public Set<StreamReaderKey> getKeys() {
         return Collections.emptySet();
+    }
+
+    private void readRangeValue(StartElement elem,
+            XMLEventReader reader, AllowedValues allowedValues) throws XMLStreamException {
+        Range range = new Range();
+
+        while (reader.hasNext()) {
+            XMLEvent event = reader.nextEvent();
+            if (event.isStartElement()) {
+                StartElement start = event.asStartElement();
+                if (start.getName().equals(OWSConstants.Elem.QN_MINIMUM_VALUE)) {
+                    range.setMinimumValue(reader.getElementText());
+                } else if (start.getName().equals(OWSConstants.Elem.QN_MAXIMUM_VALUE)) {
+                    range.setMinimumValue(reader.getElementText());
+                } else if (start.getName().equals(OWSConstants.Elem.QN_SPACING)) {
+                    range.setSpacing(reader.getElementText());
+                } else {
+                    throw unexpectedTag(start);
+                }
+            } else if (event.isEndElement()) {
+                EndElement end = event.asEndElement();
+                if (end.getName().equals(OWSConstants.Elem.QN_RANGE)) {
+                    allowedValues.addRange(range);
+                    return;
+                }
+            }
+        }
     }
 
 }

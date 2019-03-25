@@ -21,6 +21,8 @@ public class Range {
     private Object minimumValue;
 
     private Object maximumValue;
+    
+    private Object spacing;
 
     public Object getMinimumValue() {
         return minimumValue;
@@ -36,6 +38,21 @@ public class Range {
 
     public void setMaximumValue(Object maximumValue) {
         this.maximumValue = maximumValue;
+    }
+
+    public Object getSpacing() {
+        return spacing;
+    }
+
+    public void setSpacing(Object spacing) {
+        this.spacing = spacing;
+    }
+
+    public static enum Closure {
+        CLOSED,
+        OPEN,
+        OPEN_CLOSED,
+        CLOSED_OPEN
     }
 
 }
