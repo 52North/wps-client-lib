@@ -21,8 +21,10 @@ public class Range {
     private Object minimumValue;
 
     private Object maximumValue;
-    
+
     private Object spacing;
+
+    private Closure closure;
 
     public Object getMinimumValue() {
         return minimumValue;
@@ -48,11 +50,57 @@ public class Range {
         this.spacing = spacing;
     }
 
+    public Closure getClosure() {
+        return closure;
+    }
+
+    public void setClosure(String closure) {
+        this.closure = Closure.forName(closure);
+    }
+
     public static enum Closure {
-        CLOSED,
-        OPEN,
-        OPEN_CLOSED,
-        CLOSED_OPEN
+        CLOSED {
+            @Override
+            public String getName() {
+                return "closed";
+            }
+
+        },
+        OPEN {
+            @Override
+            public String getName() {
+                return "open";
+            }
+
+        },
+        OPEN_CLOSED {
+            @Override
+            public String getName() {
+                return "open-closed";
+            }
+
+        },
+        CLOSED_OPEN {
+            @Override
+            public String getName() {
+                return "closed-open";
+            }
+
+        };
+
+        public static Closure forName(String name) {
+            for (Closure c : Closure.values()) {
+                if (c.getName().equals(name)) {
+                    return c;
+                }
+            }
+
+            throw new IllegalStateException("No value available for name: " + name);
+        }
+
+        public String getName() {
+            return "";
+        }
     }
 
 }

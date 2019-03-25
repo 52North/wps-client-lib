@@ -571,6 +571,7 @@ public class DescribeProcessResponseDecoder extends AbstractElementXmlStreamRead
     private void readRangeValue(StartElement elem,
             XMLEventReader reader, AllowedValues allowedValues) throws XMLStreamException {
         Range range = new Range();
+         getAttribute(elem, WPSConstants.Attr.AN_MIME_TYPE).ifPresent(range::setClosure);
 
         while (reader.hasNext()) {
             XMLEvent event = reader.nextEvent();
