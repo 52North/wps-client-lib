@@ -26,8 +26,8 @@ public class AllowedValues {
     private List<Range> ranges;
 
     public AllowedValues() {
-        this.allowedValues = new ArrayList();
-        this.ranges = new ArrayList();
+        this.allowedValues = new ArrayList<String>();
+        this.ranges = new ArrayList<Range>();
     }
 
     public AllowedValues(int size) {
@@ -39,7 +39,7 @@ public class AllowedValues {
     }
 
     public void setAllowedValues(List<String> allowedValues) {
-        this.setAllowedValues(allowedValues);
+    	this.allowedValues.addAll(allowedValues);
     }
 
     public void addAllowedValue(String allowedValue) {

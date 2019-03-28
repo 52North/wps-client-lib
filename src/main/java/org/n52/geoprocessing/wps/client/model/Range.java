@@ -58,7 +58,7 @@ public class Range {
         this.closure = Closure.forName(closure);
     }
 
-    public static enum Closure {
+    public enum Closure {
         CLOSED {
             @Override
             public String getName() {
