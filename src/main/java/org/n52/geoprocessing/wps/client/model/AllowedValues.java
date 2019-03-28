@@ -39,7 +39,7 @@ public class AllowedValues {
     }
 
     public void setAllowedValues(List<String> allowedValues) {
-    	this.allowedValues.addAll(allowedValues);
+        this.allowedValues.addAll(allowedValues);
     }
 
     public void addAllowedValue(String allowedValue) {
