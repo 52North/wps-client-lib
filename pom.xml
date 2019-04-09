@@ -312,16 +312,6 @@
 	</repositories>
 	<build>
 		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<compilerVersion>${version.java}</compilerVersion>
-					<source>${version.java}</source>
-					<target>${version.java}</target>
-				</configuration>
-			</plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
