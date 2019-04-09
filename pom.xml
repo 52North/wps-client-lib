@@ -321,9 +321,6 @@
                         </goals>
                         <configuration>
                             <rules>
-                                <requireJavaVersion>
-                                    <version>[${version.java},)</version>
-                                </requireJavaVersion>
                                 <requireNoRepositories>
                                     <!-- Allow repositories -->
                                     <banRepositories>false</banRepositories>
