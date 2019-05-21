@@ -68,6 +68,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.n52.geoprocessing.wps.client.model.Result;
 
 /**
  * Contains some convenient methods to access and manage Web Processing Services
@@ -789,4 +790,20 @@ public final class WPSClientSession {
             LOGGER.info("Property delayForAsyncRequests not present, defaulting to: " + delayForAsyncRequests);
         }
     }
+    
+    public Result retrieveProcessResult(String url, String jobId) throws IOException, WPSClientException {
+        try {
+            String targetUrl = this.createGetResultURLWPS20(url, jobId);
+            Object result = retrieveResponseOrExceptionReportInpustream(new URL(targetUrl));
+            
+            if (result != null && result instanceof Result) {
+                return (Result) result;
+            }
+            
+            throw new WPSClientException("Invalid response from WPS: " + result);
+        } catch (MalformedURLException ex) {
+            throw new IOException(ex.getMessage(), ex);
+        }
+    }
+    
 }
