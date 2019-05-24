@@ -298,7 +298,7 @@ public class DescribeProcess100ResponseDecoder extends AbstractElementXmlStreamR
                     readAllowedValues(elem, reader, input);
                 } else if (elem.getName().equals(OWS11Constants.Elem.QN_DATA_TYPE)) {
                     readDataType(elem, reader, input);
-                } else if (elem.getName().equals(OWS11Constants.Elem.QN_DEFAULT_VALUE)) {
+                } else if (elem.getName().equals(WPS100Constants.Elem.QN_DEFAULT_VALUE_NO_NAMESPACE)) {
                     readDefaultValue(elem, reader, input);
                 } else {
                     throw unexpectedTag(elem);
@@ -353,7 +353,7 @@ public class DescribeProcess100ResponseDecoder extends AbstractElementXmlStreamR
                     readAllowedValues(elem, reader, input);
                 } else if (start.getName().equals(OWS11Constants.Elem.QN_DATA_TYPE)) {
                     readDataType(elem, reader, input);
-                } else if (start.getName().equals(OWS11Constants.Elem.QN_DEFAULT_VALUE)) {
+                } else if (start.getName().equals(WPS100Constants.Elem.QN_DEFAULT_VALUE_NO_NAMESPACE)) {
                     readDefaultValue(elem, reader, input);
                 } else {
                     throw unexpectedTag(start);
