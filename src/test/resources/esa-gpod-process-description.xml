@@ -1,0 +1,64 @@
+<wps:ProcessDescriptions service="WPS" version="1.0.0" xml:lang="en-GB" xsi:schemaLocation="http://www.opengis.net/wps/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1">
+	<ProcessDescription wps:processVersion="1.0.0" storeSupported="true" statusSupported="true">
+		<ows:Identifier>GPODTEST</ows:Identifier>
+		<ows:Title>GPODTEST</ows:Title>
+		<ows:Abstract>GPODTEST</ows:Abstract>
+		<DataInputs>
+			<Input minOccurs="1" maxOccurs="65536">
+				<ows:Identifier>files</ows:Identifier>
+				<ows:Title>Files</ows:Title>
+				<ComplexData>
+					<Default>
+						<Format>
+							<MimeType>application/atom+xml</MimeType>
+							<Encoding>utf-8</Encoding>
+						</Format>
+					</Default>
+					<Supported>
+						<Format>
+							<MimeType>application/atom+xml</MimeType>
+							<Encoding>utf-8</Encoding>
+						</Format>
+					</Supported>
+				</ComplexData>
+			</Input>
+			<Input minOccurs="0" maxOccurs="1">
+				<ows:Identifier>caption</ows:Identifier>
+				<ows:Title>Task Caption</ows:Title>
+				<LiteralData>
+					<ows:DataType ows:reference="http://www.w3.org/TR/xmlschema-2/#string">string</ows:DataType>
+					<ows:AnyValue />
+					<DefaultValue>Test</DefaultValue>
+				</LiteralData>
+			</Input>
+		</DataInputs>
+		<ProcessOutputs>
+			<Output>
+				<ows:Identifier>ResultDescription</ows:Identifier>
+				<ows:Title>List of output files produced by the process</ows:Title>
+				<ComplexOutput>
+					<Default>
+						<Format>
+							<MimeType>application/rdf+xml</MimeType>
+							<Encoding>UTF-8</Encoding>
+						</Format>
+					</Default>
+					<Supported>
+						<Format>
+							<MimeType>application/rdf+xml</MimeType>
+							<Encoding>UTF-8</Encoding>
+						</Format>
+						<Format>
+							<MimeType>application/atom+xml</MimeType>
+							<Encoding>UTF-8</Encoding>
+						</Format>
+						<Format>
+							<MimeType>application/metalink+xml</MimeType>
+							<Encoding>UTF-8</Encoding>
+						</Format>
+					</Supported>
+				</ComplexOutput>
+			</Output>
+		</ProcessOutputs>
+	</ProcessDescription>
+</wps:ProcessDescriptions>
