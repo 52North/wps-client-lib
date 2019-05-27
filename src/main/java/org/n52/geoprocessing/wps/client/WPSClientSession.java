@@ -545,8 +545,9 @@ public class WPSClientSession {
 
         XMLEventReader xmlReader = null;
         try {
-            xmlReader = XMLInputFactory.newInstance()
-                    .createXMLEventReader(new InputStreamReader(in, StandardCharsets.UTF_8));
+            XMLInputFactory xmlInputFactory = XMLInputFactory.newInstance();
+            xmlInputFactory.setProperty("javax.xml.stream.supportDTD", false);
+            xmlReader = xmlInputFactory.createXMLEventReader(new InputStreamReader(in, StandardCharsets.UTF_8));
             return new WPSResponseReader().readElement(xmlReader);
         } catch (XMLStreamException e) {
             throw new WPSClientException("Could not decode Inputstream.", e);
@@ -791,7 +792,8 @@ public class WPSClientSession {
         }
     }
 
-    public Result retrieveProcessResult(String url, String jobId) throws IOException, WPSClientException {
+    public Result retrieveProcessResult(String url,
+            String jobId) throws IOException, WPSClientException {
         try {
             String targetUrl = this.createGetResultURLWPS20(url, jobId);
             Object result = retrieveResponseOrExceptionReportInpustream(new URL(targetUrl));
