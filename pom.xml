@@ -26,7 +26,7 @@
 	<groupId>org.n52.geoprocessing</groupId>
 	<artifactId>wps-client-lib</artifactId>
 	<version>1.0.3-SNAPSHOT</version>
-	<name>52 North WPS Client libary</name>
+	<name>52 North WPS Client library</name>
 	<inceptionYear>2017</inceptionYear>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
