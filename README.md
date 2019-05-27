@@ -1,12 +1,9 @@
-# wps-client-lib 
+# wps-client-lib [![Build Status](https://travis-ci.org/52North/wps-client-lib.svg)](https://travis-ci.org/52North/wps-client-lib) [![Maven Central](https://img.shields.io/maven-central/v/org.n52.geoprocessing/wps-client-lib.svg)](https://search.maven.org/search?q=g:org.n52.geoprocessing%20and%20a:wps-client-lib)
 
 ## Description
 
 WPS client library written in Java. Support for WPS 1.0.0 and 2.0. 
 Uses [arctic-sea](https://github.com/52North/arctic-sea). 
-
-## Build Status
-* TBD
 
 ## Features
 * General Features
@@ -17,18 +14,6 @@ Uses [arctic-sea](https://github.com/52North/arctic-sea).
 ## License
 
 This project is licensed under the Apache Software License, version 2.0.
-
-## Changelog
-
-  * Changes since last release
-    * New features
-      * N/A
-  
-    * Changes
-      * N/A
-  
-    * Fixed issues
-      * N/A
 
 ## Quick Start
 
@@ -64,6 +49,6 @@ https://52north.org/software/licensing/guidelines/
 
 ### Funding projects
 
- * RIEGOS
+ * RIESGOS
  * OGC Testbeds
 
