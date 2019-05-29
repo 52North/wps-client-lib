@@ -372,6 +372,12 @@ public interface WPS100Constants {
         QName QN_ENCODING = wps(EN_ENCODING);
 
         QName QN_ENCODING_NO_NAMESPACE = noNamespace(EN_ENCODING);
+
+        String EN_DEFAULT_VALUE = "DefaultValue";
+
+        QName QN_DEFAULT_VALUE = wps(EN_DEFAULT_VALUE);
+
+        QName QN_DEFAULT_VALUE_NO_NAMESPACE = noNamespace(EN_DEFAULT_VALUE);
     }
 
 }

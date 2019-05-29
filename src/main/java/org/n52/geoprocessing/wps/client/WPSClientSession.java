@@ -68,6 +68,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.n52.geoprocessing.wps.client.model.Result;
 
 /**
  * Contains some convenient methods to access and manage Web Processing Services
@@ -78,7 +79,7 @@ import com.fasterxml.jackson.databind.JsonNode;
  * @author bpross,foerster
  */
 
-public final class WPSClientSession {
+public class WPSClientSession {
 
     public static final String VERSION_100 = "1.0.0";
 
@@ -117,7 +118,7 @@ public final class WPSClientSession {
      * Initializes a WPS client session.
      *
      */
-    private WPSClientSession() {
+    public WPSClientSession() {
         loggedServices = new HashMap<String, WPSCapabilities>();
         processDescriptions = new HashMap<String, List<Process>>();
         httpClientBuilder = HttpClientBuilder.create();
@@ -544,8 +545,9 @@ public final class WPSClientSession {
 
         XMLEventReader xmlReader = null;
         try {
-            xmlReader = XMLInputFactory.newInstance()
-                    .createXMLEventReader(new InputStreamReader(in, StandardCharsets.UTF_8));
+            XMLInputFactory xmlInputFactory = XMLInputFactory.newInstance();
+            xmlInputFactory.setProperty("javax.xml.stream.supportDTD", false);
+            xmlReader = xmlInputFactory.createXMLEventReader(new InputStreamReader(in, StandardCharsets.UTF_8));
             return new WPSResponseReader().readElement(xmlReader);
         } catch (XMLStreamException e) {
             throw new WPSClientException("Could not decode Inputstream.", e);
@@ -789,4 +791,21 @@ public final class WPSClientSession {
             LOGGER.info("Property delayForAsyncRequests not present, defaulting to: " + delayForAsyncRequests);
         }
     }
+
+    public Result retrieveProcessResult(String url,
+            String jobId) throws IOException, WPSClientException {
+        try {
+            String targetUrl = this.createGetResultURLWPS20(url, jobId);
+            Object result = retrieveResponseOrExceptionReportInpustream(new URL(targetUrl));
+
+            if (result != null && result instanceof Result) {
+                return (Result) result;
+            }
+
+            throw new WPSClientException("Invalid response from WPS: " + result);
+        } catch (MalformedURLException ex) {
+            throw new IOException(ex.getMessage(), ex);
+        }
+    }
+
 }
