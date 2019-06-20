@@ -86,8 +86,7 @@ public class GetResultResponseDecoder extends AbstractElementXmlStreamReader {
             if (event.isStartElement()) {
                 StartElement start = event.asStartElement();
                 if (start.getName().equals(WPSConstants.Elem.QN_JOB_ID)) {
-                    continue;
-                    // result.setJobId(readJobId(elem, reader));
+                    result.setJobId(readJobId(start, reader));
                 } else if (start.getName().equals(WPSConstants.Elem.QN_OUTPUT)) {
                     outputs.add(readOutput(start, reader));
                 } else if (start.getName().equals(WPSConstants.Elem.QN_EXPIRATION_DATE)) {
@@ -328,6 +327,11 @@ public class GetResultResponseDecoder extends AbstractElementXmlStreamReader {
     private String readMetadata(StartElement elem,
             XMLEventReader reader) {
         return "";
+    }
+
+    private String readJobId(StartElement elem, XMLEventReader reader) throws XMLStreamException {
+            String jobId =  reader.getElementText();
+            return jobId;
     }
 
 }

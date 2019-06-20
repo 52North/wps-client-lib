@@ -26,6 +26,8 @@ public class Result {
     private URL url;
 
     private List<Data> outputs;
+    
+    private String jobId;
 
     public URL getUrl() {
         return url;
@@ -43,4 +45,11 @@ public class Result {
         this.outputs = data;
     }
 
+    public String getJobId() {
+        return jobId;
+    }
+
+    public void setJobId(String jobId) {
+        this.jobId = jobId;
+    }
 }
