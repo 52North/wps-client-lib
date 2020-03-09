@@ -566,13 +566,21 @@ public class DescribeProcess100ResponseDecoder extends AbstractElementXmlStreamR
             XMLEventReader reader,
             LiteralInputDescription input) throws XMLStreamException {
         input.setDefaultValue(reader.getElementText());
-
     }
 
-    private void readAllowedValues(StartElement elem,
+    // TODO implement
+    private void readAllowedValues(StartElement start,
             XMLEventReader reader,
-            LiteralInputDescription input) {
-        // TODO Auto-generated method stub
+            LiteralInputDescription input) throws XMLStreamException {
+        while (reader.hasNext()) {
+            XMLEvent event = reader.nextEvent();
+            if (event.isEndElement()) {
+                EndElement elem = event.asEndElement();
+                if (elem.getName().equals(OWS11Constants.Elem.QN_ALLOWED_VALUES)) {
+                    return;
+                }
+            }
+        }
 
     }
 
