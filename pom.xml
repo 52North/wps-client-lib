@@ -21,7 +21,7 @@
         <parent>
             <groupId>org.n52</groupId>
             <artifactId>parent</artifactId>
-            <version>16</version>
+            <version>17</version>
         </parent>
 	<groupId>org.n52.geoprocessing</groupId>
 	<artifactId>wps-client-lib</artifactId>
