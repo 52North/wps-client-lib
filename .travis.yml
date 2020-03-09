@@ -1,7 +1,7 @@
 language: java
 sudo: false
 install: true
-script: mvn -fae -U -B clean install -Pwith-dependencies
+script: mvn -fae -U -B clean install
 jdk:
   - openjdk8
   - openjdk9
