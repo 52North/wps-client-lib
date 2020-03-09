@@ -26,7 +26,7 @@ public class Result {
     private URL url;
 
     private List<Data> outputs;
-    
+
     private String jobId;
 
     public URL getUrl() {
