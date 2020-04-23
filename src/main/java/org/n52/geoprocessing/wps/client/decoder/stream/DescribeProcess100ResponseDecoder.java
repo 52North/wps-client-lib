@@ -532,25 +532,31 @@ public class DescribeProcess100ResponseDecoder extends AbstractElementXmlStreamR
             XMLEvent event = reader.nextEvent();
             if (event.isStartElement()) {
                 StartElement start = event.asStartElement();
-                if (start.getName().equals(OWS11Constants.Elem.QN_TITLE)) {
-                    title = reader.getElementText();
-                } else if (start.getName().equals(OWS11Constants.Elem.QN_ABSTRACT)) {
-                    abstrakt = reader.getElementText();
-                } else if (start.getName().equals(OWS11Constants.Elem.QN_IDENTIFIER)) {
-                    id = reader.getElementText();
-                } else if (start.getName().equals(OWS11Constants.Elem.QN_METADATA)) {
-                    readMetadata(start, reader);
-                } else if (start.getName().equals(WPS100Constants.Elem.QN_COMPLEX_DATA_NO_NAMESPACE)) {
-                    input = new ComplexInputDescription();
-                    readComplexData(start, reader, input);
-                } else if (start.getName().equals(WPS100Constants.Elem.QN_LITERAL_DATA_NO_NAMESPACE)) {
-                    input = new LiteralInputDescription();
-                    readLiteralData(start, reader, (LiteralInputDescription) input);
-                } else if (start.getName().equals(WPS100Constants.Elem.QN_BOUNDING_BOX_DATA_NO_NAMESPACE)) {
-                    input = new BoundingBoxInputDescription();
-                    readBoundingBoxData(start, reader, (BoundingBoxInputDescription) input);
-                } else {
-                    throw unexpectedTag(start);
+                try {
+                    if (start.getName().equals(OWS11Constants.Elem.QN_TITLE)) {
+                        title = reader.getElementText();
+                    } else if (start.getName().equals(OWS11Constants.Elem.QN_ABSTRACT)) {
+                        abstrakt = reader.getElementText();
+                    } else if (start.getName().equals(OWS11Constants.Elem.QN_IDENTIFIER)) {
+                        id = reader.getElementText();
+                    } else if (start.getName().equals(OWS11Constants.Elem.QN_METADATA)) {
+                        readMetadata(start, reader);
+                    } else if (start.getName().equals(WPS100Constants.Elem.QN_COMPLEX_DATA_NO_NAMESPACE)) {
+                        input = new ComplexInputDescription();
+                        readComplexData(start, reader, input);
+                    } else if (start.getName().equals(WPS100Constants.Elem.QN_LITERAL_DATA_NO_NAMESPACE)) {
+                        input = new LiteralInputDescription();
+                        readLiteralData(start, reader, (LiteralInputDescription) input);
+                    } else if (start.getName().equals(WPS100Constants.Elem.QN_BOUNDING_BOX_DATA_NO_NAMESPACE)) {
+                        input = new BoundingBoxInputDescription();
+                        readBoundingBoxData(start, reader, (BoundingBoxInputDescription) input);
+                    } else {
+                        throw unexpectedTag(start);
+                    }                    
+                } catch (XMLStreamException e) {
+                    LOGGER.error("Could not decode input with ID: " + id);
+                    throw e;
+                    
                 }
             } else if (event.isEndElement()) {
                 EndElement end = event.asEndElement();
