@@ -378,6 +378,10 @@ public interface WPS100Constants {
         QName QN_DEFAULT_VALUE = wps(EN_DEFAULT_VALUE);
 
         QName QN_DEFAULT_VALUE_NO_NAMESPACE = noNamespace(EN_DEFAULT_VALUE);
+        
+        String EN_UOMS = "UOMs";
+
+        QName QN_UOMS_NO_NAMESPACE = noNamespace(EN_UOMS);
     }
 
 }

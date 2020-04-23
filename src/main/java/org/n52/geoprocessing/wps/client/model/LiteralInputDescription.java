@@ -16,6 +16,8 @@
  */
 package org.n52.geoprocessing.wps.client.model;
 
+import java.util.List;
+
 public class LiteralInputDescription extends InputDescription {
 
     private Object defaultValue;
@@ -25,6 +27,8 @@ public class LiteralInputDescription extends InputDescription {
     private boolean anyValue;
 
     private String dataType;
+    
+    private List<UOM> uoms;
 
     public Object getDefaultValue() {
         return defaultValue;
@@ -56,6 +60,14 @@ public class LiteralInputDescription extends InputDescription {
 
     public void setDataType(String dataType) {
         this.dataType = dataType;
+    }
+
+    public List<UOM> getUoms() {
+        return uoms;
+    }
+
+    public void setUoms(List<UOM> uoms) {
+        this.uoms = uoms;
     }
 
 }

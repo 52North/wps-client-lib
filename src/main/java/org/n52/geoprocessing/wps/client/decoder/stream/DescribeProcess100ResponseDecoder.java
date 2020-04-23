@@ -36,6 +36,7 @@ import org.n52.geoprocessing.wps.client.model.InputDescription;
 import org.n52.geoprocessing.wps.client.model.LiteralInputDescription;
 import org.n52.geoprocessing.wps.client.model.LiteralOutputDescription;
 import org.n52.geoprocessing.wps.client.model.OutputDescription;
+import org.n52.geoprocessing.wps.client.model.UOM;
 import org.n52.geoprocessing.wps.client.xml.OWS11Constants;
 import org.n52.geoprocessing.wps.client.xml.WPS100Constants;
 import org.n52.svalbard.decode.stream.StreamReaderKey;
@@ -300,6 +301,8 @@ public class DescribeProcess100ResponseDecoder extends AbstractElementXmlStreamR
                     readDataType(elem, reader, input);
                 } else if (elem.getName().equals(WPS100Constants.Elem.QN_DEFAULT_VALUE_NO_NAMESPACE)) {
                     readDefaultValue(elem, reader, input);
+                } else if (elem.getName().equals(WPS100Constants.Elem.QN_UOMS_NO_NAMESPACE)) {
+                    readUOMs(elem, reader, input);
                 } else {
                     throw unexpectedTag(elem);
                 }
@@ -312,6 +315,87 @@ public class DescribeProcess100ResponseDecoder extends AbstractElementXmlStreamR
             }
         }
         throw eof();
+    }
+
+    private void readUOMs(StartElement elem,
+            XMLEventReader reader,
+            LiteralInputDescription input) throws XMLStreamException {
+        
+        List<UOM> uoms = getDefaultAndSupported(elem, reader);
+        
+        input.setUoms(uoms);
+        
+    }
+    
+    private List<UOM> getDefaultAndSupported(StartElement start,
+            XMLEventReader reader) throws XMLStreamException {
+
+        List<UOM> result = new ArrayList<>();
+        
+        while (reader.hasNext()) {
+            XMLEvent event = reader.nextEvent();
+            if (event.isStartElement()) {
+                StartElement elem = event.asStartElement();
+                if (elem.getName().equals(WPS100Constants.Elem.QN_DEFAULT_NO_NAMESPACE)) {
+                    //move forward to ows:UOM element
+                    reader.nextTag();
+                    String uomString = readUOM(reader);
+                    UOM uom = new UOM(uomString, true);
+                    if(!result.contains(uom)) {
+                        result.add(uom);
+                    }
+                } else if (elem.getName().equals(WPS100Constants.Elem.QN_SUPPORTED_NO_NAMESPACE)) {
+                    
+                    List<UOM> supportedUoms = readSupportedUOMs(reader);
+                    
+                    for (UOM uom : supportedUoms) {
+                        if(!result.contains(uom)) {
+                            result.add(uom);
+                        }
+                    }
+                } else {
+                    throw unexpectedTag(elem);
+                }
+            } else if (event.isEndElement()) {
+                EndElement elem = event.asEndElement();
+                if (elem.getName().equals(WPS100Constants.Elem.QN_UOMS_NO_NAMESPACE)) {
+                    return result;
+                }
+            }
+        }
+        throw eof();
+    }
+    
+    private List<UOM> readSupportedUOMs(XMLEventReader reader) throws XMLStreamException {
+
+        List<UOM> result = new ArrayList<>();
+        
+        while (reader.hasNext()) {
+            XMLEvent event = reader.nextEvent();
+            if (event.isStartElement()) {
+                StartElement elem = event.asStartElement();
+                if (elem.getName().equals(OWS11Constants.Elem.QN_UOM)) {
+                    String uomString = readUOM(reader);
+                    result.add(new UOM(uomString, false));
+                } else {
+                    throw unexpectedTag(elem);
+                }
+            } else if (event.isEndElement()) {
+                EndElement elem = event.asEndElement();
+                if (elem.getName().equals(WPS100Constants.Elem.QN_SUPPORTED_NO_NAMESPACE)) {
+                    return result;
+                }
+            }
+        }
+        throw eof();
+        
+    }
+
+    private String readUOM(XMLEventReader reader) throws XMLStreamException {
+
+        String uomString = reader.getElementText();
+        return uomString;
+
     }
 
     private void readLiteralDataDomain(StartElement elem,

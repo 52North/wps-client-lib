@@ -21,6 +21,7 @@ import static org.junit.Assert.fail;
 
 import java.io.InputStreamReader;
 import java.util.List;
+import java.util.Set;
 
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLEventReader;
@@ -28,15 +29,21 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 
 import org.junit.Test;
+import org.n52.geoprocessing.wps.client.model.BoundingBoxInputDescription;
+import org.n52.geoprocessing.wps.client.model.ComplexInputDescription;
 import org.n52.geoprocessing.wps.client.model.ExceptionReport;
+import org.n52.geoprocessing.wps.client.model.InputDescription;
+import org.n52.geoprocessing.wps.client.model.LiteralInputDescription;
 import org.n52.geoprocessing.wps.client.model.Result;
 import org.n52.geoprocessing.wps.client.model.StatusInfo;
+import org.n52.geoprocessing.wps.client.model.UOM;
 import org.n52.geoprocessing.wps.client.model.WPSCapabilities;
 import org.n52.geoprocessing.wps.client.model.execution.BoundingBox;
 import org.n52.geoprocessing.wps.client.model.execution.BoundingBoxData;
 import org.n52.geoprocessing.wps.client.model.execution.ComplexData;
 import org.n52.geoprocessing.wps.client.model.execution.Data;
 import org.n52.geoprocessing.wps.client.model.execution.LiteralData;
+import org.n52.geoprocessing.wps.client.model.Process;
 import org.n52.geoprocessing.wps.client.xml.WPSResponseReader;
 import org.n52.shetland.ogc.wps.JobStatus;
 import org.slf4j.Logger;
@@ -90,6 +97,8 @@ public class WPSResponseReaderTest {
 
     @Test
     public void testReadDescribeProcess100(){
+        
+        Object inputWithUomsID = "buffer_distance";
 
         XMLEventReader xmlReader = null;
         try {
@@ -103,6 +112,40 @@ public class WPSResponseReaderTest {
             Object o = new WPSResponseReader().readElement(xmlReader);
             assertTrue(o != null);
             assertTrue(o instanceof List);
+            
+            List<?> processList = (List<?>)o;
+            
+            Object processObject = processList.get(0);
+            
+            assertTrue(processObject instanceof Process);
+            
+            Process process = (Process)processObject;
+            
+            List<InputDescription> inputs = process.getInputs();
+            
+            for (InputDescription inputDescription : inputs) {
+                
+                if (inputDescription instanceof ComplexInputDescription) {
+                    //TODO add assertions
+                } else if (inputDescription instanceof LiteralInputDescription) {
+
+                    LiteralInputDescription literalInputDescription = (LiteralInputDescription)inputDescription;
+                    
+                    if(literalInputDescription.getId().equals(inputWithUomsID)) {
+                        List<UOM> uoms = literalInputDescription.getUoms();
+                        
+                        assertTrue(uoms.size() == 13);
+                    }
+                    //TODO add assertions
+                    
+                    
+                } else if (inputDescription instanceof BoundingBoxInputDescription) {
+                    //TODO add assertions
+
+                }
+            }
+            
+            
         } catch (XMLStreamException e) {
             LOGGER.error(e.getMessage());
             fail();
