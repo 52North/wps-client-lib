@@ -405,6 +405,17 @@ public class ExecuteRequestBuilder {
     public Execute getExecute() {
         return execute;
     }
+    
+    
+    /**
+     * Resets the internal execute member to the initial state.
+     */
+    public void reset() {
+        execute = new Execute();
+        // set synchronous execute by default
+        execute.setExecutionMode(ExecutionMode.SYNC);
+        execute.setId(processDesc.getId());        
+    }
 
     /**
      *
