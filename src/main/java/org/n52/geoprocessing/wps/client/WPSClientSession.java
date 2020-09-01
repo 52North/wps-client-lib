@@ -321,6 +321,32 @@ public class WPSClientSession {
         return execute(url, executeObject, requestRawData, requestAsync);
     }
 
+    /**
+     * Executes a process at a WPS
+     *
+     * @param url
+     *            url of server not the entry additionally defined in the caps.
+     * @param execute
+     *            Execute document
+     * @param version
+     *            the version of the WPS
+     *
+     * @return either an ExecuteResponseDocument or an InputStream if asked for
+     *         RawData or an Exception Report
+     * @throws WPSClientException
+     *             if the initial execute request failed
+     * @throws IOException
+     *             if subsequent requests failed in async mode
+     */
+    public Object executeAsyncGetResponseImmediately(String url,
+            org.n52.geoprocessing.wps.client.model.execution.Execute execute,
+            String version) throws WPSClientException, IOException {
+
+        Object executeObject = encode(execute, version);
+
+        return retrieveAsyncExecuteResponseViaPOSTImmediately(url, executeObject);
+    }
+
     private Object execute(String url,
             Object executeObject,
             boolean rawData,
@@ -407,6 +433,40 @@ public class WPSClientSession {
 
     public void setUseBearerToken(boolean useBearerToken) {
         this.useBearerToken = useBearerToken;
+    }
+
+    public Result retrieveProcessResult(String url,
+            String jobId) throws IOException, WPSClientException {
+        try {
+            String targetUrl = this.createGetResultURLWPS20(url, jobId);
+            Object result = retrieveResponseOrExceptionReportInpustream(new URL(targetUrl));
+
+            if (result != null && result instanceof Result) {
+                return (Result) result;
+            }
+
+            throw new WPSClientException("Invalid response from WPS: " + result);
+        } catch (MalformedURLException ex) {
+            throw new IOException(ex.getMessage(), ex);
+        }
+    }
+    
+    /**
+     * TODO
+     * 
+     * @param statusLocation
+     * @return
+     * @throws MalformedURLException
+     * @throws WPSClientException
+     * @throws IOException
+     */
+    public Object getResultFromStatusLocation(String statusLocation) throws MalformedURLException, WPSClientException, IOException {
+        
+        Object statusInfoObject = retrieveResponseOrExceptionReportInpustream(new URL(statusLocation));
+        
+        String baseURL = statusLocation.substring(0, statusLocation.indexOf("?"));
+        
+        return getAsyncDoc(baseURL, statusInfoObject);
     }
 
     private synchronized boolean isCancel() {
@@ -638,6 +698,40 @@ public class WPSClientSession {
         return responseObject;
     }
 
+    /**
+     * Retrieves an StatusInfoDocument
+     *
+     * @param url
+     *            WPS url
+     * @param executeObject
+     *            encoded execute request
+     * @throws WPSClientException
+     *             if the initial execute request failed
+     * @throws IOException
+     *             if subsequent requests failed in async mode
+     */
+    private Object retrieveAsyncExecuteResponseViaPOSTImmediately(String url,
+            Object executeObject) throws WPSClientException, IOException {
+
+        Object responseObject = retrieveDataViaPOST(executeObject, url);
+
+        if(!(responseObject instanceof StatusInfo)) {
+            throw new WPSClientException("Async response is not an StatusInfo, instead: " + responseObject.getClass());
+        }
+        
+        StatusInfo statusInfoDocument = (StatusInfo) responseObject;
+        
+        String statusLocation = statusInfoDocument.getStatusLocation();
+        String jobID = statusInfoDocument.getJobId();
+
+        if (statusLocation == null || statusLocation.isEmpty()) {
+            String getStatusURL = createGetStatusURLWPS20(url, jobID);
+            statusInfoDocument.setStatusLocation(getStatusURL);
+        }
+
+        return statusInfoDocument;
+    }
+
     private String createGetStatusURLWPS20(String url,
             String jobID) throws MalformedURLException {
 
@@ -789,22 +883,6 @@ public class WPSClientSession {
             }
         } else {
             LOGGER.info("Property delayForAsyncRequests not present, defaulting to: " + delayForAsyncRequests);
-        }
-    }
-
-    public Result retrieveProcessResult(String url,
-            String jobId) throws IOException, WPSClientException {
-        try {
-            String targetUrl = this.createGetResultURLWPS20(url, jobId);
-            Object result = retrieveResponseOrExceptionReportInpustream(new URL(targetUrl));
-
-            if (result != null && result instanceof Result) {
-                return (Result) result;
-            }
-
-            throw new WPSClientException("Invalid response from WPS: " + result);
-        } catch (MalformedURLException ex) {
-            throw new IOException(ex.getMessage(), ex);
         }
     }
 
