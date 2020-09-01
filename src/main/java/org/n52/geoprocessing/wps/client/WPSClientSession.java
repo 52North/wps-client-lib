@@ -450,22 +450,23 @@ public class WPSClientSession {
             throw new IOException(ex.getMessage(), ex);
         }
     }
-    
+
     /**
-     * TODO
-     * 
-     * @param statusLocation
-     * @return
-     * @throws MalformedURLException
-     * @throws WPSClientException
-     * @throws IOException
+     * Get the result from a status location URL
+     *
+     * @param statusLocation The status location URL
+     *
+     * @return the result object
+     * @throws MalformedURLException if the status location URL is malformed
+     * @throws WPSClientException if an exception concerning WPS communication occurred
+     * @throws IOException if en exception during the general HTTPVcommunication occurred
      */
     public Object getResultFromStatusLocation(String statusLocation) throws MalformedURLException, WPSClientException, IOException {
-        
+
         Object statusInfoObject = retrieveResponseOrExceptionReportInpustream(new URL(statusLocation));
-        
+
         String baseURL = statusLocation.substring(0, statusLocation.indexOf("?"));
-        
+
         return getAsyncDoc(baseURL, statusInfoObject);
     }
 
@@ -718,9 +719,9 @@ public class WPSClientSession {
         if(!(responseObject instanceof StatusInfo)) {
             throw new WPSClientException("Async response is not an StatusInfo, instead: " + responseObject.getClass());
         }
-        
+
         StatusInfo statusInfoDocument = (StatusInfo) responseObject;
-        
+
         String statusLocation = statusInfoDocument.getStatusLocation();
         String jobID = statusInfoDocument.getJobId();
 
