@@ -308,17 +308,13 @@ public class WPSClientSession {
      * @throws IOException
      *             if subsequent requests failed in async mode
      */
-    public Object execute(String url,
+    public Object executeAsyncGetResponseImmediately(String url,
             org.n52.geoprocessing.wps.client.model.execution.Execute execute,
             String version) throws WPSClientException, IOException {
 
-        boolean requestRawData = execute.getResponseMode() == ResponseMode.RAW;
-        boolean requestAsync = execute.getExecutionMode() == ExecutionMode.ASYNC;
-        // TODO: what about AUTO mode?
-
         Object executeObject = encode(execute, version);
 
-        return execute(url, executeObject, requestRawData, requestAsync);
+        return retrieveAsyncExecuteResponseViaPOSTImmediately(url, executeObject);
     }
 
     /**
@@ -338,13 +334,17 @@ public class WPSClientSession {
      * @throws IOException
      *             if subsequent requests failed in async mode
      */
-    public Object executeAsyncGetResponseImmediately(String url,
+    public Object execute(String url,
             org.n52.geoprocessing.wps.client.model.execution.Execute execute,
             String version) throws WPSClientException, IOException {
 
+        boolean requestRawData = execute.getResponseMode() == ResponseMode.RAW;
+        boolean requestAsync = execute.getExecutionMode() == ExecutionMode.ASYNC;
+        // TODO: what about AUTO mode?
+
         Object executeObject = encode(execute, version);
 
-        return retrieveAsyncExecuteResponseViaPOSTImmediately(url, executeObject);
+        return execute(url, executeObject, requestRawData, requestAsync);
     }
 
     private Object execute(String url,
@@ -454,14 +454,20 @@ public class WPSClientSession {
     /**
      * Get the result from a status location URL
      *
-     * @param statusLocation The status location URL
+     * @param statusLocation
+     *            The status location URL
      *
      * @return the result object
-     * @throws MalformedURLException if the status location URL is malformed
-     * @throws WPSClientException if an exception concerning WPS communication occurred
-     * @throws IOException if en exception during the general HTTPVcommunication occurred
+     * @throws MalformedURLException
+     *             if the status location URL is malformed
+     * @throws WPSClientException
+     *             if an exception concerning WPS communication occurred
+     * @throws IOException
+     *             if en exception during the general HTTPVcommunication
+     *             occurred
      */
-    public Object getResultFromStatusLocation(String statusLocation) throws MalformedURLException, WPSClientException, IOException {
+    public Object getResultFromStatusLocation(String statusLocation)
+            throws MalformedURLException, WPSClientException, IOException {
 
         Object statusInfoObject = retrieveResponseOrExceptionReportInpustream(new URL(statusLocation));
 
@@ -716,7 +722,7 @@ public class WPSClientSession {
 
         Object responseObject = retrieveDataViaPOST(executeObject, url);
 
-        if(!(responseObject instanceof StatusInfo)) {
+        if (!(responseObject instanceof StatusInfo)) {
             throw new WPSClientException("Async response is not an StatusInfo, instead: " + responseObject.getClass());
         }
 

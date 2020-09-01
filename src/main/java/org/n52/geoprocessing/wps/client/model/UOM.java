@@ -16,6 +16,8 @@
  */
 package org.n52.geoprocessing.wps.client.model;
 
+import java.util.Objects;
+
 public class UOM extends DefaultableElement {
 
     private String uomString;
@@ -43,5 +45,10 @@ public class UOM extends DefaultableElement {
         }
 
         return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode());
     }
 }

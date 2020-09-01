@@ -344,7 +344,7 @@ public class DescribeProcess100ResponseDecoder extends AbstractElementXmlStreamR
                     String uomString = readUOM(reader);
                     UOM uom = new UOM(uomString);
                     uom.setDefaultElement(true);
-                    if(!result.contains(uom)) {
+                    if (!result.contains(uom)) {
                         result.add(uom);
                     }
                 } else if (elem.getName().equals(WPS100Constants.Elem.QN_SUPPORTED_NO_NAMESPACE)) {
@@ -352,7 +352,7 @@ public class DescribeProcess100ResponseDecoder extends AbstractElementXmlStreamR
                     List<UOM> supportedUoms = readSupportedUOMs(reader);
 
                     for (UOM uom : supportedUoms) {
-                        if(!result.contains(uom)) {
+                        if (!result.contains(uom)) {
                             result.add(uom);
                         }
                     }
