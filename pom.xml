@@ -25,7 +25,7 @@
         </parent>
 	<groupId>org.n52.geoprocessing</groupId>
 	<artifactId>wps-client-lib</artifactId>
-	<version>1.1.0</version>
+	<version>1.2.0-SNAPSHOT</version>
 	<name>52 North WPS Client library</name>
 	<inceptionYear>2017</inceptionYear>
 	<properties>
@@ -64,7 +64,7 @@
 		<url>https://github.com/52North/wps-client-lib</url>
 		<connection>scm:git:git://github.com/52North/wps-client-lib.git</connection>
 		<developerConnection>scm:git:ssh://git@github.com/52North/wps-client-lib.git</developerConnection>
-		<tag>v1.1.0</tag>
+		<tag>HEAD</tag>
 	</scm>
 
 	<issueManagement>
