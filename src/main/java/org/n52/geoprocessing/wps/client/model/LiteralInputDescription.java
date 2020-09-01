@@ -27,7 +27,7 @@ public class LiteralInputDescription extends InputDescription {
     private boolean anyValue;
 
     private String dataType;
-    
+
     private List<UOM> uoms;
 
     public Object getDefaultValue() {

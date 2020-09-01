@@ -28,6 +28,7 @@ import javax.xml.stream.events.EndElement;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
+import org.n52.geoprocessing.wps.client.model.AllowedValues;
 import org.n52.geoprocessing.wps.client.model.BoundingBoxInputDescription;
 import org.n52.geoprocessing.wps.client.model.BoundingBoxOutputDescription;
 import org.n52.geoprocessing.wps.client.model.ComplexInputDescription;
@@ -36,6 +37,7 @@ import org.n52.geoprocessing.wps.client.model.InputDescription;
 import org.n52.geoprocessing.wps.client.model.LiteralInputDescription;
 import org.n52.geoprocessing.wps.client.model.LiteralOutputDescription;
 import org.n52.geoprocessing.wps.client.model.OutputDescription;
+import org.n52.geoprocessing.wps.client.model.Range;
 import org.n52.geoprocessing.wps.client.model.UOM;
 import org.n52.geoprocessing.wps.client.xml.OWS11Constants;
 import org.n52.geoprocessing.wps.client.xml.WPS100Constants;
@@ -320,18 +322,18 @@ public class DescribeProcess100ResponseDecoder extends AbstractElementXmlStreamR
     private void readUOMs(StartElement elem,
             XMLEventReader reader,
             LiteralInputDescription input) throws XMLStreamException {
-        
+
         List<UOM> uoms = getDefaultAndSupported(elem, reader);
-        
+
         input.setUoms(uoms);
-        
+
     }
-    
+
     private List<UOM> getDefaultAndSupported(StartElement start,
             XMLEventReader reader) throws XMLStreamException {
 
         List<UOM> result = new ArrayList<>();
-        
+
         while (reader.hasNext()) {
             XMLEvent event = reader.nextEvent();
             if (event.isStartElement()) {
@@ -340,14 +342,15 @@ public class DescribeProcess100ResponseDecoder extends AbstractElementXmlStreamR
                     //move forward to ows:UOM element
                     reader.nextTag();
                     String uomString = readUOM(reader);
-                    UOM uom = new UOM(uomString, true);
+                    UOM uom = new UOM(uomString);
+                    uom.setDefaultElement(true);
                     if(!result.contains(uom)) {
                         result.add(uom);
                     }
                 } else if (elem.getName().equals(WPS100Constants.Elem.QN_SUPPORTED_NO_NAMESPACE)) {
-                    
+
                     List<UOM> supportedUoms = readSupportedUOMs(reader);
-                    
+
                     for (UOM uom : supportedUoms) {
                         if(!result.contains(uom)) {
                             result.add(uom);
@@ -365,18 +368,18 @@ public class DescribeProcess100ResponseDecoder extends AbstractElementXmlStreamR
         }
         throw eof();
     }
-    
+
     private List<UOM> readSupportedUOMs(XMLEventReader reader) throws XMLStreamException {
 
         List<UOM> result = new ArrayList<>();
-        
+
         while (reader.hasNext()) {
             XMLEvent event = reader.nextEvent();
             if (event.isStartElement()) {
                 StartElement elem = event.asStartElement();
                 if (elem.getName().equals(OWS11Constants.Elem.QN_UOM)) {
                     String uomString = readUOM(reader);
-                    result.add(new UOM(uomString, false));
+                    result.add(new UOM(uomString));
                 } else {
                     throw unexpectedTag(elem);
                 }
@@ -388,7 +391,7 @@ public class DescribeProcess100ResponseDecoder extends AbstractElementXmlStreamR
             }
         }
         throw eof();
-        
+
     }
 
     private String readUOM(XMLEventReader reader) throws XMLStreamException {
@@ -552,11 +555,11 @@ public class DescribeProcess100ResponseDecoder extends AbstractElementXmlStreamR
                         readBoundingBoxData(start, reader, (BoundingBoxInputDescription) input);
                     } else {
                         throw unexpectedTag(start);
-                    }                    
+                    }
                 } catch (XMLStreamException e) {
                     LOGGER.error("Could not decode input with ID: " + id);
                     throw e;
-                    
+
                 }
             } else if (event.isEndElement()) {
                 EndElement end = event.asEndElement();
@@ -662,16 +665,63 @@ public class DescribeProcess100ResponseDecoder extends AbstractElementXmlStreamR
     private void readAllowedValues(StartElement start,
             XMLEventReader reader,
             LiteralInputDescription input) throws XMLStreamException {
+
+        AllowedValues allowedValues = new AllowedValues();
+
         while (reader.hasNext()) {
             XMLEvent event = reader.nextEvent();
+            if (event.isStartElement()) {
+                StartElement elem = event.asStartElement();
+                if (elem.getName().equals(OWS11Constants.Elem.QN_VALUE)) {
+                    allowedValues.addAllowedValue(readValue(reader));
+                } else if (elem.getName().equals(OWS11Constants.Elem.QN_RANGE)) {
+                    allowedValues.addRange(readRange(reader));
+                } else {
+                    throw unexpectedTag(elem);
+                }
+            }
             if (event.isEndElement()) {
                 EndElement elem = event.asEndElement();
                 if (elem.getName().equals(OWS11Constants.Elem.QN_ALLOWED_VALUES)) {
+                    input.setAllowedValues(allowedValues);
                     return;
                 }
             }
         }
 
+    }
+
+    private Range readRange(XMLEventReader reader) throws XMLStreamException {
+
+        Range range = new Range();
+
+        while (reader.hasNext()) {
+            XMLEvent event = reader.nextEvent();
+            if (event.isStartElement()) {
+                StartElement elem = event.asStartElement();
+                if (elem.getName().equals(OWS11Constants.Elem.QN_MINIMUM_VALUE)) {
+                    range.setMinimumValue(reader.getElementText());
+                } else if (elem.getName().equals(OWS11Constants.Elem.QN_MAXIMUM_VALUE)) {
+                    range.setMaximumValue(reader.getElementText());
+                } else if (elem.getName().equals(OWS11Constants.Elem.QN_SPACING)) {
+                    range.setSpacing(reader.getElementText());
+                } else {
+                    throw unexpectedTag(elem);
+                }
+            }
+            if (event.isEndElement()) {
+                EndElement elem = event.asEndElement();
+                if (elem.getName().equals(OWS11Constants.Elem.QN_RANGE)) {
+                    return range;
+                }
+            }
+        }
+
+        throw eof();
+    }
+
+    private String readValue(XMLEventReader reader) throws XMLStreamException {
+        return reader.getElementText();
     }
 
     private Collection<? extends Format> readFormats(XMLEventReader reader) throws XMLStreamException {

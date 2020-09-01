@@ -16,6 +16,7 @@
  */
 package org.n52.geoprocessing.wps.client;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -29,6 +30,7 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 
 import org.junit.Test;
+import org.n52.geoprocessing.wps.client.model.AllowedValues;
 import org.n52.geoprocessing.wps.client.model.BoundingBoxInputDescription;
 import org.n52.geoprocessing.wps.client.model.ComplexInputDescription;
 import org.n52.geoprocessing.wps.client.model.ExceptionReport;
@@ -97,8 +99,11 @@ public class WPSResponseReaderTest {
 
     @Test
     public void testReadDescribeProcess100(){
-        
-        Object inputWithUomsID = "buffer_distance";
+
+        String inputWithUomsID = "buffer_distance";
+        String inputWithAllowedValuesID = "line_side";
+        String metersUomString = "meters";
+        int allowedValuesSize = 2;
 
         XMLEventReader xmlReader = null;
         try {
@@ -112,40 +117,62 @@ public class WPSResponseReaderTest {
             Object o = new WPSResponseReader().readElement(xmlReader);
             assertTrue(o != null);
             assertTrue(o instanceof List);
-            
+
             List<?> processList = (List<?>)o;
-            
+
             Object processObject = processList.get(0);
-            
+
             assertTrue(processObject instanceof Process);
-            
+
             Process process = (Process)processObject;
-            
+
             List<InputDescription> inputs = process.getInputs();
-            
+
             for (InputDescription inputDescription : inputs) {
-                
+
                 if (inputDescription instanceof ComplexInputDescription) {
                     //TODO add assertions
                 } else if (inputDescription instanceof LiteralInputDescription) {
 
                     LiteralInputDescription literalInputDescription = (LiteralInputDescription)inputDescription;
-                    
+
                     if(literalInputDescription.getId().equals(inputWithUomsID)) {
                         List<UOM> uoms = literalInputDescription.getUoms();
-                        
+
                         assertTrue(uoms.size() == 13);
+
+                        for (UOM uom : uoms) {
+                            //meters is default, all others not
+                            if(uom.getUomString().equals(metersUomString)) {
+                                assertTrue("UOM meters not default.", uom.isDefaultElement());
+                            } else {
+                                assertTrue("Only meters should be default. Found other default: " + uom.getUomString(), !uom.isDefaultElement());
+                            }
+                        }
+
+                    } else if(literalInputDescription.getId().equals(inputWithAllowedValuesID)) {
+                        AllowedValues allowedValues = literalInputDescription.getAllowedValues();
+
+                        assertNotNull("AllowedValues is null.", allowedValues);
+
+                        List<String> allowedValuesList = allowedValues.getAllowedValues();
+
+                        assertNotNull(allowedValuesList);
+
+                        int size = allowedValuesList.size();
+
+                        assertTrue(String.format("Wrong size. Should be %d, was %d.", allowedValuesSize, size), size == allowedValuesSize);
                     }
                     //TODO add assertions
-                    
-                    
+
+
                 } else if (inputDescription instanceof BoundingBoxInputDescription) {
                     //TODO add assertions
 
                 }
             }
-            
-            
+
+
         } catch (XMLStreamException e) {
             LOGGER.error(e.getMessage());
             fail();

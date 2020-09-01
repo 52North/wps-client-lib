@@ -16,32 +16,16 @@
  */
 package org.n52.geoprocessing.wps.client.model;
 
-public class UOM extends DefaultableElement {
+public abstract class DefaultableElement {
 
-    private String uomString;
+    private boolean defaultElement;
 
-    public UOM(String uomString) {
-        this.uomString = uomString;
+    public boolean isDefaultElement() {
+        return defaultElement;
     }
 
-    public String getUomString() {
-        return uomString;
+    public void setDefaultElement(boolean defaultElement) {
+        this.defaultElement = defaultElement;
     }
 
-    public void setUomString(String uomString) {
-        this.uomString = uomString;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-
-        if (obj instanceof UOM) {
-
-            UOM other = (UOM) obj;
-
-            return uomString.equals(other.uomString);
-        }
-
-        return false;
-    }
 }
