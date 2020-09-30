@@ -83,7 +83,7 @@ public class Data extends WPSExecuteParameter {
         data.setFormat(getFormat());
         data.setMetadata(getMetadata());
         data.setTitle(getTitle());
-        data.setReference(((ComplexData)this).getReference());
+        data.setReference(((ComplexData) this).getReference());
     }
 
     @Override
