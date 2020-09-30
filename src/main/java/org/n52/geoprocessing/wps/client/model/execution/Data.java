@@ -39,6 +39,15 @@ public class Data extends WPSExecuteParameter {
         return complexData;
     }
 
+    public ComplexData asComplexReferenceData() {
+
+        ComplexData complexData = new ComplexData();
+
+        copyMembersForReference(complexData);
+
+        return complexData;
+    }
+
     public LiteralData asLiteralData() {
 
         LiteralData literalData = new LiteralData();
@@ -65,6 +74,16 @@ public class Data extends WPSExecuteParameter {
         data.setMetadata(getMetadata());
         data.setTitle(getTitle());
         data.setValue(getValue());
+    }
+
+    private void copyMembersForReference(ComplexData data) {
+
+        data.setId(getId());
+        data.setAbstract(getAbstract());
+        data.setFormat(getFormat());
+        data.setMetadata(getMetadata());
+        data.setTitle(getTitle());
+        data.setReference(((ComplexData)this).getReference());
     }
 
     @Override
