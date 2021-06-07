@@ -33,7 +33,7 @@
 		<slf4j.version>1.7.30</slf4j.version>
 		<arctic-sea.version>7.3.1</arctic-sea.version>
 		<common-xml.version>2.3.0</common-xml.version>
-		<logback.version>1.0.13</logback.version>
+		<logback.version>1.2.0</logback.version>
 		<javaps.version>1.5.0</javaps.version>
 		<org.springframework.version>4.1.6.RELEASE</org.springframework.version>
 		<org.spring-security.version>4.0.1.RELEASE</org.spring-security.version>
