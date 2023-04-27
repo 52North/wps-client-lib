@@ -1,6 +1,6 @@
 <!--
 
-    ﻿Copyright (C) 2020 52°North Initiative for Geospatial Open Source
+    ﻿Copyright (C) 2023 52°North Initiative for Geospatial Open Source
     Software GmbH
 
     Licensed under the Apache License, Version 2.0 (the "License");
@@ -38,7 +38,7 @@
 		<org.springframework.version>4.1.6.RELEASE</org.springframework.version>
 		<org.spring-security.version>4.0.1.RELEASE</org.spring-security.version>
 		<maven.build.timestamp.format>yyyy</maven.build.timestamp.format>
-		<currentYear>2020</currentYear>
+		<currentYear>2023</currentYear>
 	</properties>
 	<licenses>
 		<license>
