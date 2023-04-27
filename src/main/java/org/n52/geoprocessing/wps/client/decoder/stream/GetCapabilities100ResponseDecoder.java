@@ -418,7 +418,11 @@ public class GetCapabilities100ResponseDecoder extends AbstractElementXmlStreamR
                 StartElement elem = event.asStartElement();
                 if (elem.getName().equals(OWS11Constants.Elem.QN_KEYWORD)) {
                     keywords.add(reader.getElementText());
-                } else {
+                } else if(elem.getName().equals(OWS11Constants.Elem.QN_TYPE)){
+                    //ignore Type tag
+                    //TODO parse Type tag properly
+                }
+                else {
                     throw unexpectedTag(elem);
                 }
             } else if (event.isEndElement()) {
