@@ -554,19 +554,16 @@ public class WPSClientSession {
             get.addHeader(AUTHORIZATION, getBearerToken());
         }
 
-        CloseableHttpResponse response = httpClient.execute(get);
+        try(CloseableHttpResponse response = httpClient.execute(get)){
+            Object responseObject = parseInputStreamToString(response.getEntity().getContent());
 
-        Object responseObject = parseInputStreamToString(response.getEntity().getContent());
-
-        try {
-            checkStatusCode(response);
-        } catch (Exception e) {
-            throw new WPSClientException(GOT_HTTP_ERROR + responseObject);
-        } finally {
-            response.close();
+            try {
+                checkStatusCode(response);
+            } catch (Exception e) {
+                throw new WPSClientException(GOT_HTTP_ERROR + responseObject);
+            }
+            return responseObject;
         }
-
-        return responseObject;
     }
 
     private Object retrieveResponseOrExceptionReportInpustream(URL url,
