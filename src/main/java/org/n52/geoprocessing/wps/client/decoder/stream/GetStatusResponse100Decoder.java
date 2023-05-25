@@ -31,6 +31,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.EndElement;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
+import org.n52.geoprocessing.wps.client.model.ExceptionReport;
 
 import org.n52.geoprocessing.wps.client.model.Format;
 import org.n52.geoprocessing.wps.client.model.Result;
@@ -74,7 +75,7 @@ public class GetStatusResponse100Decoder extends AbstractElementXmlStreamReader 
         throw eof();
     }
 
-    public StatusInfo readExecuteResponse(StartElement elem,
+    public Object readExecuteResponse(StartElement elem,
             XMLEventReader reader) throws XMLStreamException {
 
         StatusInfo statusInfo = new StatusInfo();
@@ -97,7 +98,11 @@ public class GetStatusResponse100Decoder extends AbstractElementXmlStreamReader 
                     skipProcessElement(reader);
                 } else if (start.getName().equals(WPS100Constants.Elem.QN_PROCESS_OUTPUTS)) {
                     statusInfo.setResult(readResult(start, reader));
-                } else {
+                }else if(start.getName().equals(OWS11Constants.Elem.QN_EXCEPTION_REPORT) || start.getName().equals(WPS100Constants.wps("ExceptionReport"))){
+                    ExceptionReport exceptionReport = new ExceptionReport100Decoder().readExceptionReport(start, reader); //return exception report instead of status info
+                    return exceptionReport;
+                }
+                else {
                     throw unexpectedTag(start);
                 }
             } else if (event.isEndElement()) {

@@ -26,6 +26,7 @@ import javax.xml.stream.events.XMLEvent;
 import org.n52.geoprocessing.wps.client.model.ExceptionReport;
 import org.n52.geoprocessing.wps.client.model.OWSExceptionElement;
 import org.n52.geoprocessing.wps.client.xml.OWS11Constants;
+import org.n52.geoprocessing.wps.client.xml.WPS100Constants;
 import org.n52.svalbard.decode.stream.StreamReaderKey;
 import org.n52.svalbard.decode.stream.xml.AbstractElementXmlStreamReader;
 
@@ -45,10 +46,10 @@ public class ExceptionReport100Decoder extends AbstractElementXmlStreamReader {
         throw eof();
     }
 
-    public Object readExceptionReport(StartElement start,
+    public ExceptionReport readExceptionReport(StartElement start,
             XMLEventReader reader) throws XMLStreamException {
 
-        if (start.getName().equals(OWS11Constants.Elem.QN_EXCEPTION_REPORT)) {
+        if (start.getName().equals(OWS11Constants.Elem.QN_EXCEPTION_REPORT) ||  start.getName().equals(WPS100Constants.wps("ExceptionReport"))) {
             return readExceptions(start, reader);
         }
         throw eof();
