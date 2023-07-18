@@ -554,7 +554,7 @@ public class WPSClientSession {
             get.addHeader(AUTHORIZATION, getBearerToken());
         }
 
-        try(CloseableHttpResponse response = httpClient.execute(get)){
+        try (CloseableHttpResponse response = httpClient.execute(get)) {
             Object responseObject = parseInputStreamToString(response.getEntity().getContent());
 
             try {
@@ -580,7 +580,7 @@ public class WPSClientSession {
 
         post.setEntity(new StringEntity(executeObject));
 
-       try(CloseableHttpResponse response = httpClient.execute(post)){
+        try (CloseableHttpResponse response = httpClient.execute(post)) {
             Object responseObject = parseInputStreamToString(response.getEntity().getContent());
 
             try {
@@ -590,7 +590,7 @@ public class WPSClientSession {
             }
 
             return responseObject;
-       }
+        }
     }
 
     private void checkStatusCode(CloseableHttpResponse response) throws WPSClientException {
@@ -891,10 +891,10 @@ public class WPSClientSession {
     @Override
     protected void finalize() throws Throwable {
         super.finalize();
-        if(this.httpClient != null){
-            try{
+        if (this.httpClient != null) {
+            try {
                 this.httpClient.close();
-            }catch(IOException e){
+            } catch (IOException e) {
                 LOGGER.error("unable to close http client during garbage collection", e);
             }
         }
